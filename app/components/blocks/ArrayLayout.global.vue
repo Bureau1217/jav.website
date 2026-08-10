@@ -1,6 +1,6 @@
 <template>
   <div class="v-block-array-layout">
-    <h3 v-if="block.content.title">{{ block.content.title }}</h3>
+    <h3 v-if="block.content.title" v-html="block.content.title" />
     <div class="v-block-array-layout__columns">
       <div
         v-for="(column, index) in block.content.columns"

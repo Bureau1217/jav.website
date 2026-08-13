@@ -1,0 +1,160 @@
+// Design token mixins extracted from Figma (JAZZ ACTION VALENCE)
+// https://www.figma.com/design/ga2Wp0bkuPdMEDQpSkOhLY/JAZZ-ACTION-VALENCE
+// NOTE: this partial is auto-injected into every component's <style lang="scss">
+// via Nuxt's vite scss additionalData — it must stay output-free (mixins only).
+// The actual --custom-property values live in assets/base.scss (loaded once, globally).
+
+// Typography mixins — usage: @include heading-1;
+@mixin heading-display {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: var(--spacing-7xl);
+  line-height: 0.95;
+}
+
+@mixin heading-1 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--spacing-5xl);
+  line-height: var(--spacing-5xl);
+}
+
+@mixin heading-2 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--spacing-4xl);
+  line-height: var(--spacing-4xl);
+}
+
+@mixin heading-3 {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: var(--spacing-3xl);
+  line-height: 1;
+}
+
+@mixin nav-menu {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: var(--spacing-2xl);
+  line-height: 1;
+}
+
+@mixin tag-date {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--spacing-m);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+@mixin text-body {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1;
+}
+
+@mixin text-body-large {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1;
+}
+
+@mixin text-body-large-bold {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1;
+}
+
+@mixin text-subtitle {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--spacing-4xl);
+  line-height: 1.04;
+}
+
+@mixin text-heading-2 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--spacing-2xl);
+  line-height: 1;
+}
+
+@mixin text-emphasis {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: var(--spacing-2xl);
+  line-height: 1;
+}
+
+@mixin text-stat {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: var(--spacing-3xl);
+  line-height: 1;
+}
+
+@mixin text-label {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: var(--spacing-m);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+@mixin button-xl {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: var(--spacing-xl);
+  line-height: 1;
+}
+
+@mixin button-m {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: var(--spacing-l);
+  line-height: 1;
+}
+
+@mixin button-link {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--spacing-xl);
+  line-height: 1;
+}
+
+@mixin emoji-m {
+  font-family: var(--font-emoji);
+  font-weight: 300;
+  font-size: var(--spacing-4xl);
+  line-height: 1;
+}
+
+@mixin emoji-xl {
+  font-family: var(--font-emoji);
+  font-weight: 300;
+  font-size: var(--spacing-5xl);
+  line-height: 1;
+}
+
+@mixin accent-italic {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--spacing-3xl);
+  line-height: 47px;
+}
+
+// NOTE: button visuals (primary pill / secondary underline) live in
+// UiButton.vue, not here — it's the single component every block uses, so
+// there's no separate mixin to keep in sync with it.
+
+// "No content yet" placeholder text (empty events list, no testimonials...)
+// repeated across several blocks — usage: @include empty-state;
+@mixin empty-state {
+  @include text-body-large;
+  opacity: 0.7;
+}

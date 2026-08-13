@@ -30,5 +30,32 @@ function fileUrl(item: { resource_file?: string[] }): string | null {
 
 <style lang="scss" scoped>
 .v-block-resources {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-xl) var(--spacing-6xl);
+  color: var(--color-brand-04);
+
+  @media (max-width: 900px) {
+    padding: var(--spacing-xl);
+  }
+}
+
+.v-block-resources__item {
+  border-top: 2px solid var(--color-brand-04);
+  padding: var(--spacing-m) 0;
+
+  &:last-child {
+    border-bottom: 2px solid var(--color-brand-04);
+  }
+
+  a {
+    @include text-body-large-bold;
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 </style>

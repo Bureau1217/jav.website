@@ -42,5 +42,46 @@ function dayLabel(day: string): string {
 
 <style lang="scss" scoped>
 .v-block-planning {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-xl) var(--spacing-6xl);
+  color: var(--color-brand-04);
+
+  @media (max-width: 900px) {
+    padding: var(--spacing-xl);
+  }
+}
+
+.v-block-planning__day {
+  border-top: 2px solid var(--color-brand-04);
+  padding: var(--spacing-m) 0;
+
+  &:last-child {
+    border-bottom: 2px solid var(--color-brand-04);
+  }
+
+  h3 {
+    @include text-label;
+    text-transform: none;
+    margin-bottom: var(--spacing-s);
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  li {
+    display: flex;
+    gap: var(--spacing-xl);
+    @include text-body-large;
+  }
+}
+
+.v-block-planning__time {
+  flex-shrink: 0;
+  min-width: 140px;
+  font-weight: 700;
 }
 </style>

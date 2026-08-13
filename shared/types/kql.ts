@@ -22,6 +22,30 @@ export interface KqlBlock {
   teacherPages: KqlTeacher[]
 }
 
+export interface KqlEvent {
+  id: string
+  title: string
+  date: string | null
+  time: string | null
+  type: string | null
+  location: string | null
+  ticketLink: string | null
+  cover: KqlFile | null
+  description: string | null
+}
+
+export interface KqlTestimonial {
+  role: string[]
+  text: string
+  photo: KqlFile | null
+}
+
+export interface KqlInfoBand {
+  text: string
+  image: KqlFile | null
+  link: string | null
+}
+
 export interface KqlPage {
   id: string
   title: string

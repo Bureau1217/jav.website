@@ -1,4 +1,4 @@
-const FILE_SELECT = {
+export const FILE_SELECT = {
   filename: true,
   url: true,
   alt: 'file.alt',

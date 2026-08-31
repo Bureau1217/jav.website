@@ -1,5 +1,5 @@
 <template>
-  <UiCard background="var(--color-brand-05)" color="var(--color-brand-04)" class="v-block-cta">
+  <UiCard background="var(--color-brand-05)" color="var(--color-brand-04)" class="v-block-cta u-flex u-flex--column u-flex--align-start u-gap-m u-gutter-x">
     <div v-if="block.content.title" class="v-block-cta__title" v-html="block.content.title" />
     <div
       v-if="block.content.description"
@@ -22,21 +22,19 @@ defineProps<{
 
 <style lang="scss" scoped>
 .v-block-cta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--spacing-m);
-  padding: var(--spacing-4xl) var(--spacing-6xl);
-  margin: var(--spacing-xl) var(--spacing-6xl);
+  padding-block: var(--spacing-4xl);
+  margin: var(--spacing-xl) var(--gutter);
 
-  @media (max-width: 900px) {
-    padding: var(--spacing-xl);
-    margin: var(--spacing-xl);
+  @media (max-width: $breakpoint-mobile) {
+    padding-block: var(--spacing-xl);
   }
 }
 
 .v-block-cta__title {
-  @include heading-2;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--spacing-4xl); // 48px
+  line-height: 1;
 
   :deep(em) {
     font-style: italic;
@@ -44,7 +42,10 @@ defineProps<{
 }
 
 .v-block-cta__description {
-  @include text-body-large;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1;
 }
 
 .v-block-cta__link {

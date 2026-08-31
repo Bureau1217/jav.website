@@ -1,7 +1,7 @@
 <template>
   <component
     :is="tag"
-    class="ui-button"
+    class="ui-button u-inline-flex u-flex--align-center u-flex--justify-center u-gap-xs"
     :class="[`ui-button--${variant}`, `ui-button--${size}`]"
     :to="isLink ? to : undefined"
     :target="external ? '_blank' : undefined"
@@ -40,14 +40,9 @@ const tag = computed(() => (isLink.value ? resolveComponent('NuxtLink') : 'butto
 </script>
 
 <style lang="scss" scoped>
-// Typography comes from the shared button-m / button-xl / button-link
-// mixins (assets/_tokens.scss) so it can never drift from the rest of the
-// design system's type scale — only layout/color/spacing live here.
+// Typography is written directly per variant below (font-family/weight/
+// size/line-height) — only layout/color/spacing live outside these rules.
 .ui-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-xs);
   border: none;
   cursor: pointer;
   text-decoration: none;
@@ -71,14 +66,23 @@ const tag = computed(() => (isLink.value ? resolveComponent('NuxtLink') : 'butto
   border-bottom: 2px solid currentColor;
   padding-bottom: 2px;
   border-radius: 0;
-  @include button-link;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--spacing-xl); // 24px
+  line-height: 1;
 }
 
 .ui-button--primary.ui-button--m {
-  @include button-m;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: var(--spacing-l); // 20px
+  line-height: 1;
 }
 
 .ui-button--primary.ui-button--xl {
-  @include button-xl;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: var(--spacing-xl); // 24px
+  line-height: 1;
 }
 </style>

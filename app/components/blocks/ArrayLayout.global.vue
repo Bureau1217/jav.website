@@ -1,11 +1,11 @@
 <template>
-  <div class="v-block-array-layout">
-    <h3 v-if="block.content.title">{{ block.content.title }}</h3>
-    <div class="v-block-array-layout__columns">
+  <div class="v-block-array-layout u-flex u-flex--column u-gap-xl">
+    <h3 v-if="block.content.title" v-html="block.content.title" />
+    <div class="v-block-array-layout__columns u-flex u-gap-2xl">
       <div
         v-for="(column, index) in block.content.columns"
         :key="index"
-        class="v-block-array-layout__column"
+        class="v-block-array-layout__column u-flex u-flex--column u-gap-m"
       >
         <div v-if="column.columns_title" v-html="column.columns_title" />
         <Blocks :blocks="parseKqlBlocks(column.columns_content)" :images="images" :files="files" />
@@ -26,39 +26,24 @@ defineProps<{
 
 <style lang="scss" scoped>
 .v-block-array-layout {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xl);
-  padding: var(--spacing-xl) var(--spacing-6xl);
+  padding: var(--spacing-xl) var(--gutter);
   color: var(--color-brand-04);
-
-  @media (max-width: 900px) {
-    padding: var(--spacing-xl);
-  }
-
-  h3 {
-    @include heading-3;
-  }
 }
 
 .v-block-array-layout__columns {
-  display: flex;
-  gap: var(--spacing-2xl);
-
-  @media (max-width: 900px) {
+  @media (max-width: $breakpoint-mobile) {
     flex-direction: column;
   }
 }
 
 .v-block-array-layout__column {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-m);
 
   > div:first-child {
-    @include text-label;
-    text-transform: none;
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: var(--spacing-m); // 16px
+    line-height: 1;
   }
 }
 </style>

@@ -1,0 +1,147 @@
+// Layout — flex utility classes, same idea as .app-grid in the reference
+// stylesheet this was modeled on: instead of every block writing its own
+// `display: flex; flex-direction: column; gap: ...;`, it adds a couple of
+// `.u-flex*` classes in its template. A component still writes its own
+// scoped rule for anything that's genuinely one-off (a specific width, an
+// unusual gap like 152px, colors, positioning) — these classes only cover
+// the handful of layout properties that were repeated, as-is, dozens of
+// times across the site: display, direction, wrap, align, justify, gap,
+// and the page gutter.
+
+.u-flex {
+  display: flex;
+}
+
+.u-inline-flex {
+  display: inline-flex;
+}
+
+.u-flex--column {
+  flex-direction: column;
+}
+
+.u-flex--wrap {
+  flex-wrap: wrap;
+}
+
+.u-flex--align-start {
+  align-items: flex-start;
+}
+
+.u-flex--align-center {
+  align-items: center;
+}
+
+.u-flex--align-end {
+  align-items: flex-end;
+}
+
+.u-flex--align-stretch {
+  align-items: stretch;
+}
+
+.u-flex--align-baseline {
+  align-items: baseline;
+}
+
+.u-flex--justify-start {
+  justify-content: flex-start;
+}
+
+.u-flex--justify-center {
+  justify-content: center;
+}
+
+.u-flex--justify-end {
+  justify-content: flex-end;
+}
+
+.u-flex--justify-between {
+  justify-content: space-between;
+}
+
+.u-flex--justify-around {
+  justify-content: space-around;
+}
+
+// Gap scale — mirrors --spacing-* one-to-one (see main.scss). Kept as a
+// full scale rather than the reference's two-tier default/small split,
+// because the site actually uses most of the spacing scale for gaps, not
+// just two sizes.
+.u-gap-0 {
+  gap: 0;
+}
+
+.u-gap-xxs {
+  gap: var(--spacing-xxs);
+}
+
+.u-gap-xs {
+  gap: var(--spacing-xs);
+}
+
+.u-gap-s {
+  gap: var(--spacing-s);
+}
+
+.u-gap-m {
+  gap: var(--spacing-m);
+}
+
+.u-gap-l {
+  gap: var(--spacing-l);
+}
+
+.u-gap-xl {
+  gap: var(--spacing-xl);
+}
+
+.u-gap-2xl {
+  gap: var(--spacing-2xl);
+}
+
+.u-gap-3xl {
+  gap: var(--spacing-3xl);
+}
+
+.u-gap-4xl {
+  gap: var(--spacing-4xl);
+}
+
+.u-gap-5xl {
+  gap: var(--spacing-5xl);
+}
+
+.u-gap-6xl {
+  gap: var(--spacing-6xl);
+}
+
+.u-gap-7xl {
+  gap: var(--spacing-7xl);
+}
+
+// Page gutter (left/right inset used by virtually every section and block
+// on the site). Fully self-contained here (base value + its own
+// responsive override) so the override always wins on mobile regardless
+// of where this file gets imported from.
+:root {
+  --gutter: var(--spacing-6xl);
+}
+
+@media (max-width: $breakpoint-mobile) {
+  :root {
+    --gutter: var(--spacing-xl);
+  }
+}
+
+.u-gutter {
+  padding: var(--gutter);
+}
+
+.u-gutter-x {
+  padding-inline: var(--gutter);
+}
+
+.u-gutter-y {
+  padding-block: var(--gutter);
+}

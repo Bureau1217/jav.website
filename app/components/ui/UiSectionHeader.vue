@@ -1,6 +1,6 @@
 <template>
-  <div class="ui-section-header">
-    <h2 v-if="title">{{ title }}</h2>
+  <div class="ui-section-header u-flex u-flex--align-center u-flex--justify-between u-gap-xl u-flex--wrap">
+    <h2 v-if="title" v-html="title" />
     <UiButton
       v-if="linkTo"
       variant="secondary"
@@ -32,15 +32,6 @@ withDefaults(defineProps<{
 
 <style lang="scss" scoped>
 .ui-section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-xl);
-  flex-wrap: wrap;
   width: 100%;
-
-  h2 {
-    @include heading-1;
-  }
 }
 </style>

@@ -1,12 +1,12 @@
 <template>
-  <div class="v-block-gallery">
-    <UiSectionHeader title="JAV en image" class="v-block-gallery__header" />
+  <div class="v-block-gallery u-flex u-flex--column u-flex--align-center u-gap-4xl u-gutter-x">
+    <UiSectionHeader :title="block.content.title || 'JAV en image'" class="v-block-gallery__header" />
 
     <div v-if="current" class="v-block-gallery__media">
       <img v-if="imageUrl(current)" :src="imageUrl(current)!" :alt="current.title ?? ''" class="v-block-gallery__image">
     </div>
 
-    <div v-if="current" class="v-block-gallery__carousel">
+    <div v-if="current" class="v-block-gallery__carousel u-flex u-flex--align-center u-gap-xl">
       <button
         type="button"
         class="v-block-gallery__arrow"
@@ -17,7 +17,7 @@
         ‹
       </button>
 
-      <div class="v-block-gallery__content">
+      <div class="v-block-gallery__content u-flex u-flex--column u-flex--align-center u-gap-s">
         <p v-if="current.title" class="v-block-gallery__title">{{ current.title }}</p>
         <div v-if="current.content" class="v-block-gallery__text" v-html="current.content" />
       </div>
@@ -33,7 +33,7 @@
       </button>
     </div>
 
-    <div v-if="items.length > 1" class="v-block-gallery__dots">
+    <div v-if="items.length > 1" class="v-block-gallery__dots u-flex u-gap-s">
       <button
         v-for="(item, index) in items"
         :key="index"
@@ -82,16 +82,12 @@ function next() {
 
 <style lang="scss" scoped>
 .v-block-gallery {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-4xl);
   background: var(--color-brand-04);
   color: var(--color-brand-00);
-  padding: var(--spacing-7xl) var(--spacing-6xl);
+  padding-block: var(--spacing-7xl);
 
-  @media (max-width: 900px) {
-    padding: var(--spacing-4xl) var(--spacing-xl);
+  @media (max-width: $breakpoint-mobile) {
+    padding-block: var(--spacing-4xl);
   }
 }
 
@@ -106,15 +102,12 @@ function next() {
   object-fit: cover;
   border-radius: 999px;
 
-  @media (max-width: 900px) {
+  @media (max-width: $breakpoint-mobile) {
     border-radius: var(--radius-l);
   }
 }
 
 .v-block-gallery__carousel {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xl);
   width: 100%;
 }
 
@@ -135,26 +128,23 @@ function next() {
 
 .v-block-gallery__content {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-s);
   text-align: center;
   max-width: 676px;
   margin: 0 auto;
 }
 
 .v-block-gallery__title {
-  @include text-emphasis;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: var(--spacing-2xl); // 32px
+  line-height: 1;
 }
 
 .v-block-gallery__text {
-  @include text-body-large;
-}
-
-.v-block-gallery__dots {
-  display: flex;
-  gap: var(--spacing-s);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1;
 }
 
 .v-block-gallery__dot {

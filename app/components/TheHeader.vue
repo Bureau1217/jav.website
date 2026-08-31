@@ -1,12 +1,12 @@
 <template>
-  <header class="v-header">
-    <div class="v-header__bar">
-      <NuxtLink to="/" class="v-header__logo" aria-label="Jazz Action Valence — accueil">
-        <span class="v-header__logo-mark" aria-hidden="true">JAV</span>
+  <header class="v-header" :class="{ 'is-open': isOpen }">
+    <div class="v-header__bar u-flex u-flex--align-center u-flex--justify-between u-gutter-x">
+      <NuxtLink to="/" class="v-header__logo" aria-label="Jazz Action Valence — accueil" @click="isOpen = false">
+        <span class="v-header__logo-mark" aria-hidden="true" />
       </NuxtLink>
       <button
         type="button"
-        class="v-header__burger"
+        class="v-header__burger u-flex u-flex--align-center u-flex--justify-center"
         :aria-expanded="isOpen"
         aria-controls="v-header-nav"
         :aria-label="isOpen ? 'Fermer le menu' : 'Ouvrir le menu'"
@@ -19,24 +19,14 @@
     </div>
 
     <transition name="v-header-nav">
-      <nav v-if="isOpen" id="v-header-nav" class="v-header__nav">
-        <div class="v-header__nav-bar">
-          <NuxtLink to="/" class="v-header__logo v-header__logo--nav" aria-label="Jazz Action Valence — accueil" @click="isOpen = false">
-            <span class="v-header__logo-mark" aria-hidden="true">JAV</span>
-          </NuxtLink>
-          <button
-            type="button"
-            class="v-header__burger"
-            aria-label="Fermer le menu"
-            @click="isOpen = false"
-          >
-            <span class="v-header__burger-icon is-open"><span /><span /><span /></span>
-          </button>
-        </div>
-
-        <ul class="v-header__nav-list">
-          <li v-for="item in navItems" :key="item.href" class="v-header__nav-item">
-            <NuxtLink :to="item.href" class="v-header__nav-link" @click="isOpen = false">
+      <nav
+        v-if="isOpen"
+        id="v-header-nav"
+        class="v-header__nav u-flex u-flex--column u-flex--justify-center u-gutter-x"
+      >
+        <ul class="v-header__nav-list u-flex u-flex--column u-gap-m">
+          <li v-for="item in navItems" :key="item.href" class="v-header__nav-item u-flex u-flex--column u-gap-m">
+            <NuxtLink :to="item.href" class="v-header__nav-link u-flex u-flex--align-center u-flex--justify-between" @click="isOpen = false">
               {{ item.label }}
               <span class="v-header__nav-arrow" aria-hidden="true">↗</span>
             </NuxtLink>
@@ -51,13 +41,15 @@
 <script setup lang="ts">
 const isOpen = ref(false)
 
-const navItems = [
-  { label: 'Formation professionnelle', href: '/formation-professionnelle' },
-  { label: 'Pratique Amateur', href: '/pratique-amateur' },
-  { label: 'Agenda', href: '/agenda' },
-  { label: 'A propos', href: '/a-propos' },
-  { label: 'Ressources', href: '/ressources' }
-]
+// Menu généré depuis les pages Kirby réelles (template "default"), dans
+// l'ordre de l'arbre du Panel — plus de liste en dur à maintenir à la main.
+// L'accueil est exclu ici : le logo pointe déjà vers "/".
+const { data: navPages } = await useSiteNav()
+const navItems = computed(() =>
+  (navPages.value ?? [])
+    .filter(page => page.uri !== '')
+    .map(page => ({ label: page.title, href: `/${page.uri}` }))
+)
 
 watch(isOpen, (open) => {
   if (import.meta.client) {
@@ -67,40 +59,59 @@ watch(isOpen, (open) => {
 </script>
 
 <style lang="scss" scoped>
+// Always sticky at the top of the page — .is-open switches it to a
+// full-screen fixed panel instead. The bar (logo + burger) is never
+// duplicated: it's the same element in both states, only its background
+// color changes, so nothing shifts or jumps when the menu opens. The nav
+// list simply becomes the second half of this same flex column, filling
+// whatever height is left below the bar.
 .v-header {
   position: sticky;
   top: 0;
-  z-index: 100;
-}
+  z-index: 1000;
+  isolation: isolate;
 
-.v-header__bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-m) var(--spacing-6xl);
-
-  @media (max-width: 900px) {
-    padding: var(--spacing-m) var(--spacing-xl);
+  &.is-open {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
   }
 }
 
-// TODO: replace with the exported Figma logo mark (public/logo-jav.svg) once
-// the asset is available — the Figma MCP asset CDN isn't reachable from this
-// sandbox's network, so a text mark stands in for now.
-.v-header__logo-mark {
-  @include nav-menu;
-  color: var(--color-brand-04);
-  letter-spacing: 0.02em;
+// Always transparent — every page's own top section (Hero photo or flat
+// color panel, see PagesDefault.vue) rises up underneath the header instead
+// of sitting below a plain cream bar. Only the full-screen mobile nav
+// (.is-open) gets an opaque background, since it's no longer overlaying
+// anything.
+.v-header__bar {
+  padding-block: var(--spacing-m);
+  background: transparent;
+  transition: background-color 0.2s ease;
 }
 
-.v-header__nav .v-header__logo-mark {
+.v-header.is-open .v-header__bar {
+  background: var(--color-brand-04);
+}
+
+// Real exported logo mark, applied as a mask so it can be recolored via
+// `color` — same trick the Figma source file uses — instead of shipping
+// two separate colored SVGs for the bar vs. the open-nav state. Always
+// brand-01 now that the header is transparent everywhere; kept as its own
+// rule (rather than folded into .is-open) in case the two states ever need
+// to diverge again.
+.v-header__logo-mark {
+  display: block;
+  width: 60px;
+  height: 47px;
   color: var(--color-brand-01);
+  background-color: currentColor;
+  -webkit-mask: url('/img/LOGO-JAV_HEADER.svg') center / contain no-repeat;
+  mask: url('/img/LOGO-JAV_HEADER.svg') center / contain no-repeat;
+  transition: color 0.2s ease;
 }
 
 .v-header__burger {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 56px;
   height: 56px;
   padding: var(--spacing-xs);
@@ -109,73 +120,71 @@ watch(isOpen, (open) => {
   cursor: pointer;
 }
 
+// Hamburger ↔ cross morph: three absolutely-positioned bars so the top and
+// bottom ones can rotate in place around the same center as the middle one,
+// which just fades out.
 .v-header__burger-icon {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  position: relative;
+  display: block;
   width: 100%;
+  height: 16px;
 
   span {
-    display: block;
+    position: absolute;
+    left: 0;
+    width: 100%;
     height: 4px;
     border-radius: var(--radius-pill);
-    background: var(--color-brand-04);
-    transition: transform 0.2s ease, opacity 0.2s ease;
+    background: var(--color-brand-01);
+    transition: transform 0.25s ease, opacity 0.2s ease, background-color 0.2s ease;
   }
 
-  &.is-open span {
-    background: var(--color-brand-01);
+  span:nth-child(1) { top: 0; }
+  span:nth-child(2) { top: 6px; }
+  span:nth-child(3) { top: 12px; }
+
+  &.is-open {
+    span {
+      background: var(--color-brand-01);
+    }
+
+    span:nth-child(1) {
+      top: 6px;
+      transform: rotate(45deg);
+    }
+
+    span:nth-child(2) {
+      opacity: 0;
+    }
+
+    span:nth-child(3) {
+      top: 6px;
+      transform: rotate(-45deg);
+    }
   }
 }
 
 .v-header__nav {
-  position: fixed;
-  inset: 0;
+  flex: 1;
   background: var(--color-brand-04);
   color: var(--color-brand-01);
-  padding: var(--spacing-4xl) var(--spacing-6xl);
-  display: flex;
-  flex-direction: column;
-  gap: 152px;
+  padding-block: var(--spacing-4xl);
   overflow-y: auto;
 
-  @media (max-width: 900px) {
-    padding: var(--spacing-xl);
-    gap: var(--spacing-4xl);
+  @media (max-width: $breakpoint-mobile) {
+    padding-block: var(--spacing-xl);
   }
-}
-
-.v-header__nav-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  .v-header__burger-icon span {
-    background: var(--color-brand-01);
-  }
-}
-
-.v-header__nav-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-m);
-}
-
-.v-header__nav-item {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-m);
 }
 
 .v-header__nav-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   text-decoration: none;
   color: var(--color-brand-01);
-  @include nav-menu;
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: var(--spacing-2xl); // 32px
+  line-height: 1;
 
-  @media (max-width: 900px) {
+  @media (max-width: $breakpoint-mobile) {
     font-size: var(--spacing-xl);
   }
 }
@@ -183,7 +192,6 @@ watch(isOpen, (open) => {
 .v-header__nav-arrow {
   font-size: var(--spacing-2xl);
 }
-
 
 .v-header-nav-enter-active,
 .v-header-nav-leave-active {

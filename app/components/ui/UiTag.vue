@@ -1,6 +1,6 @@
 <template>
   <span
-    class="ui-tag"
+    class="ui-tag u-inline-flex u-flex--align-center"
     :style="color ? { '--ui-tag-color': color } : undefined"
   ><slot /></span>
 </template>
@@ -16,12 +16,14 @@ withDefaults(defineProps<{
 
 <style lang="scss" scoped>
 .ui-tag {
-  display: inline-flex;
-  align-items: center;
   color: var(--ui-tag-color, currentColor);
   border: 2px solid var(--ui-tag-color, currentColor);
   border-radius: var(--radius-s);
   padding: var(--spacing-xs) var(--spacing-s);
-  @include text-label;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: var(--spacing-m); // 16px
+  line-height: 1;
+  text-transform: uppercase;
 }
 </style>

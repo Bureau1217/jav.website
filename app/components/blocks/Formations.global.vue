@@ -1,19 +1,20 @@
 <template>
-  <div class="v-block-formations">
-    <div class="v-block-formations__titles">
+  <div class="v-block-formations u-flex u-flex--column u-gap-2xl u-gutter-x">
+    <UiSectionHeader v-if="block.content.title" :title="block.content.title" />
+    <div class="v-block-formations__titles u-flex u-flex--align-end u-gap-xl u-flex--wrap">
       <h2>Formation<br>Professionnelle</h2>
       <h2>Pratique<br>Amateur</h2>
     </div>
 
     <div class="v-block-formations__cards">
-      <article v-for="card in cards" :key="card.title" class="v-block-formations__card">
+      <article v-for="card in cards" :key="card.uri" class="v-block-formations__card u-flex u-flex--column">
         <div class="v-block-formations__card-image">
-          <img :src="card.image" :alt="card.imageAlt">
+          <img v-if="card.image" :src="card.image" :alt="card.imageAlt">
         </div>
-        <div class="v-block-formations__card-content">
-          <div class="v-block-formations__card-text">
+        <div class="v-block-formations__card-content u-flex u-flex--align-end u-flex--justify-between u-gap-m">
+          <div class="v-block-formations__card-text u-flex u-flex--column u-gap-xs">
             <p class="v-block-formations__card-tag">{{ card.tag }}</p>
-            <p class="v-block-formations__card-title">{{ card.title }}</p>
+            <h3 class="v-block-formations__card-title">{{ card.title }}</h3>
             <p class="v-block-formations__card-description">{{ card.description }}</p>
           </div>
           <UiButton :to="card.href" class="v-block-formations__card-cta">Découvrir</UiButton>
@@ -21,9 +22,9 @@
       </article>
     </div>
 
-    <div class="v-block-formations__banner">
-      <span class="v-block-formations__banner-icon" aria-hidden="true">🤝</span>
-      <div class="v-block-formations__banner-text">
+    <div class="v-block-formations__banner u-flex u-flex--align-center u-gap-xl">
+      <span class="v-block-formations__banner-icon u-flex u-flex--align-center u-flex--justify-center" aria-hidden="true">🤝</span>
+      <div class="v-block-formations__banner-text u-flex u-flex--column">
         <p class="v-block-formations__banner-title">JAV</p>
         <p class="v-block-formations__banner-subtitle">Un espace pour tous·tes</p>
       </div>
@@ -33,57 +34,54 @@
 </template>
 
 <script setup lang="ts">
-import type { KqlBlock } from '~~/shared/types/kql'
+import type { KqlBlock, KqlFormationCard } from '~~/shared/types/kql'
 
 defineProps<{
   block: KqlBlock
 }>()
 
-// The "formations" Kirby block has no editable fields — it's an anchor for
-// this front-end component. Content mirrors the Figma design until a real
-// data source (CMS fields or an API) is wired up.
-const cards = [
-  {
-    tag: 'Cours collectifs',
-    title: 'Devenir musicien·ne professionnel·le',
-    description: 'Centre reconnu par le Ministère de la Culture, certifié Qualiopi, qui forme depuis 30 ans aux métiers du jazz et des musiques actuelles.',
-    image: '/images/formation-professionnelle.jpg',
-    imageAlt: '',
-    href: '/formation-professionnelle'
-  },
-  {
-    tag: 'Cours individuels',
-    title: 'Pratiquer en amateur·ice',
-    description: 'Cours individuels par instrument et ateliers de pratique collective (jazz, pop/rock, funk, voix...), pour tous âges et tous niveaux.',
-    image: '/images/pratique-amateur.jpg',
-    imageAlt: '',
-    href: '/pratique-amateur'
-  }
-]
+// The "formations" Kirby block has no editable fields — it's a fixed
+// anchor that always highlights the "Formation Professionnelle" and
+// "Pratique Amateur" pages (see server/api/formations.get.ts). Tag, title
+// and image come from those pages' own header fields; the description is
+// still hardcoded here until a matching CMS field exists for it.
+const DESCRIPTIONS: Record<string, string> = {
+  'formation-professionnelle': 'Centre reconnu par le Ministère de la Culture, certifié Qualiopi, qui forme depuis 30 ans aux métiers du jazz et des musiques actuelles.',
+  'pratique-amateur': 'Cours individuels par instrument et ateliers de pratique collective (jazz, pop/rock, funk, voix...), pour tous âges et tous niveaux.'
+}
+
+const { data: formationPages } = await useFetch<KqlFormationCard[]>('/api/formations')
+
+const cards = computed(() =>
+  (formationPages.value ?? []).map(page => ({
+    uri: page.uri,
+    tag: page.headerTitle ?? '',
+    title: page.headerSubtitle ?? '',
+    description: DESCRIPTIONS[page.uri] ?? '',
+    image: page.previewImage?.url ?? '',
+    imageAlt: page.previewImage?.alt ?? '',
+    href: `/${page.uri}`
+  }))
+)
 </script>
 
 <style lang="scss" scoped>
 .v-block-formations {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2xl);
   background: var(--color-brand-04);
   color: var(--color-brand-00);
-  padding: var(--spacing-7xl) var(--spacing-6xl);
+  padding-block: var(--spacing-7xl);
 
-  @media (max-width: 900px) {
-    padding: var(--spacing-4xl) var(--spacing-xl);
+  @media (max-width: $breakpoint-mobile) {
+    padding-block: var(--spacing-4xl);
   }
 }
 
 .v-block-formations__titles {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--spacing-xl);
-  flex-wrap: wrap;
-
   h2 {
-    @include heading-2;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: var(--spacing-4xl); // 48px
+    line-height: 1;
     flex: 1;
     min-width: 260px;
   }
@@ -94,14 +92,12 @@ const cards = [
   grid-template-columns: repeat(2, 1fr);
   gap: var(--spacing-xl);
 
-  @media (max-width: 900px) {
+  @media (max-width: $breakpoint-mobile) {
     grid-template-columns: 1fr;
   }
 }
 
 .v-block-formations__card {
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
 }
 
@@ -119,10 +115,6 @@ const cards = [
 }
 
 .v-block-formations__card-content {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--spacing-m);
   padding-top: var(--spacing-s);
   flex: 1;
 
@@ -132,22 +124,29 @@ const cards = [
   }
 }
 
-.v-block-formations__card-text {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
-
 .v-block-formations__card-tag {
-  @include text-label;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: var(--spacing-m); // 16px
+  line-height: 1;
+  text-transform: uppercase;
 }
 
+// Now a real <h3> (card title, subordinate to the h2s above) — kept as an
+// explicit override since the design intentionally uses the body font here
+// instead of the default heading font/weight.
 .v-block-formations__card-title {
-  @include text-stat;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: var(--spacing-3xl); // 40px
+  line-height: 1;
 }
 
 .v-block-formations__card-description {
-  @include text-body-large-bold;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1;
 }
 
 .v-block-formations__card-cta {
@@ -155,9 +154,6 @@ const cards = [
 }
 
 .v-block-formations__banner {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xl);
   background: var(--color-brand-05);
   color: var(--color-brand-04);
   border-radius: var(--radius-s);
@@ -165,9 +161,6 @@ const cards = [
 }
 
 .v-block-formations__banner-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   aspect-ratio: 1;
   height: 86px;
   background: var(--color-brand-04);
@@ -179,17 +172,21 @@ const cards = [
 
 .v-block-formations__banner-text {
   flex: 1;
-  display: flex;
-  flex-direction: column;
 }
 
 .v-block-formations__banner-title {
-  @include heading-3;
-  font-size: var(--spacing-2xl);
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: var(--spacing-2xl); // 32px — smaller than the default heading-3 (40px), fits the banner
+  line-height: 1;
 }
 
 .v-block-formations__banner-subtitle {
-  @include accent-italic;
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--spacing-3xl); // 40px
+  line-height: 47px;
 }
 
 .v-block-formations__banner-arrow {

@@ -1,4 +1,12 @@
-import type { KqlInfoBand } from '~~/shared/types/kql'
+import type { KqlAddress, KqlInfoBand, KqlNavItem, KqlSiteInfo } from '~~/shared/types/kql'
+
+interface RawAddress {
+  name?: string
+  street?: string
+  number?: string
+  postal_code?: string
+  city?: string
+}
 
 interface RawInfoBand {
   infos_bands_text?: string
@@ -7,20 +15,47 @@ interface RawInfoBand {
 }
 
 interface RawSiteInfosPage {
+  adresse: RawAddress | null
+  phone: string | null
+  fax: string | null
+  email: string | null
+  footerPages: KqlNavItem[] | null
   bands: RawInfoBand[] | null
   images: Array<{ filename: string; url: string; alt: string | null; width: number; height: number; extension: string }>
 }
 
 /**
- * The scrolling announcement banner and floating promo card both pull from
- * the "Infos-bands" structure on the site-wide "informations-globales"
- * page (template "site_infos" — see site.yml). Editors manage this from a
- * dedicated Panel section instead of a per-page block.
+ * Everything editors manage from "Informations globales" (site.yml ->
+ * site_infos template): postal address, phone/fax/email, the editor-picked
+ * list of pages to show in the footer nav ("Pages" field — deliberately
+ * separate from /api/nav's auto-generated header list, so editors control
+ * exactly what shows up in the footer), and the scrolling banner items.
  */
 export default defineEventHandler(async () => {
   const page = await kqlFetch<RawSiteInfosPage | null>({
     query: 'site.index.filterBy("intendedTemplate", "site_infos").first',
     select: {
+      adresse: {
+        query: 'page.adresse.toObject',
+        select: {
+          name: true,
+          street: true,
+          number: true,
+          postal_code: true,
+          city: true
+        }
+      },
+      phone: 'page.phone_number',
+      fax: 'page.fax',
+      email: 'page.email',
+      footerPages: {
+        query: 'page.pages.toPages',
+        select: {
+          id: true,
+          title: true,
+          uri: 'page.uri'
+        }
+      },
       bands: {
         query: 'page.infos_bands.toStructure',
         select: {
@@ -36,8 +71,9 @@ export default defineEventHandler(async () => {
     }
   })
 
+  const empty: KqlSiteInfo = { address: null, phone: null, fax: null, email: null, footerPages: [], bands: [] }
   if (!page) {
-    return [] as KqlInfoBand[]
+    return empty
   }
 
   const bands: KqlInfoBand[] = (page.bands ?? [])
@@ -48,5 +84,24 @@ export default defineEventHandler(async () => {
       link: band.infos_bands_link || null
     }))
 
-  return bands
+  const address: KqlAddress | null = page.adresse
+    ? {
+        name: page.adresse.name || null,
+        street: page.adresse.street || null,
+        number: page.adresse.number || null,
+        postalCode: page.adresse.postal_code || null,
+        city: page.adresse.city || null
+      }
+    : null
+
+  const siteInfo: KqlSiteInfo = {
+    address,
+    phone: page.phone || null,
+    fax: page.fax || null,
+    email: page.email || null,
+    footerPages: page.footerPages ?? [],
+    bands
+  }
+
+  return siteInfo
 })

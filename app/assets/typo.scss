@@ -1,0 +1,57 @@
+// Typography — one rule per level, paired with a `.u-*` utility class so
+// the visual style can be applied to any element independent of its
+// semantic tag (e.g. a <span> that needs to look like an H2 without being
+// a heading in the document outline).
+//
+// Values are written directly here, no mixin in between — same for every
+// component in the codebase: each one writes its own font-family/weight/
+// size/line-height. Yes, that means the same numbers show up in several
+// places; that's the trade-off for a file you can read top to bottom
+// without jumping anywhere else.
+
+h1,
+.u-heading-display {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: var(--spacing-7xl); // 96px
+  line-height: 0.95;
+}
+
+h2,
+.u-heading-1 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--spacing-5xl); // 64px
+  line-height: 1;
+}
+
+h3,
+.u-heading-3 {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: var(--spacing-3xl); // 40px
+  line-height: 1;
+}
+
+p,
+.u-text-body {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 1;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

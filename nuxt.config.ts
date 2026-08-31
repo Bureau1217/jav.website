@@ -2,13 +2,13 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  css: ['~/assets/base.scss'],
+  css: ['~/assets/main.scss'],
   vite: {
     css: {
       preprocessorOptions: {
         scss: {
           api: 'modern-compiler',
-          additionalData: '@import "~/assets/_tokens.scss";'
+          additionalData: '@import "~/assets/_params.scss";'
         }
       }
     }

@@ -1,7 +1,6 @@
 <template>
-  <div class="v-app">
+  <div class="v-app u-flex u-flex--column">
     <TheHeader />
-    <TheScrollingBanner />
     <main>
       <NuxtPage/>
     </main>
@@ -12,8 +11,6 @@
 
 <style lang="scss">
 .v-app {
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
 
   main {

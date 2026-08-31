@@ -1,12 +1,12 @@
 <template>
-  <div class="v-block-testimonials">
-    <UiSectionHeader title="Témoignages" class="v-block-testimonials__header" />
+  <div class="v-block-testimonials u-flex u-flex--column u-gap-4xl u-gutter">
+    <UiSectionHeader :title="block.content.title || 'Témoignages'" class="v-block-testimonials__header" />
 
     <div v-if="testimonials?.length" class="v-block-testimonials__grid">
       <article
         v-for="(item, index) in testimonials"
         :key="index"
-        class="v-block-testimonials__card"
+        class="v-block-testimonials__card u-flex u-flex--column u-gap-xs"
         :style="{ '--card-color': cardColor(index) }"
       >
         <UiDivider :color="cardColor(index)" />
@@ -14,7 +14,7 @@
           <img v-if="item.photo" :src="item.photo.url" :alt="item.photo.alt ?? ''">
         </div>
         <UiDivider :color="cardColor(index)" />
-        <div class="v-block-testimonials__card-content">
+        <div class="v-block-testimonials__card-content u-flex u-flex--column u-gap-xs">
           <p v-if="item.role?.length" class="v-block-testimonials__card-name">{{ item.role.join(' · ') }}</p>
           <div class="v-block-testimonials__card-quote" v-html="item.text" />
         </div>
@@ -45,27 +45,13 @@ function cardColor(index: number) {
 
 <style lang="scss" scoped>
 .v-block-testimonials {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-4xl);
-  padding: var(--spacing-6xl);
   color: var(--color-brand-04);
-
-  @media (max-width: 900px) {
-    padding: var(--spacing-xl);
-  }
 }
 
 .v-block-testimonials__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--spacing-xl);
-}
-
-.v-block-testimonials__card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
 }
 
 .v-block-testimonials__card-background {
@@ -84,18 +70,22 @@ function cardColor(index: number) {
 }
 
 .v-block-testimonials__card-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
   padding-top: var(--spacing-s);
 }
 
 .v-block-testimonials__card-name {
-  @include text-label;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: var(--spacing-m); // 16px
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .v-block-testimonials__card-quote {
-  @include text-body-large;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1;
 
   :deep(p) {
     margin: 0;
@@ -103,6 +93,10 @@ function cardColor(index: number) {
 }
 
 .v-block-testimonials__empty {
-  @include empty-state;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1;
+  opacity: 0.7;
 }
 </style>

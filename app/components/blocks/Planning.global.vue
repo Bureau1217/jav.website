@@ -1,13 +1,14 @@
 <template>
-  <div class="v-block-planning">
+  <div class="v-block-planning u-flex u-flex--column">
+    <UiSectionHeader v-if="block.content.title" :title="block.content.title" />
     <section
       v-for="(day, index) in block.content.planning_items"
       :key="index"
       class="v-block-planning__day"
     >
       <h3>{{ dayLabel(day.day) }}</h3>
-      <ul>
-        <li v-for="(course, courseIndex) in day.courses" :key="courseIndex">
+      <ul class="u-flex u-flex--column u-gap-xs">
+        <li v-for="(course, courseIndex) in day.courses" :key="courseIndex" class="u-flex u-gap-xl">
           <span class="v-block-planning__time">
             {{ course['time-tart'] }} – {{ course['time-end'] }}
           </span>
@@ -42,14 +43,8 @@ function dayLabel(day: string): string {
 
 <style lang="scss" scoped>
 .v-block-planning {
-  display: flex;
-  flex-direction: column;
-  padding: var(--spacing-xl) var(--spacing-6xl);
+  padding: var(--spacing-xl) var(--gutter);
   color: var(--color-brand-04);
-
-  @media (max-width: 900px) {
-    padding: var(--spacing-xl);
-  }
 }
 
 .v-block-planning__day {
@@ -61,21 +56,18 @@ function dayLabel(day: string): string {
   }
 
   h3 {
-    @include text-label;
-    text-transform: none;
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: var(--spacing-m); // 16px — this h3 is styled as a day label, not a heading-3
+    line-height: 1;
     margin-bottom: var(--spacing-s);
   }
 
-  ul {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-  }
-
   li {
-    display: flex;
-    gap: var(--spacing-xl);
-    @include text-body-large;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 1;
   }
 }
 

@@ -1,18 +1,21 @@
 <template>
-  <ul class="v-block-resources">
-    <li
-      v-for="(item, index) in block.content.resource_items"
-      :key="index"
-      class="v-block-resources__item"
-    >
-      <a v-if="item.resource_type === 'file'" :href="fileUrl(item) ?? '#'" target="_blank" rel="noopener">
-        {{ item.resource_title }}
-      </a>
-      <a v-else :href="item.resource_link">
-        {{ item.resource_title }}
-      </a>
-    </li>
-  </ul>
+  <div class="v-block-resources u-flex u-flex--column u-gap-xl">
+    <UiSectionHeader v-if="block.content.title" :title="block.content.title" />
+    <ul class="v-block-resources__list u-flex u-flex--column">
+      <li
+        v-for="(item, index) in block.content.resource_items"
+        :key="index"
+        class="v-block-resources__item"
+      >
+        <a v-if="item.resource_type === 'file'" :href="fileUrl(item) ?? '#'" target="_blank" rel="noopener">
+          {{ item.resource_title }}
+        </a>
+        <a v-else :href="item.resource_link">
+          {{ item.resource_title }}
+        </a>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -30,14 +33,8 @@ function fileUrl(item: { resource_file?: string[] }): string | null {
 
 <style lang="scss" scoped>
 .v-block-resources {
-  display: flex;
-  flex-direction: column;
-  padding: var(--spacing-xl) var(--spacing-6xl);
+  padding: var(--spacing-xl) var(--gutter);
   color: var(--color-brand-04);
-
-  @media (max-width: 900px) {
-    padding: var(--spacing-xl);
-  }
 }
 
 .v-block-resources__item {
@@ -49,7 +46,10 @@ function fileUrl(item: { resource_file?: string[] }): string | null {
   }
 
   a {
-    @include text-body-large-bold;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 1;
     color: inherit;
     text-decoration: none;
 

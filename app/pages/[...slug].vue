@@ -1,5 +1,5 @@
 <template>
-  <PagesDefault v-if="page && page.template === 'default'" :page="page" />
+  <PagesDefault v-if="page && page.template === 'default'" :page="page" :is-home="path === ''" />
   <p v-else-if="page" class="v-page-unsupported">
     Le template « {{ page.template }} » n'est pas encore pris en charge.
   </p>

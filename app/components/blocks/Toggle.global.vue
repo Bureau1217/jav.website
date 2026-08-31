@@ -1,11 +1,17 @@
 <template>
-  <div class="v-block-toggle">
+  <div class="v-block-toggle u-flex u-flex--column">
+    <UiSectionHeader
+      v-if="block.content.title"
+      :title="block.content.title"
+      :link-to="block.content.link?.link_url"
+      :link-text="block.content.link?.link_text"
+    />
     <details
       v-for="(item, index) in block.content.items"
       :key="index"
       class="v-block-toggle__item"
     >
-      <summary>
+      <summary class="u-flex u-flex--align-center u-flex--justify-between u-gap-5xl">
         <span class="v-block-toggle__title">{{ item.titre }}</span>
         <span class="v-block-toggle__icon" aria-hidden="true" />
       </summary>
@@ -24,14 +30,13 @@ defineProps<{
 
 <style lang="scss" scoped>
 .v-block-toggle {
-  display: flex;
-  flex-direction: column;
+  padding: var(--spacing-xl) var(--gutter);
   color: var(--color-brand-04);
 }
 
 .v-block-toggle__item {
   padding-top: var(--spacing-xl);
-  border-top: 2px solid var(--color-brand-04);
+  border-top: 3px solid var(--color-brand-04);
 
   &:first-child {
     border-top: none;
@@ -47,10 +52,6 @@ defineProps<{
 }
 
 .v-block-toggle__item summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-5xl);
   cursor: pointer;
   list-style: none;
 
@@ -60,7 +61,10 @@ defineProps<{
 }
 
 .v-block-toggle__title {
-  @include text-heading-2;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--spacing-2xl); // 32px
+  line-height: 1;
   flex: 1;
 }
 
@@ -93,7 +97,10 @@ defineProps<{
 }
 
 .v-block-toggle__content {
-  @include text-body-large;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1;
   padding-top: var(--spacing-s);
 }
 </style>

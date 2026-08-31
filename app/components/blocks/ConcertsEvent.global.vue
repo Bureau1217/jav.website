@@ -1,7 +1,7 @@
 <template>
-  <div class="v-block-concerts-event">
+  <div class="v-block-concerts-event u-flex u-flex--column u-gap-4xl u-gutter">
     <UiSectionHeader
-      title="Concerts & Évènements"
+      :title="block.content.title || 'Concerts &amp; Évènements'"
       link-to="/agenda"
       link-text="Voir tout l'agenda"
       class="v-block-concerts-event__header"
@@ -12,20 +12,20 @@
         v-for="event in events"
         :key="event.id"
         background="var(--color-brand-05)"
-        class="v-block-concerts-event__card"
+        class="v-block-concerts-event__card u-flex"
       >
-        <div class="v-block-concerts-event__card-content">
-          <div class="v-block-concerts-event__card-header">
+        <div class="v-block-concerts-event__card-content u-flex u-flex--column u-flex--justify-between u-gap-xl">
+          <div class="v-block-concerts-event__card-header u-flex u-flex--column u-gap-s">
             <p class="v-block-concerts-event__card-date">{{ formatEventDate(event.date) }}</p>
-            <p class="v-block-concerts-event__card-title">{{ event.title }}</p>
+            <h3 class="v-block-concerts-event__card-title">{{ event.title }}</h3>
           </div>
-          <div class="v-block-concerts-event__card-footer">
+          <div class="v-block-concerts-event__card-footer u-flex u-flex--column u-gap-s">
             <UiDivider color="var(--color-brand-02)" />
             <div class="v-block-concerts-event__card-description" v-html="event.description" />
             <UiDivider color="var(--color-brand-02)" />
           </div>
         </div>
-        <div class="v-block-concerts-event__card-media">
+        <div class="v-block-concerts-event__card-media u-flex u-flex--column u-flex--align-end u-flex--justify-between">
           <img v-if="event.cover" :src="event.cover.url" :alt="event.cover.alt ?? ''">
           <UiTag v-if="event.type" color="var(--color-brand-05)" class="v-block-concerts-event__card-filter">
             {{ eventTypeLabel(event.type) }}
@@ -69,15 +69,7 @@ function formatEventDate(date: string | null) {
 
 <style lang="scss" scoped>
 .v-block-concerts-event {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-4xl);
-  padding: var(--spacing-6xl);
   color: var(--color-brand-04);
-
-  @media (max-width: 900px) {
-    padding: var(--spacing-xl);
-  }
 }
 
 .v-block-concerts-event__grid {
@@ -103,7 +95,6 @@ function formatEventDate(date: string | null) {
 }
 
 .v-block-concerts-event__card {
-  display: flex;
   min-height: 505px;
 
   @media (max-width: 700px) {
@@ -114,38 +105,31 @@ function formatEventDate(date: string | null) {
 
 .v-block-concerts-event__card-content {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   padding: var(--spacing-xl);
-  gap: var(--spacing-xl);
-}
-
-.v-block-concerts-event__card-header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-s);
 }
 
 .v-block-concerts-event__card-date {
-  @include tag-date;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--spacing-m); // 16px
+  line-height: 1;
+  text-transform: uppercase;
   color: var(--color-brand-02);
 }
 
+// Was a <p> styled to look exactly like the global h3 — now a real <h3>
+// (section title above is an h2, via UiSectionHeader), so it inherits
+// family/weight/size/line-height straight from typo.scss. Only the color
+// is card-specific.
 .v-block-concerts-event__card-title {
-  @include heading-3;
   color: var(--color-brand-02);
 }
-
-.v-block-concerts-event__card-footer {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-s);
-}
-
 
 .v-block-concerts-event__card-description {
-  @include text-body-large-bold;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1;
   color: var(--color-brand-02);
 
   :deep(p) {
@@ -157,10 +141,6 @@ function formatEventDate(date: string | null) {
   position: relative;
   flex: 1;
   min-width: 200px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: space-between;
   padding: var(--spacing-xl);
 
   img {
@@ -183,6 +163,10 @@ function formatEventDate(date: string | null) {
 }
 
 .v-block-concerts-event__empty {
-  @include empty-state;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1;
+  opacity: 0.7;
 }
 </style>

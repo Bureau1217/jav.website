@@ -1,7 +1,7 @@
 <template>
-  <section class="v-block-section">
-    <header v-if="block.content.title || block.content.text" class="v-block-section__header">
-      <h2 v-if="block.content.title">{{ block.content.title }}</h2>
+  <section class="v-block-section u-flex u-flex--column">
+    <header v-if="block.content.title || block.content.text" class="v-block-section__header u-flex u-flex--column u-gap-m">
+      <h2 v-if="block.content.title" v-html="block.content.title" />
       <p v-if="block.content.tags">{{ block.content.tags }}</p>
       <div v-if="block.content.text" v-html="block.content.text" />
       <UiButton
@@ -30,27 +30,18 @@ defineProps<{
 
 <style lang="scss" scoped>
 .v-block-section {
-  display: flex;
-  flex-direction: column;
   color: var(--color-brand-04);
 }
 
 .v-block-section__header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-m);
-  padding: var(--spacing-6xl) var(--spacing-6xl) 0;
-
-  @media (max-width: 900px) {
-    padding: var(--spacing-xl) var(--spacing-xl) 0;
-  }
-
-  h2 {
-    @include heading-1;
-  }
+  padding: var(--gutter) var(--gutter) 0;
 
   p:first-of-type {
-    @include text-label;
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: var(--spacing-m); // 16px
+    line-height: 1;
+    text-transform: uppercase;
   }
 }
 

@@ -1,34 +1,35 @@
 <template>
-  <form class="v-block-form" :data-form-type="block.content.form_type" @submit.prevent>
+  <form class="v-block-form u-flex u-flex--column u-gap-xl u-gutter" :data-form-type="block.content.form_type" @submit.prevent>
+    <UiSectionHeader v-if="block.content.title" :title="block.content.title" />
     <template v-if="block.content.form_type === 'inscription'">
       <div class="v-block-form__row">
-        <label class="v-block-form__field">
+        <label class="v-block-form__field u-flex u-flex--column u-gap-xs">
           <span>Prénom</span>
           <input type="text" name="firstname" required>
         </label>
-        <label class="v-block-form__field">
+        <label class="v-block-form__field u-flex u-flex--column u-gap-xs">
           <span>Nom</span>
           <input type="text" name="lastname" required>
         </label>
       </div>
       <div class="v-block-form__row">
-        <label class="v-block-form__field">
+        <label class="v-block-form__field u-flex u-flex--column u-gap-xs">
           <span>Email</span>
           <input type="email" name="email" required>
         </label>
-        <label class="v-block-form__field">
+        <label class="v-block-form__field u-flex u-flex--column u-gap-xs">
           <span>Téléphone</span>
           <input type="tel" name="phone">
         </label>
       </div>
-      <label class="v-block-form__field">
+      <label class="v-block-form__field u-flex u-flex--column u-gap-xs">
         <span>Formation souhaitée</span>
         <select name="formation">
           <option value="pro">Formation Professionnelle</option>
           <option value="amateur">Pratique Amateur</option>
         </select>
       </label>
-      <label class="v-block-form__field">
+      <label class="v-block-form__field u-flex u-flex--column u-gap-xs">
         <span>Message</span>
         <textarea name="message" rows="4" />
       </label>
@@ -36,16 +37,16 @@
 
     <template v-else>
       <div class="v-block-form__row">
-        <label class="v-block-form__field">
+        <label class="v-block-form__field u-flex u-flex--column u-gap-xs">
           <span>Nom</span>
           <input type="text" name="name" required>
         </label>
-        <label class="v-block-form__field">
+        <label class="v-block-form__field u-flex u-flex--column u-gap-xs">
           <span>Email</span>
           <input type="email" name="email" required>
         </label>
       </div>
-      <label class="v-block-form__field">
+      <label class="v-block-form__field u-flex u-flex--column u-gap-xs">
         <span>Message</span>
         <textarea name="message" rows="6" required />
       </label>
@@ -68,15 +69,7 @@ defineProps<{
 
 <style lang="scss" scoped>
 .v-block-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xl);
-  padding: var(--spacing-6xl);
   color: var(--color-brand-04);
-
-  @media (max-width: 900px) {
-    padding: var(--spacing-xl);
-  }
 }
 
 .v-block-form__row {
@@ -90,12 +83,12 @@ defineProps<{
 }
 
 .v-block-form__field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-
   span {
-    @include text-label;
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: var(--spacing-m); // 16px
+    line-height: 1;
+    text-transform: uppercase;
   }
 
   input,

@@ -11,6 +11,13 @@ export interface KqlTeacher {
   id: string
   title: string
   fonction: string | null
+  /** Personal/professional website — shown as an "En savoir plus"-style
+   * link on the Teachers block card when set. */
+  website: string | null
+  /** Full bio (writer field) — the Teachers block shows it truncated as a
+   * short quote; the individual teacher page (not yet built) would show it
+   * in full. */
+  bio: string | null
   photo: KqlFile | null
 }
 
@@ -20,6 +27,10 @@ export interface KqlBlock {
   isHidden: boolean
   content: Record<string, any>
   teacherPages: KqlTeacher[]
+  /** One entry per row of the block's "items" structure (Gallery, List...),
+   * same order as content.items, with that row's "image" field resolved to
+   * a real file — see server/utils/kqlPageQuery.ts. */
+  itemImages: Array<{ image: KqlFile | null }>
 }
 
 export interface KqlEvent {

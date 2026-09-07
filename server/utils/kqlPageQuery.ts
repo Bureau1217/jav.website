@@ -11,6 +11,8 @@ const TEACHER_SELECT = {
   id: true,
   title: true,
   fonction: 'page.teachers_fonction',
+  website: 'page.teachers_website',
+  bio: 'page.teachers_bio',
   photo: {
     query: 'page.teachers_photo.toFile',
     select: { url: true, alt: 'file.alt' }
@@ -56,6 +58,22 @@ export const pageSelect = {
       teacherPages: {
         query: 'block.content.teacher_pages.toPages',
         select: TEACHER_SELECT
+      },
+      // Resolves the "image" field of each row in a block's "items"
+      // structure (Gallery, List...) into a real file object, in the same
+      // order as content.items. Needed because those images are picked
+      // from anywhere on the site (stored as a file:// UUID), not just
+      // files uploaded to the current page — page.images (used by
+      // resolveKqlFile.ts) only covers the latter. Harmless no-op on
+      // blocks without an "items" field.
+      itemImages: {
+        query: 'block.content.items.toStructure',
+        select: {
+          image: {
+            query: 'structureItem.image.toFile',
+            select: FILE_SELECT
+          }
+        }
       }
     }
   }

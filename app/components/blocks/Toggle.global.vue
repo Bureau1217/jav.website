@@ -6,17 +6,16 @@
       :link-to="block.content.link?.link_url"
       :link-text="block.content.link?.link_text"
     />
-    <details
-      v-for="(item, index) in block.content.items"
-      :key="index"
-      class="v-block-toggle__item"
-    >
-      <summary class="u-flex u-flex--align-center u-flex--justify-between u-gap-5xl">
-        <span class="v-block-toggle__title">{{ item.titre }}</span>
-        <span class="v-block-toggle__icon" aria-hidden="true" />
-      </summary>
-      <div class="v-block-toggle__content" v-html="item.contenu" />
-    </details>
+    <template v-for="(item, index) in block.content.items" :key="index">
+      <UiDivider v-if="index > 0" variant="thin" />
+      <details class="v-block-toggle__item">
+        <summary class="u-flex u-flex--align-center u-flex--justify-between u-gap-5xl">
+          <span class="v-block-toggle__title">{{ item.titre }}</span>
+          <span class="v-block-toggle__icon" aria-hidden="true" />
+        </summary>
+        <div class="v-block-toggle__content" v-html="item.contenu" />
+      </details>
+    </template>
   </div>
 </template>
 
@@ -32,20 +31,10 @@ defineProps<{
 .v-block-toggle {
   padding: var(--spacing-xl) var(--gutter);
   color: var(--color-brand-04);
+  gap: var(--spacing-xl);
 }
 
 .v-block-toggle__item {
-  padding-top: var(--spacing-xl);
-  border-top: 3px solid var(--color-brand-04);
-
-  &:first-child {
-    border-top: none;
-  }
-
-  & + & {
-    margin-top: var(--spacing-xl);
-  }
-
   &[open] .v-block-toggle__icon {
     transform: rotate(45deg);
   }

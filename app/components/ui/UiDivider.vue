@@ -33,23 +33,23 @@ withDefaults(defineProps<{
 
 .ui-divider--thick.ui-divider--horizontal {
   width: 100%;
-  height: var(--spacing-s);
+  height: var(--divider-thick-size);
   border-radius: var(--radius-pill);
 }
 
 .ui-divider--thick.ui-divider--vertical {
   height: 100%;
-  width: var(--spacing-xxs);
+  width: var(--divider-thick-size);
   border-radius: var(--radius-pill);
 }
 
 .ui-divider--thin.ui-divider--horizontal {
   width: 100%;
-  height: 2px;
+  height: var(--divider-thin-size);
 }
 
 .ui-divider--thin.ui-divider--vertical {
   height: 100%;
-  width: 2px;
+  width: var(--divider-thin-size);
 }
 </style>

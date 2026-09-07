@@ -47,6 +47,13 @@
   --radius-l: var(--spacing-l);
   --radius-pill: var(--spacing-7xl);
 
+  // UiDivider sizes — "thick" matches the footer's pill bar, "thin" matches
+  // the FAQ (Toggle) block's hairline between items. Every UiDivider in the
+  // site reads from these two variables, so changing one changes it
+  // everywhere at once.
+  --divider-thick-size: var(--spacing-s);
+  --divider-thin-size: 3px;
+
   // --gutter lives in grid.scss (base value + its own responsive
   // override, kept together in one file).
 }

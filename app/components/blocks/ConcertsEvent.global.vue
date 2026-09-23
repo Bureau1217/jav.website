@@ -7,9 +7,9 @@
       class="v-block-concerts-event__header"
     />
 
-    <div v-if="events?.length" class="v-block-concerts-event__grid">
+    <div v-if="displayedEvents.length" class="v-block-concerts-event__grid">
       <UiCard
-        v-for="(event, index) in events"
+        v-for="{ event, index } in displayedEvents"
         :key="event.id"
         :background="palette(index).bg"
         :color="palette(index).accent"
@@ -31,7 +31,7 @@
           </div>
           <div class="v-block-concerts-event__card-footer u-flex u-flex--column u-gap-s">
             <UiDivider />
-            <div class="v-block-concerts-event__card-description" v-html="event.description" />
+            <div class="v-block-concerts-event__card-description">{{ truncateText(event.description) }}</div>
             <UiDivider />
           </div>
           <!-- Non-featured cards keep the CTA in the same pane, at the
@@ -81,6 +81,23 @@ defineProps<{
 // Real events live in the site-wide "évènements" collection and are fetched
 // from /api/events (see server/api/events.get.ts).
 const { data: events } = await useFetch<KqlEvent[]>('/api/events')
+
+// This same block renders both on the homepage and on /agenda (it's a
+// generic Kirby block, not two separate components) — the homepage teaser
+// is capped at 5 events; /agenda shows the full list. Indices are kept
+// relative to the FULL list (not the sliced one) so each card's color still
+// matches its real position — same lookup used by the event's own detail
+// page and the "Autres évènements" section (see app/utils/eventPalette.ts).
+const route = useRoute()
+const isHome = computed(() => {
+  const slug = route.params.slug
+  return !slug || (Array.isArray(slug) && slug.length === 0)
+})
+
+const displayedEvents = computed(() => {
+  const withIndex = (events.value ?? []).map((event, index) => ({ event, index }))
+  return isHome.value ? withIndex.slice(0, 5) : withIndex
+})
 
 const TYPE_LABELS: Record<string, string> = {
   concert: 'Concert',

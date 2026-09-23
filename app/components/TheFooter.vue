@@ -48,6 +48,18 @@
         </ul>
         <span class="v-footer__rights">Tous droits réservés {{ new Date().getFullYear() }}.</span>
       </div>
+
+      <div class="v-footer__accessibility u-flex u-flex--column u-gap-0">
+        <p><strong>ACCESSIBILITÉ AUX PERSONNES EN SITUATION DE HANDICAP :</strong></p>
+        <p>Notre établissement est accessible aux personnes à mobilité réduite.</p>
+        <p>
+          Selon les spécificités de votre handicap, nous étudierons les possibilités d’adaptation de la
+          formation en concertation avec l’équipe pédagogique et avec l’aide de la référente Ressource
+          handicap formation de l’AGEFIPH Auvergne-Rhône-Alpes.
+        </p>
+        <p>Une proposition vous sera apportée sous 10 jours.</p>
+        <p>Contact : <a href="mailto:coordination@jazzactionvalence.com">coordination@jazzactionvalence.com</a></p>
+      </div>
     </div>
   </footer>
 </template>
@@ -180,6 +192,33 @@ const addressLine2 = computed(() => {
   a {
     color: var(--color-brand-01);
     text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Legal-style small print, well below the "Tous droits réservés" row —
+// deliberately not using type-body-large like the rest of the footer.
+.v-footer__accessibility {
+  font-family: var(--font-body);
+  line-height: 1.5;
+  opacity: 0.7;
+  text-align: center;
+  align-items: center;
+
+  p {
+    color: var(--color-brand-01);
+    margin: 0;
+    // type-body-large (global p rule in typo.scss) sets its own explicit
+    // font-size directly on <p>, so this has to override it here rather
+    // than relying on inheriting the wrap's font-size.
+    font-size: 12px;
+  }
+
+  a {
+    color: var(--color-brand-01);
 
     &:hover {
       text-decoration: underline;

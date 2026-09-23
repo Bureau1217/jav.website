@@ -29,8 +29,11 @@ const link = computed(() => band.value?.link ?? '')
 .v-scrolling-banner {
   position: relative;
   z-index: 2; // homepage only, rendered right after the Hero (see PagesDefault.vue)
-  background: var(--color-brand-01);
-  color: var(--color-brand-04);
+  // Follows the page's own theme (see usePageTheme.ts) instead of a fixed
+  // mint/indigo pair — on-accent for the background, accent for the text,
+  // same inverted pairing used by the featured event card's CTA.
+  background: var(--color-page-on-accent);
+  color: var(--color-page-accent);
   overflow: hidden;
   padding: var(--spacing-xs) 0;
 }

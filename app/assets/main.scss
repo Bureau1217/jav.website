@@ -18,6 +18,26 @@
   --color-brand-07: #fb8d04; // orange
   --color-brand-08: #ffd400; // yellow
 
+  // Page accent — the primary color used by every block (header/hero,
+  // footer, CTA, Form, Section, Citation, Planning, Resources, ArrayLayout,
+  // Toggle, List, Formations, Gallery, Text, Teachers, Partners, Cartels,
+  // Testimonials...). Defaults to the site-wide green theme (brand-02);
+  // specific pages override it (see usePageTheme.ts, applied in app.vue) to
+  // run their own color instead, e.g. Formation Pro's maroon (brand-06),
+  // without touching any block's own SCSS. Multi-color cycling palettes
+  // (ConcertsEvent) are the deliberate exception and stay fixed.
+  --color-page-accent: var(--color-brand-02);
+
+  // "On accent" — the foreground color used by elements that sit on top of
+  // a --color-page-accent-colored background (buttons, dividers, form
+  // fields...) inside a block's own content. Defaults to mint everywhere;
+  // a page can override it (e.g. Formation Pro uses white instead of mint)
+  // without affecting the header/hero or footer, which always use mint
+  // directly rather than this variable. The *-rgb twin is the same color as
+  // raw "r, g, b" for the translucent rgba() uses (Form's field borders).
+  --color-page-on-accent: var(--color-brand-01);
+  --color-page-on-accent-rgb: 141, 255, 192;
+
   --button-text: var(--color-brand-04);
   --button-color: var(--color-brand-00);
 

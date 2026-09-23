@@ -1,5 +1,5 @@
 <template>
-  <div class="v-block-list-wrap u-flex u-flex--column u-gap-xl u-gutter">
+  <div class="v-block-list-wrap u-flex u-flex--column u-gap-xl u-gutter-x">
     <UiSectionHeader v-if="block.content.title" :title="block.content.title" />
     <ul class="v-block-list">
       <li v-for="(item, index) in block.content.items" :key="index" class="v-block-list__item u-flex u-flex--column u-gap-s">
@@ -29,7 +29,8 @@ function imageUrl(item: { image?: string[] }): string | null {
 
 <style lang="scss" scoped>
 .v-block-list-wrap {
-  color: var(--color-brand-04);
+  color: var(--color-page-accent);
+  padding-block: var(--block-spacing);
 }
 
 .v-block-list {
@@ -47,10 +48,7 @@ function imageUrl(item: { image?: string[] }): string | null {
   }
 
   div {
-    font-family: var(--font-body);
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 1;
+    @include type-body;
   }
 }
 

@@ -1,34 +1,36 @@
 <template>
-  <div class="v-block-formations u-flex u-flex--column u-gap-2xl u-gutter-x">
+  <div class="v-block-formations u-flex u-flex--column u-gap-xl u-gutter-x">
     <UiSectionHeader v-if="block.content.title" :title="block.content.title" />
-    <div class="v-block-formations__titles u-flex u-flex--align-end u-gap-xl u-flex--wrap">
-      <h2>Formation<br>Professionnelle</h2>
-      <h2>Pratique<br>Amateur</h2>
-    </div>
-
-    <div class="v-block-formations__cards">
-      <article v-for="card in cards" :key="card.uri" class="v-block-formations__card u-flex u-flex--column">
-        <div class="v-block-formations__card-image">
-          <img v-if="card.image" :src="card.image" :alt="card.imageAlt">
-        </div>
-        <div class="v-block-formations__card-content u-flex u-flex--align-end u-flex--justify-between u-gap-m">
-          <div class="v-block-formations__card-text u-flex u-flex--column u-gap-xs">
-            <p class="v-block-formations__card-tag">{{ card.tag }}</p>
-            <h3 class="v-block-formations__card-title">{{ card.title }}</h3>
-            <p class="v-block-formations__card-description">{{ card.description }}</p>
-          </div>
-          <UiButton :to="card.href" class="v-block-formations__card-cta">Découvrir</UiButton>
-        </div>
-      </article>
-    </div>
-
-    <div class="v-block-formations__banner u-flex u-flex--align-center u-gap-xl">
-      <span class="v-block-formations__banner-icon u-flex u-flex--align-center u-flex--justify-center" aria-hidden="true">🤝</span>
-      <div class="v-block-formations__banner-text u-flex u-flex--column">
-        <p class="v-block-formations__banner-title">JAV</p>
-        <p class="v-block-formations__banner-subtitle">Un espace pour tous·tes</p>
+    <div class="v-block-formations__body u-flex u-flex--column u-gap-2xl">
+      <div class="v-block-formations__titles u-flex u-flex--align-end u-gap-xl u-flex--wrap">
+        <h1 class="v-block-formations__title">Formation<br>Professionnelle</h1>
+        <h1 class="v-block-formations__title">Pratique<br>Amateur</h1>
       </div>
-      <span class="v-block-formations__banner-arrow" aria-hidden="true">↗</span>
+
+      <div class="v-block-formations__cards">
+        <article v-for="card in cards" :key="card.uri" class="v-block-formations__card u-flex u-flex--column">
+          <div class="v-block-formations__card-image">
+            <img v-if="card.image" :src="card.image" :alt="card.imageAlt">
+          </div>
+          <div class="v-block-formations__card-content u-flex u-flex--align-end u-flex--justify-between u-gap-m">
+            <div class="v-block-formations__card-text u-flex u-flex--column u-gap-xs">
+              <span class="v-block-formations__card-tag">{{ card.tag }}</span>
+              <div class="v-block-formations__card-title">{{ card.title }}</div>
+              <div class="v-block-formations__card-description">{{ card.description }}</div>
+            </div>
+            <UiButton :to="card.href" class="v-block-formations__card-cta">Découvrir</UiButton>
+          </div>
+        </article>
+      </div>
+
+      <div class="v-block-formations__banner u-flex u-flex--align-center u-gap-xl">
+        <span class="v-block-formations__banner-icon u-flex u-flex--align-center u-flex--justify-center" aria-hidden="true">🤝</span>
+        <div class="v-block-formations__banner-text u-flex u-flex--column">
+          <span class="v-block-formations__banner-title">JAV</span>
+          <span class="v-block-formations__banner-subtitle">Un espace pour tous·tes</span>
+        </div>
+        <span class="v-block-formations__banner-arrow" aria-hidden="true">↗</span>
+      </div>
     </div>
   </div>
 </template>
@@ -67,24 +69,16 @@ const cards = computed(() =>
 
 <style lang="scss" scoped>
 .v-block-formations {
-  background: var(--color-brand-04);
+  background: var(--color-page-accent);
   color: var(--color-brand-00);
-  padding-block: var(--spacing-7xl);
-
-  @media (max-width: $breakpoint-mobile) {
-    padding-block: var(--spacing-4xl);
-  }
+  padding-block: var(--block-spacing);
 }
 
-.v-block-formations__titles {
-  h2 {
-    font-family: var(--font-heading);
-    font-weight: 700;
-    font-size: var(--spacing-4xl); // 48px
-    line-height: 1;
-    flex: 1;
-    min-width: 260px;
-  }
+// Real <h1> — no local font override needed, typo.scss's bare tag rule
+// covers it entirely, same as every other block's "Titre de la section".
+.v-block-formations__title {
+  flex: 1;
+  min-width: 260px;
 }
 
 .v-block-formations__cards {
@@ -125,28 +119,17 @@ const cards = computed(() =>
 }
 
 .v-block-formations__card-tag {
-  font-family: var(--font-body);
-  font-weight: 800;
-  font-size: var(--spacing-m); // 16px
-  line-height: 1;
-  text-transform: uppercase;
+  @include type-label;
 }
 
-// Now a real <h3> (card title, subordinate to the h2s above) — kept as an
-// explicit override since the design intentionally uses the body font here
-// instead of the default heading font/weight.
+// A <div>, not a <h3> — the design intentionally uses the body font here
+// (type-stat) instead of h3's canonical GT Maru heading-3.
 .v-block-formations__card-title {
-  font-family: var(--font-body);
-  font-weight: 800;
-  font-size: var(--spacing-3xl); // 40px
-  line-height: 1;
+  @include type-stat;
 }
 
 .v-block-formations__card-description {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 1;
+  @include type-body-large-bold;
 }
 
 .v-block-formations__card-cta {
@@ -155,7 +138,7 @@ const cards = computed(() =>
 
 .v-block-formations__banner {
   background: var(--color-brand-05);
-  color: var(--color-brand-04);
+  color: var(--color-page-accent);
   border-radius: var(--radius-s);
   padding: var(--spacing-m);
 }
@@ -163,10 +146,10 @@ const cards = computed(() =>
 .v-block-formations__banner-icon {
   aspect-ratio: 1;
   height: 86px;
-  background: var(--color-brand-04);
+  background: var(--color-page-accent);
   color: var(--color-brand-05);
   border-radius: var(--radius-s);
-  font-size: var(--spacing-5xl);
+  font-size: 64px;
   flex-shrink: 0;
 }
 
@@ -177,19 +160,15 @@ const cards = computed(() =>
 .v-block-formations__banner-title {
   font-family: var(--font-heading);
   font-weight: 900;
-  font-size: var(--spacing-2xl); // 32px — smaller than the default heading-3 (40px), fits the banner
+  font-size: 32px; // smaller than the default heading-3 (40px), fits the banner
   line-height: 1;
 }
 
 .v-block-formations__banner-subtitle {
-  font-family: var(--font-accent);
-  font-style: italic;
-  font-weight: 500;
-  font-size: var(--spacing-3xl); // 40px
-  line-height: 47px;
+  @include type-accent-italic;
 }
 
 .v-block-formations__banner-arrow {
-  font-size: var(--spacing-2xl);
+  font-size: 32px;
 }
 </style>

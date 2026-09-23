@@ -1,20 +1,28 @@
 <template>
-  <div class="v-block-resources u-flex u-flex--column u-gap-xl">
+  <div class="v-block-resources u-flex u-flex--column u-gap-xl u-gutter-x">
     <UiSectionHeader v-if="block.content.title" :title="block.content.title" />
-    <ul class="v-block-resources__list u-flex u-flex--column">
-      <li
-        v-for="(item, index) in block.content.resource_items"
-        :key="index"
-        class="v-block-resources__item"
+    <UiDivider variant="thin" />
+    <template v-for="(item, index) in block.content.resource_items" :key="index">
+      <a
+        :href="item.resource_type === 'file' ? (fileUrl(item, index) ?? '#') : item.resource_link"
+        target="_blank"
+        rel="noopener"
+        class="v-block-resources__item u-flex u-flex--align-center u-flex--justify-between u-gap-xl"
       >
-        <a v-if="item.resource_type === 'file'" :href="fileUrl(item) ?? '#'" target="_blank" rel="noopener">
-          {{ item.resource_title }}
-        </a>
-        <a v-else :href="item.resource_link">
-          {{ item.resource_title }}
-        </a>
-      </li>
-    </ul>
+        <span class="v-block-resources__text u-flex u-flex--column u-gap-xs">
+          <span class="v-block-resources__meta">
+            {{ typeLabel(item) }}<template v-if="updatedLabel(item, index)"> · MIS À JOUR EN {{ updatedLabel(item, index) }}</template>
+          </span>
+          <span class="v-block-resources__title">{{ item.resource_title }}</span>
+        </span>
+        <span
+          class="v-block-resources__icon"
+          :class="item.resource_type === 'file' ? 'v-block-resources__icon--download' : 'v-block-resources__icon--link'"
+          aria-hidden="true"
+        />
+      </a>
+      <UiDivider variant="thin" />
+    </template>
   </div>
 </template>
 
@@ -24,38 +32,105 @@ import type { KqlBlock, KqlFile } from '~~/shared/types/kql'
 const props = defineProps<{
   block: KqlBlock
   files?: KqlFile[]
+  /** Page content's last-saved date ("Y-m-d") — used as the "MIS À JOUR
+   * EN ..." for "Dossier" (link) items, which have no file of their own. */
+  pageModified?: string | null
 }>()
 
-function fileUrl(item: { resource_file?: string[] }): string | null {
-  return resolveKqlFile(item.resource_file, props.files)?.url ?? null
+// block.resourceFiles (see server/utils/kqlPageQuery.ts) resolves each
+// item's "resource_file" from anywhere on the site, not just files
+// uploaded to this page — the primary source, so a PDF picked from
+// elsewhere still shows its real modified date automatically. Falling back
+// to resolveKqlFile against the page's own files covers the (rare) case a
+// file was actually uploaded straight to this page.
+function resolvedFile(item: { resource_file?: string[] }, index: number): KqlFile | null {
+  return props.block.resourceFiles?.[index]?.file
+    ?? resolveKqlFile(item.resource_file, props.files)
+    ?? null
+}
+
+function fileUrl(item: { resource_file?: string[] }, index: number): string | null {
+  return resolvedFile(item, index)?.url ?? null
+}
+
+function typeLabel(item: { resource_type?: string }): string {
+  return item.resource_type === 'file' ? 'PDF' : 'DOSSIER'
+}
+
+// Editors never fill a date themselves — it's read automatically from
+// whichever timestamp is available: the PDF file's own modified date (kept
+// current automatically whenever that file is replaced/re-uploaded in
+// Kirby, no editor action needed), or (for a plain link, which has no
+// file) the page content's last-saved date as the closest available
+// proxy. Always shown as "mois année" only.
+function updatedLabel(item: { resource_type?: string; resource_file?: string[] }, index: number): string {
+  const raw = item.resource_type === 'file'
+    ? resolvedFile(item, index)?.modified
+    : props.pageModified
+
+  if (!raw) return ''
+
+  const date = new Date(raw)
+  if (Number.isNaN(date.getTime())) return ''
+
+  return new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' })
+    .format(date)
+    .toUpperCase()
 }
 </script>
 
 <style lang="scss" scoped>
 .v-block-resources {
-  padding: var(--spacing-xl) var(--gutter);
-  color: var(--color-brand-04);
+  padding-block: var(--block-spacing);
+  color: var(--color-page-accent);
 }
 
 .v-block-resources__item {
-  border-top: 2px solid var(--color-brand-04);
-  padding: var(--spacing-m) 0;
+  // Spacing between rows/dividers comes purely from the container's own
+  // 24px gap (see template), not from padding here — same rhythm as
+  // Planning/Toggle/Tableau avec colonnes.
+  text-decoration: none;
+  color: inherit;
+}
 
-  &:last-child {
-    border-bottom: 2px solid var(--color-brand-04);
-  }
+.v-block-resources__meta {
+  @include type-label;
+  font-size: 16px;
+  font-weight: 500;
+}
 
-  a {
-    font-family: var(--font-body);
-    font-weight: 700;
-    font-size: 24px;
-    line-height: 1;
-    color: inherit;
-    text-decoration: none;
+.v-block-resources__title {
+  @include type-body-large-bold;
+}
 
-    &:hover {
-      text-decoration: underline;
-    }
-  }
+.v-block-resources__item:hover .v-block-resources__title {
+  text-decoration: underline;
+}
+
+// Real SVG icons (public/img), recolored via CSS mask so they always match
+// the block's own text color (currentColor) instead of the fixed indigo
+// baked into the source files — needed since this block's color varies by
+// instance (maroon here, but could be any brand color elsewhere).
+.v-block-resources__icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background-color: currentColor;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+.v-block-resources__icon--download {
+  mask-image: url('/img/Iconstelechargement.svg');
+  -webkit-mask-image: url('/img/Iconstelechargement.svg');
+}
+
+.v-block-resources__icon--link {
+  mask-image: url('/img/Iconsliensvg.svg');
+  -webkit-mask-image: url('/img/Iconsliensvg.svg');
 }
 </style>

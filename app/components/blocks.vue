@@ -7,6 +7,7 @@
             :block="block"
             :images="images"
             :files="files"
+            :page-modified="pageModified"
         />
     </section>
 </template>
@@ -18,6 +19,7 @@ const props = defineProps<{
     blocks?: KqlBlock[]
     images?: KqlFile[]
     files?: KqlFile[]
+    pageModified?: string | null
 }>()
 
 const visibleBlocks = computed(() => (props.blocks ?? []).filter(block => !block.isHidden))

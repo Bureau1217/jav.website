@@ -1,5 +1,5 @@
 <template>
-  <div class="v-block-testimonials u-flex u-flex--column u-gap-4xl u-gutter">
+  <div class="v-block-testimonials u-flex u-flex--column u-gap-xl u-gutter-x">
     <UiSectionHeader :title="block.content.title || 'Témoignages'" class="v-block-testimonials__header" />
 
     <div v-if="testimonials?.length" class="v-block-testimonials__grid">
@@ -15,7 +15,7 @@
         </div>
         <UiDivider :color="cardColor(index)" />
         <div class="v-block-testimonials__card-content u-flex u-flex--column u-gap-xs">
-          <p v-if="item.role?.length" class="v-block-testimonials__card-name">{{ item.role.join(' · ') }}</p>
+          <span v-if="item.role?.length" class="v-block-testimonials__card-name">{{ item.role.join(' · ') }}</span>
           <div class="v-block-testimonials__card-quote" v-html="item.text" />
         </div>
       </article>
@@ -45,7 +45,8 @@ function cardColor(index: number) {
 
 <style lang="scss" scoped>
 .v-block-testimonials {
-  color: var(--color-brand-04);
+  color: var(--color-page-accent);
+  padding-block: var(--block-spacing);
 }
 
 .v-block-testimonials__grid {
@@ -73,30 +74,22 @@ function cardColor(index: number) {
   padding-top: var(--spacing-s);
 }
 
+// A <span>, not a <p> — this uses type-label (uppercase), unlike a <p>'s
+// canonical style.
 .v-block-testimonials__card-name {
-  font-family: var(--font-body);
-  font-weight: 800;
-  font-size: var(--spacing-m); // 16px
-  line-height: 1;
-  text-transform: uppercase;
+  @include type-label;
 }
 
 .v-block-testimonials__card-quote {
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 24px;
-  line-height: 1;
+  @include type-body-large;
 
   :deep(p) {
     margin: 0;
   }
 }
 
+// Real <p> — font comes from typo.scss's bare tag rule (Inter body-large).
 .v-block-testimonials__empty {
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 24px;
-  line-height: 1;
   opacity: 0.7;
 }
 </style>

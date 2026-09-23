@@ -4,7 +4,7 @@
       <UiDivider />
       <div class="v-footer__brand-row u-flex u-flex--align-center u-flex--justify-between u-gap-xl u-flex--wrap">
         <span class="v-footer__logo-mark" aria-hidden="true" />
-        <p class="v-footer__wordmark">JAV - L’École des Musiques</p>
+        <div class="v-footer__wordmark">JAV - L’École des Musiques</div>
       </div>
     </div>
 
@@ -46,7 +46,7 @@
           <li><a href="https://facebook.com" target="_blank" rel="noopener">Facebook</a></li>
           <li><a href="https://x.com" target="_blank" rel="noopener">X</a></li>
         </ul>
-        <p class="v-footer__rights">Tous droits réservés {{ new Date().getFullYear() }}.</p>
+        <span class="v-footer__rights">Tous droits réservés {{ new Date().getFullYear() }}.</span>
       </div>
     </div>
   </footer>
@@ -83,7 +83,11 @@ const addressLine2 = computed(() => {
 
 <style lang="scss" scoped>
 .v-footer {
-  background: var(--color-brand-04);
+  // Follows the page you're on (see usePageTheme.ts) — green by default,
+  // e.g. maroon on Formation Pro. Text stays mint always (not
+  // --color-page-on-accent — that one's for blocks specifically, the
+  // footer is an explicit exception along with the page's own hero).
+  background: var(--color-page-accent);
   color: var(--color-brand-01);
   padding-block: var(--spacing-7xl) var(--spacing-5xl);
   gap: var(--spacing-7xl);
@@ -112,16 +116,15 @@ const addressLine2 = computed(() => {
   }
 }
 
+// A <div>, not a <p> — the wordmark uses the display style (GT Maru 96px),
+// nothing like a <p>'s canonical style, so it isn't tagged as one.
 .v-footer__wordmark {
-  font-family: var(--font-heading);
-  font-weight: 900;
-  font-size: var(--spacing-7xl); // 96px
-  line-height: 0.95;
+  @include type-display;
   text-align: right;
   max-width: 820px;
 
   @media (max-width: $breakpoint-mobile) {
-    font-size: var(--spacing-3xl);
+    font-size: 40px;
     text-align: left;
     max-width: none;
   }
@@ -129,10 +132,7 @@ const addressLine2 = computed(() => {
 
 .v-footer__links {
   a {
-    font-family: var(--font-body);
-    font-weight: 700;
-    font-size: 24px;
-    line-height: 1;
+    @include type-body-large-bold;
     text-decoration: none;
     color: var(--color-brand-01);
     width: fit-content;
@@ -151,11 +151,10 @@ const addressLine2 = computed(() => {
     color: var(--color-brand-01);
   }
 
+  // Same size as the p's right next to them (address, phone...) — both
+  // read as regular footer body text, just one is a link.
   a {
-    font-family: var(--font-body);
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 1;
+    @include type-body-large;
     color: var(--color-brand-01);
     text-decoration: none;
 
@@ -165,10 +164,15 @@ const addressLine2 = computed(() => {
   }
 }
 
+// Doesn't map to a named type style — "Tous droits réservés" shouldn't be
+// force-uppercased the way type-label would. Set here on the row and
+// inherited by both the nav links and .v-footer__rights below — safe now
+// that neither is a <p> (a real <p> would have overridden this via
+// typo.scss's own bare-tag rule instead of inheriting it).
 .v-footer__bottom {
   font-family: var(--font-body);
   font-weight: 800;
-  font-size: var(--spacing-m); // 16px
+  font-size: 16px;
   line-height: 1;
 }
 

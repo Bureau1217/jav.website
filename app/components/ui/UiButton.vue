@@ -40,8 +40,10 @@ const tag = computed(() => (isLink.value ? resolveComponent('NuxtLink') : 'butto
 </script>
 
 <style lang="scss" scoped>
-// Typography is written directly per variant below (font-family/weight/
-// size/line-height) — only layout/color/spacing live outside these rules.
+// "secondary" reuses the shared type-body-large mixin (typo.scss); the
+// "primary" m/xl sizes below are the button component's own scale (20px/
+// 24px, both weight 800) — not part of the shared content type scale, kept
+// as explicit values on purpose.
 .ui-button {
   border: none;
   cursor: pointer;
@@ -61,28 +63,25 @@ const tag = computed(() => (isLink.value ? resolveComponent('NuxtLink') : 'butto
 }
 
 .ui-button--secondary {
+  @include type-body-large;
   background: transparent;
   color: inherit;
   border-bottom: 2px solid currentColor;
   padding-bottom: 2px;
   border-radius: 0;
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: var(--spacing-xl); // 24px
-  line-height: 1;
 }
 
 .ui-button--primary.ui-button--m {
   font-family: var(--font-body);
   font-weight: 800;
-  font-size: var(--spacing-l); // 20px
+  font-size: 24px; // same size as running text (p) everywhere else
   line-height: 1;
 }
 
 .ui-button--primary.ui-button--xl {
   font-family: var(--font-body);
   font-weight: 800;
-  font-size: var(--spacing-xl); // 24px
+  font-size: 24px;
   line-height: 1;
 }
 </style>

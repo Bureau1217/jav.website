@@ -9,10 +9,11 @@
           v-for="(partner, partnerIndex) in card.partners"
           :key="partnerIndex"
           bordered
-          color="var(--color-brand-04)"
+          background="var(--color-brand-00)"
+          color="var(--color-page-accent)"
           class="v-block-partners__logo u-flex u-flex--align-center u-flex--justify-center"
         >
-          <img v-if="logoUrl(partner)" :src="logoUrl(partner)!" :alt="partner.name ?? ''">
+          <img v-if="logoUrl(partner, index, partnerIndex)" :src="logoUrl(partner, index, partnerIndex)!" :alt="partner.name ?? ''">
           <span v-else>{{ partner.name }}</span>
         </UiCard>
       </div>
@@ -28,22 +29,26 @@ const props = defineProps<{
   images?: KqlFile[]
 }>()
 
-function logoUrl(partner: { logo?: string[] }): string | null {
-  return resolveKqlFile(partner.logo, props.images)?.url ?? null
+// block.partnerLogos (see server/utils/kqlPageQuery.ts) resolves each
+// partner's "logo" from anywhere on the site, not just images uploaded to
+// this page — the primary source. Falling back to resolveKqlFile against
+// the page's own images covers the (rare) case a logo was actually
+// uploaded straight to this page.
+function logoUrl(partner: { logo?: string[] }, cardIndex: number, partnerIndex: number): string | null {
+  const resolved = props.block.partnerLogos?.[cardIndex]?.partners?.[partnerIndex]?.logo
+  return resolved?.url ?? resolveKqlFile(partner.logo, props.images)?.url ?? null
 }
 </script>
 
 <style lang="scss" scoped>
 .v-block-partners {
-  padding: var(--spacing-xl) var(--gutter);
-  color: var(--color-brand-04);
+  padding-block: var(--block-spacing);
+  padding-inline: var(--gutter);
+  color: var(--color-page-accent);
 }
 
 .v-block-partners__description {
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: var(--spacing-2xl); // 32px
-  line-height: 1;
+  @include type-text-heading-2;
   max-width: 755px;
 
   :deep(p) {
@@ -53,10 +58,14 @@ function logoUrl(partner: { logo?: string[] }): string | null {
 
 .v-block-partners__grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--spacing-xl);
 
-  @media (max-width: 700px) {
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: $breakpoint-mobile) {
     grid-template-columns: 1fr;
   }
 }
@@ -74,7 +83,7 @@ function logoUrl(partner: { logo?: string[] }): string | null {
   span {
     font-family: var(--font-heading);
     font-weight: 900;
-    font-size: var(--spacing-xl); // 24px — smaller than the default heading-3 (40px), fits inside the logo card
+    font-size: 24px; // smaller than the default heading-3 (40px), fits inside the logo card
     line-height: 1;
     text-align: center;
     max-width: 278px;

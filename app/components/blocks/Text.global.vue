@@ -1,5 +1,5 @@
 <template>
-  <div class="v-block-text-wrap u-flex u-flex--column u-gap-m">
+  <div class="v-block-text-wrap u-flex u-flex--column u-gap-xl">
     <UiSectionHeader v-if="block.content.title" :title="block.content.title" />
     <div class="v-block-text" v-html="block.content.text" />
   </div>
@@ -15,16 +15,14 @@ defineProps<{
 
 <style lang="scss" scoped>
 .v-block-text-wrap {
-  padding: var(--spacing-xl) var(--gutter);
-  color: var(--color-brand-04);
+  padding-block: var(--block-spacing);
+  padding-inline: var(--gutter);
+  color: var(--color-page-accent);
   max-width: 860px;
 }
 
 .v-block-text {
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 24px;
-  line-height: 1;
+  @include type-body-large;
 
   :deep(p) {
     margin: 0 0 var(--spacing-m);

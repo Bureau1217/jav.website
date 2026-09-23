@@ -47,7 +47,7 @@ const link = computed(() => band.value?.link ?? '')
 .v-scrolling-banner__item {
   font-family: var(--font-heading);
   font-weight: 900;
-  font-size: var(--spacing-2xl); // 32px
+  font-size: 32px;
   line-height: 1;
   white-space: nowrap;
   padding-right: var(--spacing-m);

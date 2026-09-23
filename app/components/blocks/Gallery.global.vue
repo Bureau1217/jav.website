@@ -1,48 +1,60 @@
 <template>
-  <div class="v-block-gallery u-flex u-flex--column u-flex--align-center u-gap-4xl u-gutter-x">
+  <div class="v-block-gallery u-flex u-flex--column u-flex--align-center u-gap-xl u-gutter-x">
     <UiSectionHeader :title="block.content.title || 'JAV en image'" class="v-block-gallery__header" />
 
-    <div v-if="current" class="v-block-gallery__media">
-      <img v-if="currentImage" :src="currentImage.url" :alt="currentImage.alt ?? current.title ?? ''" class="v-block-gallery__image">
-    </div>
-
-    <div v-if="current" class="v-block-gallery__carousel u-flex u-flex--align-center u-gap-xl">
-      <button
-        type="button"
-        class="v-block-gallery__arrow"
-        :disabled="items.length < 2"
-        aria-label="Élément précédent"
-        @click="prev"
-      >
-        ‹
-      </button>
-
-      <div class="v-block-gallery__content u-flex u-flex--column u-flex--align-center u-gap-s">
-        <p v-if="current.title" class="v-block-gallery__title">{{ current.title }}</p>
-        <div v-if="current.content" class="v-block-gallery__text" v-html="current.content" />
+    <div class="v-block-gallery__body u-flex u-flex--column u-flex--align-center u-gap-4xl">
+      <div v-if="current" class="v-block-gallery__media">
+        <component
+          :is="current.link ? 'a' : 'div'"
+          v-if="currentImage"
+          :href="current.link || undefined"
+          :target="current.link ? '_blank' : undefined"
+          :rel="current.link ? 'noopener' : undefined"
+          class="v-block-gallery__image-wrap"
+        >
+          <img :src="currentImage.url" :alt="currentImage.alt ?? current.title ?? ''" class="v-block-gallery__image">
+          <img v-if="current.link" src="/img/play-button.svg" alt="" aria-hidden="true" class="v-block-gallery__play">
+        </component>
       </div>
 
-      <button
-        type="button"
-        class="v-block-gallery__arrow"
-        :disabled="items.length < 2"
-        aria-label="Élément suivant"
-        @click="next"
-      >
-        ›
-      </button>
-    </div>
+      <div v-if="current" class="v-block-gallery__carousel u-flex u-flex--align-center u-gap-xl">
+        <button
+          type="button"
+          class="v-block-gallery__arrow"
+          :disabled="items.length < 2"
+          aria-label="Élément précédent"
+          @click="prev"
+        >
+          ‹
+        </button>
 
-    <div v-if="items.length > 1" class="v-block-gallery__dots u-flex u-gap-s">
-      <button
-        v-for="(item, index) in items"
-        :key="index"
-        type="button"
-        class="v-block-gallery__dot"
-        :class="{ 'is-active': index === activeIndex }"
-        :aria-label="`Aller à l'élément ${index + 1}`"
-        @click="activeIndex = index"
-      />
+        <div class="v-block-gallery__content u-flex u-flex--column u-flex--align-center u-gap-s">
+          <div v-if="current.title" class="v-block-gallery__title">{{ current.title }}</div>
+          <div v-if="current.content" class="v-block-gallery__text" v-html="current.content" />
+        </div>
+
+        <button
+          type="button"
+          class="v-block-gallery__arrow"
+          :disabled="items.length < 2"
+          aria-label="Élément suivant"
+          @click="next"
+        >
+          ›
+        </button>
+      </div>
+
+      <div v-if="items.length > 1" class="v-block-gallery__dots u-flex u-gap-s">
+        <button
+          v-for="(item, index) in items"
+          :key="index"
+          type="button"
+          class="v-block-gallery__dot"
+          :class="{ 'is-active': index === activeIndex }"
+          :aria-label="`Aller à l'élément ${index + 1}`"
+          @click="activeIndex = index"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -88,18 +100,26 @@ function next() {
 
 <style lang="scss" scoped>
 .v-block-gallery {
-  background: var(--color-brand-04);
+  background: var(--color-page-accent);
   color: var(--color-brand-00);
-  padding-block: var(--spacing-7xl);
+  padding-block: var(--block-spacing);
+}
 
-  @media (max-width: $breakpoint-mobile) {
-    padding-block: var(--spacing-4xl);
-  }
+// Full width, like .ui-section-header above it — so it doesn't shrink to
+// fit its own content and instead lets .v-block-gallery__media's own
+// max-width (below) govern how wide the media actually renders.
+.v-block-gallery__body {
+  width: 100%;
 }
 
 .v-block-gallery__media {
   width: 100%;
   max-width: 1096px;
+}
+
+.v-block-gallery__image-wrap {
+  position: relative;
+  display: block;
 }
 
 .v-block-gallery__image {
@@ -110,6 +130,24 @@ function next() {
 
   @media (max-width: $breakpoint-mobile) {
     border-radius: var(--radius-l);
+  }
+}
+
+// Only shown when the item's "Lien" field is filled — signals the image is
+// clickable and leads to that link (e.g. a video hosted elsewhere), instead
+// of embedding a player straight in the page.
+.v-block-gallery__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 88px;
+  height: 88px;
+  pointer-events: none;
+
+  @media (max-width: $breakpoint-mobile) {
+    width: 56px;
+    height: 56px;
   }
 }
 
@@ -139,18 +177,14 @@ function next() {
   margin: 0 auto;
 }
 
+// A <div>, not a <p> — this uses type-text-heading-1 (Inter 700/32px),
+// unlike a <p>'s canonical style (type-body-large, 500/24px).
 .v-block-gallery__title {
-  font-family: var(--font-body);
-  font-weight: 800;
-  font-size: var(--spacing-2xl); // 32px
-  line-height: 1;
+  @include type-text-heading-1;
 }
 
 .v-block-gallery__text {
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 24px;
-  line-height: 1;
+  @include type-body-large;
 }
 
 .v-block-gallery__dot {
@@ -163,10 +197,11 @@ function next() {
   padding: 0;
   cursor: pointer;
 
-  // Active dot gets a real accent color (mint) instead of just full opacity
-  // on the same white, so it actually stands out against the others.
+  // Active dot gets a real accent color (mint, white on some pages — see
+  // usePageTheme.ts) instead of just full opacity on the same white, so it
+  // actually stands out against the others.
   &.is-active {
-    background: var(--color-brand-01);
+    background: var(--color-page-on-accent);
     opacity: 1;
   }
 }

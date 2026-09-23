@@ -10,7 +10,7 @@
       <UiDivider v-if="index > 0" variant="thin" />
       <details class="v-block-toggle__item">
         <summary class="u-flex u-flex--align-center u-flex--justify-between u-gap-5xl">
-          <span class="v-block-toggle__title">{{ item.titre }}</span>
+          <h3 class="v-block-toggle__title">{{ item.titre }}</h3>
           <span class="v-block-toggle__icon" aria-hidden="true" />
         </summary>
         <div class="v-block-toggle__content" v-html="item.contenu" />
@@ -29,8 +29,9 @@ defineProps<{
 
 <style lang="scss" scoped>
 .v-block-toggle {
-  padding: var(--spacing-xl) var(--gutter);
-  color: var(--color-brand-04);
+  padding-block: var(--block-spacing);
+  padding-inline: var(--gutter);
+  color: var(--color-page-accent);
   gap: var(--spacing-xl);
 }
 
@@ -49,11 +50,11 @@ defineProps<{
   }
 }
 
+// Real <h3>, but overridden locally to Inter instead of the canonical h3
+// (GT Maru, type-heading-3) — FAQ item titles use their own
+// type-text-heading-3 (Inter 700/40px) instead.
 .v-block-toggle__title {
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: var(--spacing-2xl); // 32px
-  line-height: 1;
+  @include type-text-heading-3;
   flex: 1;
 }
 
@@ -70,7 +71,7 @@ defineProps<{
     position: absolute;
     top: 50%;
     left: 50%;
-    background: var(--color-brand-04);
+    background: var(--color-page-accent);
     transform: translate(-50%, -50%);
   }
 
@@ -86,10 +87,7 @@ defineProps<{
 }
 
 .v-block-toggle__content {
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 24px;
-  line-height: 1;
+  @include type-body-large;
   padding-top: var(--spacing-s);
 }
 </style>

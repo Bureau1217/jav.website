@@ -16,14 +16,10 @@ withDefaults(defineProps<{
 
 <style lang="scss" scoped>
 .ui-tag {
+  @include type-label;
   color: var(--ui-tag-color, currentColor);
   border: 2px solid var(--ui-tag-color, currentColor);
   border-radius: var(--radius-s);
   padding: var(--spacing-xs) var(--spacing-s);
-  font-family: var(--font-body);
-  font-weight: 800;
-  font-size: var(--spacing-m); // 16px
-  line-height: 1;
-  text-transform: uppercase;
 }
 </style>

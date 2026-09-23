@@ -1,12 +1,12 @@
 <template>
-  <UiCard background="var(--color-brand-06)" color="var(--color-brand-00)" class="v-block-cta u-gutter-x">
+  <UiCard background="var(--color-page-accent)" color="var(--color-page-on-accent)" class="v-block-cta u-gutter-x">
     <div class="v-block-cta__rule u-flex u-flex--column u-gap-xs">
       <UiDivider />
       <UiDivider />
     </div>
     <div class="v-block-cta__content u-flex u-flex--column u-flex--align-center u-gap-m">
-      <div v-if="block.content.title" class="v-block-cta__title" v-html="block.content.title" />
-      <div
+      <h1 v-if="block.content.title" class="v-block-cta__title" v-html="block.content.title" />
+      <p
         v-if="block.content.description"
         class="v-block-cta__description"
         v-html="block.content.description"
@@ -35,12 +35,13 @@ defineProps<{
 </script>
 
 <style lang="scss" scoped>
-// Full-bleed: the maroon background spans the entire viewport width (no
+// Full-bleed: the dark green background spans the entire viewport width (no
 // horizontal margin), while the actual text/button content still sits
 // inset from the edges via the `u-gutter-x` class on the card itself.
 .v-block-cta {
-  padding-block: var(--spacing-xl);
-  margin-block: var(--spacing-xl);
+  // 96px lives inside the card as padding (not an outer margin) so the
+  // dark green background itself fills the vertical gap to neighboring blocks.
+  padding-block: var(--block-spacing);
   border-radius: 0;
 }
 
@@ -53,28 +54,22 @@ defineProps<{
   }
 }
 
+// Real <h1> — same tag as every other block's "Titre de la section" field
+// (rendered via UiSectionHeader elsewhere); no local font override needed,
+// typo.scss's bare tag rule covers it entirely.
 .v-block-cta__title {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: var(--spacing-4xl); // 48px
-  line-height: 1;
-
   :deep(em) {
     font-style: italic;
   }
 }
 
-.v-block-cta__description {
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 24px;
-  line-height: 1;
-}
+// Real <p> — no local font override needed either, typo.scss's bare tag
+// rule covers it entirely (Inter body-large).
 
-// Inverted from the card's own colors: cream pill with maroon text, so the
-// button pops against the maroon card background.
+// Inverted from the card's own colors: mint pill with dark green text, so
+// the button pops against the dark green card background.
 .v-block-cta__link {
-  --button-color: var(--color-brand-00);
-  --button-text: var(--color-brand-06);
+  --button-color: var(--color-page-on-accent);
+  --button-text: var(--color-page-accent);
 }
 </style>

@@ -1,51 +1,38 @@
-// Typography — one rule per level, paired with a `.u-*` utility class so
-// the visual style can be applied to any element independent of its
-// semantic tag (e.g. a <span> that needs to look like an H2 without being
-// a heading in the document outline).
+// Bare tag defaults — the mixins themselves live in _typo-mixins.scss
+// (auto-injected into every component via Nuxt's vite scss additionalData,
+// see nuxt.config.ts), this file just applies them globally to the raw
+// HTML tags.
 //
-// Values are written directly here, no mixin in between — same for every
-// component in the codebase: each one writes its own font-family/weight/
-// size/line-height. Yes, that means the same numbers show up in several
-// places; that's the trade-off for a file you can read top to bottom
-// without jumping anywhere else.
-
-h1,
-.u-heading-display {
-  font-family: var(--font-heading);
-  font-weight: 900;
-  font-size: var(--spacing-7xl); // 96px
-  line-height: 0.95;
+// h1 is now the "Titre de la section" tag — every block can have one (so
+// there are deliberately several <h1>s per page), rendered via
+// UiSectionHeader or inline in a few blocks (Section, ArrayLayout, Cta,
+// Formations). The page's own big title (formerly the page's single <h1>)
+// is no longer a heading tag at all — see .h-hero below, used once per page
+// in Default.vue.
+h1 {
+  @include type-text-heading-2;
+  font-size: var(--heading-1-size);
 }
 
-h2,
-.u-heading-1 {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: var(--spacing-5xl); // 64px
-  line-height: 1;
+h3 {
+  @include type-heading-3;
 }
 
-h3,
-.u-heading-3 {
-  font-family: var(--font-heading);
-  font-weight: 900;
-  font-size: var(--spacing-3xl); // 40px
-  line-height: 1;
+p {
+  @include type-body-large;
 }
 
-p,
-.u-text-body {
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 26px;
-  line-height: 1;
+// The page's own title (Hero/page-header) — a styled <div>, not a heading
+// tag, since h1 is now reserved for "Titre de la section" (see above).
+.h-hero {
+  @include type-display;
 }
 
 h1,
-h2,
 h3,
 h4,
-p {
+p,
+.h-hero {
   margin: 0;
 }
 

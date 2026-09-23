@@ -8,7 +8,7 @@ export default defineNuxtConfig({
       preprocessorOptions: {
         scss: {
           api: 'modern-compiler',
-          additionalData: '@import "~/assets/_params.scss";'
+          additionalData: '@import "~/assets/_params.scss"; @import "~/assets/_typo-mixins.scss";'
         }
       }
     }

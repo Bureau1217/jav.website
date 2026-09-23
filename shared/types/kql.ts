@@ -5,6 +5,8 @@ export interface KqlFile {
   width: number
   height: number
   extension: string
+  /** "Y-m-d" — used by the Resources block to show "MIS À JOUR EN <mois> <année>" automatically, without editors having to fill a date field. */
+  modified: string | null
 }
 
 export interface KqlTeacher {
@@ -31,6 +33,17 @@ export interface KqlBlock {
    * same order as content.items, with that row's "image" field resolved to
    * a real file — see server/utils/kqlPageQuery.ts. */
   itemImages: Array<{ image: KqlFile | null }>
+  /** One entry per row of the Resources block's "resource_items" structure,
+   * same order, with that row's "resource_file" field resolved to a real
+   * file — picked from anywhere on the site, not just files uploaded to
+   * this page, so the Resources block's "MIS À JOUR EN ..." date always
+   * reflects the file's real modified date, however it's stored. */
+  resourceFiles: Array<{ file: KqlFile | null }>
+  /** One entry per row of the Partners block's "cards" structure, each with
+   * its own "partners" sub-structure resolved so every partner's "logo"
+   * field points to a real file — picked from anywhere on the site, not
+   * just this page's own images. */
+  partnerLogos: Array<{ partners: Array<{ logo: KqlFile | null }> }>
 }
 
 export interface KqlEvent {
@@ -117,4 +130,18 @@ export interface KqlPage {
   images: KqlFile[]
   files: KqlFile[]
   blocks: KqlBlock[]
+  /** "Y-m-d" — page content's last-saved date. Used as the Resources
+   * block's "MIS À JOUR EN ..." for "Dossier" (link) items, which have no
+   * file of their own to read a modified date from. */
+  pageModified: string | null
+  /** "event_item" template fields (see PagesEventItem.vue) — null/empty on
+   * every other template. */
+  eventDate: string | null
+  eventTime: string | null
+  eventType: string | null
+  eventLocation: string | null
+  eventTicketLink: string | null
+  eventDescription: string | null
+  eventCover: KqlFile | null
+  eventGallery: KqlFile[]
 }

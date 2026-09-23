@@ -1,5 +1,5 @@
 <template>
-  <div class="v-block-concerts-event u-flex u-flex--column u-gap-4xl u-gutter">
+  <div class="v-block-concerts-event u-flex u-flex--column u-gap-xl u-gutter-x">
     <UiSectionHeader
       :title="block.content.title || 'Concerts &amp; Évènements'"
       link-to="/agenda"
@@ -19,7 +19,7 @@
         <div class="v-block-concerts-event__card-content u-flex u-flex--column u-flex--justify-between u-gap-xl">
           <div class="v-block-concerts-event__card-header u-flex u-flex--column u-gap-s">
             <div class="u-flex u-flex--align-start u-flex--justify-between u-gap-s">
-              <p class="v-block-concerts-event__card-date">{{ formatEventDate(event.date) }}</p>
+              <span class="v-block-concerts-event__card-date">{{ formatEventDate(event.date) }}</span>
               <!-- Non-featured cards show their tag inline, next to the
                    date — the featured card's tag lives over its photo
                    instead (see .card-media below). -->
@@ -38,7 +38,7 @@
                bottom — the featured card's CTA sits on its photo instead. -->
           <UiButton
             v-if="index !== 0"
-            :to="event.ticketLink || `/agenda/${event.id}`"
+            :to="event.ticketLink || `/${event.id}`"
             class="v-block-concerts-event__card-cta"
             :style="{ '--button-color': palette(index).accent, '--button-text': palette(index).bg }"
           >
@@ -57,7 +57,7 @@
             {{ eventTypeLabel(event.type) }}
           </UiTag>
           <UiButton
-            :to="event.ticketLink || `/agenda/${event.id}`"
+            :to="event.ticketLink || `/${event.id}`"
             class="v-block-concerts-event__card-cta"
             :style="{ '--button-color': palette(index).bg, '--button-text': palette(index).accent }"
           >
@@ -102,23 +102,20 @@ function formatEventDate(date: string | null) {
 // non-featured cards invert the pair (accent background, base text) so
 // they stand out against the card's own flat background; the featured
 // card's button sits on its photo instead, so it just reuses the pair
-// as-is (no inversion needed for contrast there).
-const PALETTE = [
-  { bg: 'var(--color-brand-05)', accent: 'var(--color-brand-02)' }, // pink / dark green
-  { bg: 'var(--color-brand-04)', accent: 'var(--color-brand-01)' }, // indigo / mint
-  { bg: 'var(--color-brand-03)', accent: 'var(--color-brand-02)' }, // light blue / dark green
-  { bg: 'var(--color-brand-07)', accent: 'var(--color-brand-04)' }, // orange / indigo
-  { bg: 'var(--color-brand-02)', accent: 'var(--color-brand-05)' } // dark green / pink
-]
-
-function palette(index: number) {
-  return PALETTE[index % PALETTE.length]
-}
+// as-is (no inversion needed for contrast there). Shared with the event's
+// own detail page (see app/utils/eventPalette.ts) so its color matches
+// this card exactly.
+const palette = eventPalette
 </script>
 
 <style lang="scss" scoped>
 .v-block-concerts-event {
-  color: var(--color-brand-04);
+  // Only the section title (+ "Voir tout l'agenda" link, empty-state text)
+  // follows the page's theme (see usePageTheme.ts) — the cards themselves
+  // keep their own fixed 5-color cycling palette (see PALETTE above),
+  // untouched, since each card sets its own color explicitly via UiCard.
+  color: var(--color-page-accent);
+  padding-block: var(--block-spacing);
 }
 
 .v-block-concerts-event__grid {
@@ -164,24 +161,19 @@ function palette(index: number) {
   padding: var(--spacing-xl);
 }
 
+// A <span>, not a <p> — this uses type-tag-date (uppercase), unlike a <p>'s
+// canonical style.
 .v-block-concerts-event__card-date {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: var(--spacing-m); // 16px
-  line-height: 1;
-  text-transform: uppercase;
+  @include type-tag-date;
 }
 
 // .card-title itself has no rule: it's a real <h3> (the section title above
-// is an h2, via UiSectionHeader) so it inherits family/weight/size/
+// is an h1, via UiSectionHeader) so it inherits family/weight/size/
 // line-height straight from typo.scss, and color from UiCard (see note
 // above) — nothing left to set here.
 
 .v-block-concerts-event__card-description {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 1;
+  @include type-body-large-bold;
 
   :deep(p) {
     margin: 0;
@@ -214,11 +206,8 @@ function palette(index: number) {
   position: relative;
 }
 
+// Real <p> — font comes from typo.scss's bare tag rule (Inter body-large).
 .v-block-concerts-event__empty {
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 24px;
-  line-height: 1;
   opacity: 0.7;
 }
 </style>

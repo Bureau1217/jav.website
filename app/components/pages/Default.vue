@@ -3,7 +3,10 @@
     <header
       v-if="page.headerTitle || page.title"
       class="v-page-default__header u-flex u-flex--column u-flex--justify-end u-gutter-x"
-      :class="page.headerImage ? 'v-page-default__header--hero' : 'v-page-default__header--plain'"
+      :class="[
+        page.headerImage ? 'v-page-default__header--hero' : 'v-page-default__header--plain',
+        !page.headerImage && !hasThemeOverride ? 'v-page-default__header--plain-no-bg' : ''
+      ]"
     >
       <div v-if="page.headerImage" class="v-page-default__header-media" aria-hidden="true">
         <img
@@ -16,8 +19,8 @@
       <div class="v-page-default__header-content u-flex u-flex--column u-gap-xl">
         <div class="v-page-default__header-row u-flex u-flex--align-end u-flex--justify-between u-gap-xl u-flex--wrap">
           <div class="v-page-default__header-titles u-flex u-flex--column u-gap-m">
-            <h1>{{ page.headerTitle || page.title }}</h1>
-            <p v-if="page.headerSubtitle">{{ page.headerSubtitle }}</p>
+            <div class="h-hero">{{ page.headerTitle || page.title }}</div>
+            <div v-if="page.headerSubtitle" class="v-page-default__header-subtitle">{{ page.headerSubtitle }}</div>
           </div>
           <!-- Fixed quick links to the two flagship programs — homepage hero
                only, per design (not a generic hero-page feature). -->
@@ -34,7 +37,7 @@
     <!-- Homepage only — the scrolling banner isn't shown on any other page. -->
     <TheScrollingBanner v-if="isHome" />
 
-    <Blocks :blocks="page.blocks" :images="page.images" :files="page.files" />
+    <Blocks :blocks="page.blocks" :images="page.images" :files="page.files" :page-modified="page.pageModified" />
   </article>
 </template>
 
@@ -57,6 +60,18 @@ withDefaults(defineProps<{
 }>(), {
   isHome: false
 })
+
+// Per-page color theme (--color-page-accent / --color-page-on-accent) is
+// applied at the app root, not here — see usePageTheme.ts and app.vue —
+// so it also reaches TheFooter, a sibling of this component.
+
+// Whether a page-specific theme override is active (Formation Pro, Pratique
+// Amateur, or an event page) — null means we're on the default theme (home
+// or any other untouched page). Used below to give the "plain" (no image)
+// header variant a flat, colorless treatment on default-theme pages only —
+// themed pages keep their solid colored panel exactly as before.
+const pageTheme = usePageTheme()
+const hasThemeOverride = computed(() => pageTheme.value !== null)
 </script>
 
 <style lang="scss" scoped>
@@ -69,7 +84,13 @@ withDefaults(defineProps<{
   z-index: 1;
   margin-top: -88px; // pulled up by the header's own height (~88px)
   padding-block: var(--spacing-4xl);
-  color: var(--color-brand-01);
+  // Follows the page you're on, same as every other block now (see
+  // usePageTheme.ts) — mint by default, e.g. white on Formation Pro. Safe
+  // for the photo "hero" variant too: only a page with headerImage AND its
+  // own theme override would ever see this move off mint, and no such page
+  // exists yet — the homepage (the only headerImage page today) has no
+  // override, so its hero stays mint exactly as before.
+  color: var(--color-page-on-accent);
   overflow: hidden;
 
   @media (max-width: $breakpoint-mobile) {
@@ -88,14 +109,25 @@ withDefaults(defineProps<{
 }
 
 // Plain variant — no image (Figma: "Training Nav" header used on every
-// other default page): flat brand-06 panel, shorter, two dividers.
+// other default page): flat brand-02 panel, shorter, two dividers.
 .v-page-default__header--plain {
-  min-height: 600px;
-  background: var(--color-brand-06);
+  min-height: 700px;
+  background: var(--color-page-accent);
 
   @media (max-width: $breakpoint-mobile) {
     min-height: 420px;
   }
+}
+
+// Default-theme variant of "plain" — no colored panel at all, just the
+// page's cream background straight through. Only applied when there's no
+// active page theme override (see hasThemeOverride above), so Formation Pro
+// / Pratique Amateur are untouched. Text switches from the light
+// --color-page-on-accent (mint, meant to sit on a colored panel) to the dark
+// --color-page-accent itself, since it's now reading directly on cream.
+.v-page-default__header--plain-no-bg {
+  background: none;
+  color: var(--color-page-accent);
 }
 
 .v-page-default__header-media {
@@ -115,7 +147,10 @@ withDefaults(defineProps<{
 .v-page-default__header-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(41, 15, 161, 0) 0%, var(--color-brand-04) 100%);
+  // Fades to the page's own theme color (see usePageTheme.ts) instead of a
+  // fixed indigo — green by default, e.g. maroon if a themed page ever uses
+  // the photo "hero" variant instead of the flat panel.
+  background: linear-gradient(to bottom, transparent 0%, var(--color-page-accent) 100%);
 }
 
 .v-page-default__header-content {
@@ -129,20 +164,23 @@ withDefaults(defineProps<{
   }
 }
 
-.v-page-default__header h1 {
+.v-page-default__header .h-hero {
   @media (max-width: $breakpoint-mobile) {
-    font-size: var(--spacing-4xl);
+    font-size: 48px;
   }
 }
 
-.v-page-default__header p {
+// A <div>, not a <p> — this subtitle is styled differently from the
+// site-wide p default (Inter body-large, see typo.scss) on purpose, so it
+// uses a non-canonical tag instead of overriding a <p>'s own style.
+.v-page-default__header-subtitle {
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: var(--spacing-4xl); // 48px
+  font-size: 48px;
   line-height: 1.04;
 
   @media (max-width: $breakpoint-mobile) {
-    font-size: var(--spacing-xl);
+    font-size: 24px;
   }
 }
 

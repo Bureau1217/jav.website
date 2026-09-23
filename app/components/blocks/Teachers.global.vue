@@ -1,5 +1,5 @@
 <template>
-  <div class="v-block-teachers-wrap u-flex u-flex--column u-gap-xl u-gutter">
+  <div class="v-block-teachers-wrap u-flex u-flex--column u-gap-xl u-gutter-x">
     <UiSectionHeader
       v-if="block.content.title"
       :title="block.content.title"
@@ -12,7 +12,7 @@
         :key="teacher.id"
         bordered
         background="var(--color-brand-00)"
-        color="var(--color-brand-04)"
+        color="var(--color-page-accent)"
         class="v-block-teachers__item u-flex"
       >
         <div class="v-block-teachers__media">
@@ -48,6 +48,11 @@ defineProps<{
 </script>
 
 <style lang="scss" scoped>
+
+.v-block-teachers-wrap {
+  padding-block: var(--block-spacing);
+  color: var(--color-page-accent);
+}
 
 .v-block-teachers {
   display: grid;
@@ -105,10 +110,7 @@ defineProps<{
 // bio doesn't blow out the card's height — matches every other block's
 // pattern of not touching real CMS content, just how much of it shows.
 .v-block-teachers__bio {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 1.3;
+  @include type-body-large-bold;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;

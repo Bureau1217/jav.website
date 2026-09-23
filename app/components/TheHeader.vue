@@ -90,16 +90,19 @@ watch(isOpen, (open) => {
   transition: background-color 0.2s ease;
 }
 
+// Follows the page you're on (see usePageTheme.ts), same as every themed
+// block — only while open, since the closed bar is transparent and floats
+// over the page's own hero, which always stays mint regardless of theme.
 .v-header.is-open .v-header__bar {
-  background: var(--color-brand-04);
+  background: var(--color-page-accent);
 }
 
 // Real exported logo mark, applied as a mask so it can be recolored via
 // `color` — same trick the Figma source file uses — instead of shipping
-// two separate colored SVGs for the bar vs. the open-nav state. Always
-// brand-01 now that the header is transparent everywhere; kept as its own
-// rule (rather than folded into .is-open) in case the two states ever need
-// to diverge again.
+// two separate colored SVGs for the bar vs. the open-nav state. Mint while
+// closed (floating over the page's hero, which always stays mint), but
+// switches to the page's "on accent" color once the menu opens onto its
+// own accent-colored background.
 .v-header__logo-mark {
   display: block;
   width: 60px;
@@ -109,6 +112,10 @@ watch(isOpen, (open) => {
   -webkit-mask: url('/img/LOGO-JAV_HEADER.svg') center / contain no-repeat;
   mask: url('/img/LOGO-JAV_HEADER.svg') center / contain no-repeat;
   transition: color 0.2s ease;
+}
+
+.v-header.is-open .v-header__logo-mark {
+  color: var(--color-page-on-accent);
 }
 
 .v-header__burger {
@@ -145,7 +152,7 @@ watch(isOpen, (open) => {
 
   &.is-open {
     span {
-      background: var(--color-brand-01);
+      background: var(--color-page-on-accent);
     }
 
     span:nth-child(1) {
@@ -166,8 +173,8 @@ watch(isOpen, (open) => {
 
 .v-header__nav {
   flex: 1;
-  background: var(--color-brand-04);
-  color: var(--color-brand-01);
+  background: var(--color-page-accent);
+  color: var(--color-page-on-accent);
   padding-block: var(--spacing-4xl);
   overflow-y: auto;
 
@@ -177,20 +184,17 @@ watch(isOpen, (open) => {
 }
 
 .v-header__nav-link {
+  @include type-nav-menu;
   text-decoration: none;
-  color: var(--color-brand-01);
-  font-family: var(--font-heading);
-  font-weight: 900;
-  font-size: var(--spacing-2xl); // 32px
-  line-height: 1;
+  color: var(--color-page-on-accent);
 
   @media (max-width: $breakpoint-mobile) {
-    font-size: var(--spacing-xl);
+    font-size: 24px;
   }
 }
 
 .v-header__nav-arrow {
-  font-size: var(--spacing-2xl);
+  font-size: 32px;
 }
 
 .v-header-nav-enter-active,

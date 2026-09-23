@@ -1,18 +1,18 @@
 <template>
   <UiCard
     v-if="isVisible && nextEvent"
-    background="var(--color-brand-01)"
-    color="var(--color-brand-04)"
+    background="var(--color-page-accent)"
+    color="var(--color-page-on-accent)"
     class="v-floating-promo u-flex u-flex--column u-flex--align-end u-gap-2xl"
   >
     <div class="v-floating-promo__header u-flex u-flex--align-center u-flex--justify-between">
-      <p class="v-floating-promo__tag">Bientôt</p>
+      <span class="v-floating-promo__tag">Bientôt</span>
       <button type="button" class="v-floating-promo__close" aria-label="Fermer" @click="isVisible = false">
         ✕
       </button>
     </div>
-    <h3 class="v-floating-promo__title">{{ nextEvent.title }}</h3>
-    <UiButton :to="nextEvent.ticketLink || `/agenda/${nextEvent.id}`" class="v-floating-promo__cta">
+    <div class="v-floating-promo__title">{{ nextEvent.title }}</div>
+    <UiButton :to="nextEvent.ticketLink || `/${nextEvent.id}`" class="v-floating-promo__cta">
       En savoir plus
     </UiButton>
   </UiCard>
@@ -51,36 +51,32 @@ const isVisible = ref(true)
 }
 
 .v-floating-promo__tag {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: var(--spacing-m); // 16px
-  line-height: 1;
-  text-transform: uppercase;
+  @include type-tag-date;
 }
 
 .v-floating-promo__close {
   background: transparent;
   border: none;
-  color: var(--color-brand-04);
+  color: var(--color-page-on-accent);
   font-size: 20px;
   line-height: 1;
   cursor: pointer;
   padding: var(--spacing-xs);
 }
 
-// Real <h3> (event title), kept at a smaller custom size than the default
+// A <div>, not a <h3> — kept at a smaller custom size than h3's canonical
 // heading-3 (40px) so it fits the floating card.
 .v-floating-promo__title {
   font-family: var(--font-heading);
   font-weight: 900;
-  font-size: var(--spacing-2xl); // 32px
+  font-size: 32px;
   line-height: 1;
   width: 100%;
   white-space: pre-line;
 }
 
 .v-floating-promo__cta {
-  --button-color: var(--color-brand-04);
-  --button-text: var(--color-brand-01);
+  --button-color: var(--color-page-on-accent);
+  --button-text: var(--color-page-accent);
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="ui-section-header u-flex u-flex--align-center u-flex--justify-between u-gap-xl u-flex--wrap">
-    <h2 v-if="title" v-html="title" />
+    <h1 v-if="title" class="ui-section-header__title" v-html="title" />
     <UiButton
       v-if="linkTo"
       variant="secondary"
@@ -33,5 +33,12 @@ withDefaults(defineProps<{
 <style lang="scss" scoped>
 .ui-section-header {
   width: 100%;
+}
+
+// Only the title is capped — not the whole row — so the optional link
+// button (e.g. "Voir tout l'agenda") stays pinned to the right via the
+// row's own justify-between, instead of being dragged in alongside it.
+.ui-section-header__title {
+  max-width: 400px; // same cap as Citation/Text blocks, keeps the title from stretching edge-to-edge
 }
 </style>

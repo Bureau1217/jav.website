@@ -134,6 +134,29 @@
   }
 }
 
+// Top-level block vertical padding (space between blocks on a page) — every
+// standard block's padding-block reads this instead of the raw spacing
+// token, so a container that needs less breathing room (e.g. a Section
+// block's nested/accordion content) can override it locally and every
+// block rendered inside picks it up automatically, no per-block edits.
+:root {
+  --block-spacing: var(--spacing-7xl);
+}
+
+@media (max-width: $breakpoint-mobile) {
+  :root {
+    --block-spacing: var(--spacing-4xl);
+  }
+}
+
+// "Titre de la section" (h1) font-size — same idea as --block-spacing
+// above: typo.scss's h1 rule reads this instead of a hardcoded value, so a
+// container like a Section block's nested/accordion content can shrink
+// every title rendered inside it without touching each block.
+:root {
+  --heading-1-size: 52px;
+}
+
 .u-gutter {
   padding: var(--gutter);
 }

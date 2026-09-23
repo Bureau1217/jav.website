@@ -4,7 +4,8 @@ export const FILE_SELECT = {
   alt: 'file.alt',
   width: true,
   height: true,
-  extension: true
+  extension: true,
+  modified: 'file.modified("Y-m-d")'
 }
 
 const TEACHER_SELECT = {
@@ -48,6 +49,25 @@ export const pageSelect = {
     query: 'page.files',
     select: FILE_SELECT
   },
+  // Page content's last-saved date — see KqlPage.pageModified.
+  pageModified: 'page.modified("Y-m-d")',
+  // "event_item" template fields (site/blueprints/pages/event_item.yml) —
+  // harmless no-op (empty/null) on every other template, same pattern as
+  // itemImages/resourceFiles below. See PagesEventItem.vue.
+  eventDate: 'page.event_date.toDate("Y-m-d")',
+  eventTime: 'page.event_time',
+  eventType: 'page.event_type',
+  eventLocation: 'page.event_location',
+  eventTicketLink: 'page.event_ticket_link',
+  eventDescription: 'page.event_description',
+  eventCover: {
+    query: 'page.event_cover.toFile',
+    select: FILE_SELECT
+  },
+  eventGallery: {
+    query: 'page.event_gallery.toFiles',
+    select: FILE_SELECT
+  },
   blocks: {
     query: 'page.content.content.toBlocks',
     select: {
@@ -72,6 +92,38 @@ export const pageSelect = {
           image: {
             query: 'structureItem.image.toFile',
             select: FILE_SELECT
+          }
+        }
+      },
+      // Same idea as itemImages above, but for the Resources block's
+      // "resource_file" field — resolved from anywhere on the site (not
+      // just this page's own files) so a PDF's real modified date always
+      // comes through, wherever it's stored. Harmless no-op on blocks
+      // without a "resource_items" field.
+      resourceFiles: {
+        query: 'block.content.resource_items.toStructure',
+        select: {
+          file: {
+            query: 'structureItem.resource_file.toFile',
+            select: FILE_SELECT
+          }
+        }
+      },
+      // Same idea again for the Partners block's nested "cards.partners"
+      // structure — each partner's "logo" resolved from anywhere on the
+      // site, not just this page's own images. Harmless no-op on blocks
+      // without a "cards" field.
+      partnerLogos: {
+        query: 'block.content.cards.toStructure',
+        select: {
+          partners: {
+            query: 'structureItem.partners.toStructure',
+            select: {
+              logo: {
+                query: 'structureItem.logo.toFile',
+                select: FILE_SELECT
+              }
+            }
           }
         }
       }

@@ -1,0 +1,156 @@
+// Typography mixins — the single source of truth for every text style used
+// across the site, named after the type scale in Figma. Auto-injected into
+// every component via Nuxt's vite scss additionalData (see nuxt.config.ts),
+// same as _params.scss — reference any mixin directly with `@include`, no
+// @use/@import needed. The actual bare-tag rules (h1/h2/h3/p) that apply
+// these mixins globally live in typo.scss instead, since a real CSS
+// selector (rather than a mixin definition) injected into every component
+// would get scoped locally to each one instead of applying site-wide.
+//
+// Font sizes here are literal px values, deliberately NOT the --spacing-*
+// variables — those are for padding/gaps/margins, a different scale with a
+// different purpose. Reusing them for font-size would mean a padding tweak
+// could silently resize text somewhere else on the site.
+//
+// Font usage rule: GT Maru (--font-heading) is reserved for the page's own
+// big title (the Hero/page-header <h1>, "display") and for <h3>
+// ("heading-3") — everywhere else on the site is Inter (--font-body),
+// including <h2>, which looks like a "heading" semantically but is styled
+// with the Inter scale, not GT Maru.
+
+// ---- Heading (GT Maru) ----------------------------------------------
+
+@mixin type-display {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 96px;
+  line-height: 0.95; // 96/95
+}
+
+@mixin type-heading-1 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 64px;
+  line-height: 1; // 64/64
+}
+
+@mixin type-heading-2 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 78px;
+  line-height: 1; // 48/48
+}
+
+@mixin type-heading-3 {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 40px;
+  line-height: 1; // 40/Auto
+}
+
+// ---- Text (Inter) ------------------------------------------------------
+
+// "Heading" in name only — visually part of the Inter/Text scale, used for
+// every section/card/block title that isn't the page's own <h1> or <h3>.
+@mixin type-text-heading-1 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1; // 32/Auto
+}
+
+@mixin type-text-heading-2 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 52px;
+  line-height: 1; // 32/Auto
+}
+
+@mixin type-text-heading-3 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 1;
+}
+
+@mixin type-subtitle {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 48px;
+  line-height: 104px; // 48/104 — deliberately loose, for pull-quotes
+}
+
+@mixin type-body {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.4; // 16/Auto
+}
+
+@mixin type-body-large {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1.3; // 24/Auto
+}
+
+@mixin type-body-large-bold {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.3; // 24/Auto
+}
+
+@mixin type-label {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 1; // 16/Auto
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+@mixin type-stat {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 40px;
+  line-height: 1; // 40/Auto
+}
+
+@mixin type-emphasis {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1; // 32/Auto
+}
+
+// ---- Tag / Nav / Accent / Emoji ----------------------------------------
+
+@mixin type-tag-date {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1; // 16/Auto
+  text-transform: uppercase;
+}
+
+@mixin type-nav-menu {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1; // 32/Auto
+}
+
+@mixin type-accent-italic {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 40px;
+  line-height: 47px; // 40/47
+}
+
+@mixin type-emoji {
+  font-family: var(--font-emoji);
+  font-size: 48px;
+  line-height: 1; // 48/Auto
+}

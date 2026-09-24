@@ -23,14 +23,14 @@
         </article>
       </div>
 
-      <div class="v-block-formations__banner u-flex u-flex--align-center u-gap-xl">
+      <NuxtLink to="/a-propos" class="v-block-formations__banner u-flex u-flex--align-center u-gap-xl">
         <span class="v-block-formations__banner-icon u-flex u-flex--align-center u-flex--justify-center" aria-hidden="true">🤝</span>
         <div class="v-block-formations__banner-text u-flex u-flex--column">
           <span class="v-block-formations__banner-title">JAV</span>
           <span class="v-block-formations__banner-subtitle">Un espace pour tous·tes</span>
         </div>
         <span class="v-block-formations__banner-arrow" aria-hidden="true">↗</span>
-      </div>
+      </NuxtLink>
     </div>
   </div>
 </template>
@@ -141,6 +141,12 @@ const cards = computed(() =>
   color: var(--color-page-accent);
   border-radius: var(--radius-s);
   padding: var(--spacing-m);
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.85;
+  }
 }
 
 .v-block-formations__banner-icon {

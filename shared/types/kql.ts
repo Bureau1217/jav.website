@@ -7,6 +7,11 @@ export interface KqlFile {
   extension: string
   /** "Y-m-d" — used by the Resources block to show "MIS À JOUR EN <mois> <année>" automatically, without editors having to fill a date field. */
   modified: string | null
+  /** Kirby's own file UUID (no "file://" prefix) — a block's raw file
+   * reference (e.g. Resources' "resource_file") is always stored as
+   * "file://<uuid>", never a filename, so resolveKqlFile.ts needs this to
+   * match files nested inside a Section/Array-layout block. */
+  uuid: string | null
 }
 
 export interface KqlTeacher {

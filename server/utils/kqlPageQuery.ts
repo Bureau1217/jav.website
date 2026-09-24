@@ -5,7 +5,13 @@ export const FILE_SELECT = {
   width: true,
   height: true,
   extension: true,
-  modified: 'file.modified("Y-m-d")'
+  modified: 'file.modified("Y-m-d")',
+  // Needed to resolve files nested inside a Section/Array-layout block's
+  // own JSON-encoded content (see resolveKqlFile.ts) — those blocks never
+  // go through this file's own itemImages/resourceFiles/partnerLogos
+  // KQL resolution, so the front-end has to match a raw "file://<uuid>"
+  // reference against the page's files itself, by uuid, not by filename.
+  uuid: 'file.uuid'
 }
 
 const TEACHER_SELECT = {

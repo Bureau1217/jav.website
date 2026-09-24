@@ -4,8 +4,9 @@
     <UiDivider variant="thin" />
     <template v-for="(item, index) in block.content.resource_items" :key="index">
       <a
-        :href="item.resource_type === 'file' ? (fileUrl(item, index) ?? '#') : item.resource_link"
-        target="_blank"
+        :href="resourceHref(item, index)"
+        :download="resourceDownload(item, index)"
+        :target="item.resource_type === 'file' ? undefined : '_blank'"
         rel="noopener"
         class="v-block-resources__item u-flex u-flex--align-center u-flex--justify-between u-gap-xl"
       >
@@ -51,6 +52,23 @@ function resolvedFile(item: { resource_file?: string[] }, index: number): KqlFil
 
 function fileUrl(item: { resource_file?: string[] }, index: number): string | null {
   return resolvedFile(item, index)?.url ?? null
+}
+
+// Falls back to "#" when a "Fichier PDF" item's file hasn't resolved (e.g.
+// picked but the page not yet saved/published in the Panel) — but NEVER
+// pairs that with the `download` attribute below, otherwise the browser
+// downloads the current page itself as an .html file instead of doing
+// nothing, which is worse than a dead link.
+function resourceHref(item: { resource_type?: string; resource_file?: string[]; resource_link?: string }, index: number): string {
+  if (item.resource_type !== 'file') return item.resource_link || '#'
+  return fileUrl(item, index) ?? '#'
+}
+
+function resourceDownload(item: { resource_type?: string; resource_file?: string[]; resource_title?: string }, index: number): string | true | undefined {
+  if (item.resource_type !== 'file') return undefined
+  const url = fileUrl(item, index)
+  if (!url) return undefined
+  return item.resource_title || true
 }
 
 function typeLabel(item: { resource_type?: string }): string {

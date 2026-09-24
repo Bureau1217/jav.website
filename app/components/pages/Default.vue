@@ -159,8 +159,11 @@ const hasThemeOverride = computed(() => pageTheme.value !== null)
 
 .v-page-default__header-actions {
   .ui-button {
-    --button-color: var(--color-brand-01);
-    --button-text: var(--color-brand-04);
+    // Follows the page's own theme (see usePageTheme.ts) instead of a fixed
+    // mint/indigo pair — same on-accent/accent inversion used by the
+    // scrolling banner right below it.
+    --button-color: var(--color-page-on-accent);
+    --button-text: var(--color-page-accent);
   }
 }
 

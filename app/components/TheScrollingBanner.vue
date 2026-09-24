@@ -9,7 +9,8 @@
         :class="{ 'is-static': !link }"
       >
         <span>{{ message }}</span>
-        <span aria-hidden="true">💥</span>
+        <img v-if="image" :src="image.url" :alt="image.alt ?? ''" class="v-scrolling-banner__icon">
+        <span v-else aria-hidden="true">💥</span>
       </NuxtLink>
     </div>
   </div>
@@ -23,6 +24,9 @@ const { data: siteInfo } = await useSiteInfo()
 const band = computed(() => siteInfo.value?.bands[0] ?? null)
 const message = computed(() => band.value?.text ?? '')
 const link = computed(() => band.value?.link ?? '')
+// "Image du bandeau" (Panel: Informations globales > Bandeau infos) — falls
+// back to the fixed 💥 emoji when no image is set for this band item.
+const image = computed(() => band.value?.image ?? null)
 </script>
 
 <style lang="scss" scoped>
@@ -60,6 +64,13 @@ const link = computed(() => band.value?.link ?? '')
   &.is-static {
     pointer-events: none;
   }
+}
+
+.v-scrolling-banner__icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 @keyframes v-scrolling-banner-scroll {

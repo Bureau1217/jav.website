@@ -46,8 +46,32 @@ function tagList(card: { tags?: string }): string[] {
 
 .v-block-cartels {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  // auto-fit (not auto-fill) so a row with fewer cards than the column cap
+  // still stretches to fill the full width — a plain `repeat(4, 1fr)` left
+  // an empty 4th track (and matching dead space) whenever there were only
+  // 2 or 3 cards. The minmax lower bound is set to whichever is bigger,
+  // 280px or 1/N of the row, so auto-fit can never pack in more than N
+  // columns even on a very wide screen, while still collapsing any empty
+  // trailing tracks so real cards grow to fill the row.
+  // The lower bound accounts for the gap explicitly (100% minus the gaps a
+  // full row would have, divided by the column count) — a plain percentage
+  // like 25% looks right but, once gaps are subtracted from the actual
+  // available space, is just barely too wide for N columns to fit, so
+  // auto-fit silently drops to N-1 well before the cap is reached.
+  grid-template-columns: repeat(auto-fit, minmax(max(280px, calc((100% - 3 * var(--spacing-xl)) / 4)), 1fr));
   gap: var(--spacing-xl);
+
+  @media (max-width: 1400px) {
+    grid-template-columns: repeat(auto-fit, minmax(max(260px, calc((100% - 2 * var(--spacing-xl)) / 3)), 1fr));
+  }
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(auto-fit, minmax(max(240px, calc((100% - var(--spacing-xl)) / 2)), 1fr));
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    grid-template-columns: 1fr;
+  }
 }
 
 // Filled pink by default; hovering swaps it to the bordered-cream look

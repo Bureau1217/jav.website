@@ -28,7 +28,7 @@
           <li v-for="item in navItems" :key="item.href" class="v-header__nav-item u-flex u-flex--column u-gap-m">
             <NuxtLink :to="item.href" class="v-header__nav-link u-flex u-flex--align-center u-flex--justify-between" @click="isOpen = false">
               {{ item.label }}
-              <span class="v-header__nav-arrow" aria-hidden="true">↗</span>
+              <span class="v-header__nav-arrow" aria-hidden="true" />
             </NuxtLink>
             <UiDivider />
           </li>
@@ -193,8 +193,25 @@ watch(isOpen, (open) => {
   }
 }
 
+// The "go to this page" arrow — a mask-image (not <img>) so it inherits
+// the link's own color via currentColor, same pattern as Resources.global.vue's
+// download/link icons. Not to be confused with those download/external-link
+// icons (Iconstelechargement.svg / Iconsliensvg.svg) — this is purely the
+// internal-navigation "next" indicator (see also Gallery.global.vue's
+// prev/next carousel arrows, which use the same inconsnext.svg).
 .v-header__nav-arrow {
-  font-size: 32px;
+  flex-shrink: 0;
+  width: 32px;
+  height: 24px;
+  background-color: currentColor;
+  mask-image: url('/img/inconsnext.svg');
+  -webkit-mask-image: url('/img/inconsnext.svg');
+  mask-size: contain;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: center;
 }
 
 .v-header-nav-enter-active,

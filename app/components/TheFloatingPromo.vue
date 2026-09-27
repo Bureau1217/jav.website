@@ -22,9 +22,13 @@
 import type { KqlEvent } from '~~/shared/types/kql'
 
 // Shows the soonest upcoming event from the site-wide "évènements"
-// collection (server/api/events.get.ts already sorts by date ascending).
+// collection (server/api/events.get.ts sorts by date ascending, but that
+// list includes past events too — see ConcertsEvent.global.vue's Archives
+// section — so the first truly upcoming one has to be picked here, not
+// just events[0]).
 const { data: events } = await useFetch<KqlEvent[]>('/api/events')
-const nextEvent = computed(() => events.value?.[0] ?? null)
+const todayIso = new Date().toISOString().slice(0, 10)
+const nextEvent = computed(() => events.value?.find(event => event.date && event.date >= todayIso) ?? null)
 
 const isVisible = ref(true)
 </script>

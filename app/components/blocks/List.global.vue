@@ -1,30 +1,49 @@
 <template>
   <div class="v-block-list-wrap u-flex u-flex--column u-gap-xl u-gutter-x">
     <UiSectionHeader v-if="block.content.title" :title="block.content.title" />
-    <ul class="v-block-list">
-      <li v-for="(item, index) in block.content.items" :key="index" class="v-block-list__item u-flex u-flex--column u-gap-s">
-        <img v-if="imageUrl(item)" :src="imageUrl(item)!" :alt="item.title ?? ''">
-        <h3 v-if="item.title">{{ item.title }}</h3>
-        <div v-if="item.text" v-html="item.text" />
-        <UiButton v-if="item.link" variant="secondary" :to="item.link" class="v-block-list__link">
-          {{ item.link }}
-        </UiButton>
-      </li>
-    </ul>
+    <UiDivider variant="thin" />
+    <template v-for="(item, index) in block.content.items" :key="index">
+      <component
+        :is="item.link ? 'a' : 'div'"
+        :href="item.link || undefined"
+        :target="item.link ? '_blank' : undefined"
+        :rel="item.link ? 'noopener' : undefined"
+        class="v-block-list__item u-flex u-flex--column u-gap-l"
+      >
+        <div class="u-flex u-flex--align-center u-gap-m">
+          <UiTag v-if="item.title">{{ item.title }}</UiTag>
+          <span v-if="updatedLabel" class="v-block-list__date">{{ updatedLabel }}</span>
+        </div>
+        <div v-if="item.text" class="u-flex u-flex--align-center u-flex--justify-between u-gap-xl">
+          <div class="v-block-list__text" v-html="item.text" />
+          <span v-if="item.link" class="v-block-list__arrow" aria-hidden="true" />
+        </div>
+      </component>
+      <UiDivider variant="thin" />
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { KqlBlock, KqlFile } from '~~/shared/types/kql'
+import type { KqlBlock } from '~~/shared/types/kql'
 
 const props = defineProps<{
   block: KqlBlock
-  images?: KqlFile[]
+  /** Page content's last-saved date ("Y-m-d") — items have no date field of
+   * their own (see jav.cms/site/blueprints/blocks/list.yml), so every item
+   * shows the same "mois année", same pattern as Resources.global.vue's
+   * "MIS À JOUR EN ..." for link items. */
+  pageModified?: string | null
 }>()
 
-function imageUrl(item: { image?: string[] }): string | null {
-  return resolveKqlFile(item.image, props.images)?.url ?? null
-}
+const updatedLabel = computed(() => {
+  if (!props.pageModified) return ''
+  const date = new Date(props.pageModified)
+  if (Number.isNaN(date.getTime())) return ''
+  return new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' })
+    .format(date)
+    .toUpperCase()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -33,26 +52,43 @@ function imageUrl(item: { image?: string[] }): string | null {
   padding-block: var(--block-spacing);
 }
 
-.v-block-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--spacing-xl);
-}
-
 .v-block-list__item {
-  img {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-    border-radius: var(--radius-m);
-  }
+  text-decoration: none;
+  color: inherit;
+}
 
-  div {
-    @include type-body;
+.v-block-list__date {
+  @include type-tag-date;
+  flex-shrink: 0;
+}
+
+.v-block-list__text {
+  @include type-emphasis;
+
+  :deep(p) {
+    margin: 0;
   }
 }
 
-.v-block-list__link {
-  align-self: flex-start;
+.v-block-list__item:hover .v-block-list__text {
+  text-decoration: underline;
+}
+
+// Same icon/pattern as TheHeader.vue's nav-arrow and Gallery.global.vue's
+// carousel arrows (mask-image so it inherits currentColor) — not to be
+// confused with Resources.global.vue's download/external-link icons.
+.v-block-list__arrow {
+  flex-shrink: 0;
+  width: 40px;
+  height: 30px;
+  background-color: currentColor;
+  mask-image: url('/img/inconsnext.svg');
+  -webkit-mask-image: url('/img/inconsnext.svg');
+  mask-size: contain;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: center;
 }
 </style>

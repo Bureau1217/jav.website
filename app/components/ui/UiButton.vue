@@ -49,17 +49,27 @@ const tag = computed(() => (isLink.value ? resolveComponent('NuxtLink') : 'butto
   cursor: pointer;
   text-decoration: none;
   transition: opacity 0.15s ease;
-
-  &:hover {
-    opacity: 0.85;
-  }
 }
 
+// Every filled/pill button site-wide (event cards, CTA blocks, forms...)
+// switches to outline-only on hover — fond transparent, texte/bordure dans
+// --button-color — same treatment as ConcertsEvent.global.vue's "En savoir
+// plus" originally had, now centralized here so it applies everywhere. A
+// transparent border is reserved at all times (not just on :hover) so the
+// button doesn't change size when that border becomes visible on hover.
 .ui-button--primary {
   background: var(--button-color);
   color: var(--button-text);
+  border: 2px solid transparent;
   border-radius: var(--radius-pill);
   padding: var(--spacing-xs) var(--spacing-m);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    background: transparent;
+    color: var(--button-color);
+    border-color: var(--button-color);
+  }
 }
 
 .ui-button--secondary {
@@ -69,6 +79,10 @@ const tag = computed(() => (isLink.value ? resolveComponent('NuxtLink') : 'butto
   border-bottom: 2px solid currentColor;
   padding-bottom: 2px;
   border-radius: 0;
+
+  &:hover {
+    opacity: 0.85;
+  }
 }
 
 .ui-button--primary.ui-button--m {

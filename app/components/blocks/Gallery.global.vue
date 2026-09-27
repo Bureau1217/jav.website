@@ -20,13 +20,11 @@
       <div v-if="current" class="v-block-gallery__carousel u-flex u-flex--align-center u-gap-xl">
         <button
           type="button"
-          class="v-block-gallery__arrow"
+          class="v-block-gallery__arrow v-block-gallery__arrow--prev"
           :disabled="items.length < 2"
           aria-label="Élément précédent"
           @click="prev"
-        >
-          ‹
-        </button>
+        />
 
         <div class="v-block-gallery__content u-flex u-flex--column u-flex--align-center u-gap-s">
           <div v-if="current.title" class="v-block-gallery__title">{{ current.title }}</div>
@@ -35,13 +33,11 @@
 
         <button
           type="button"
-          class="v-block-gallery__arrow"
+          class="v-block-gallery__arrow v-block-gallery__arrow--next"
           :disabled="items.length < 2"
           aria-label="Élément suivant"
           @click="next"
-        >
-          ›
-        </button>
+        />
       </div>
 
       <div v-if="items.length > 1" class="v-block-gallery__dots u-flex u-gap-s">
@@ -155,19 +151,36 @@ function next() {
   width: 100%;
 }
 
+// Prev/next carousel controls — a mask-image (not <img>) so the icon
+// inherits --color-brand-00 via currentColor, same pattern as
+// TheHeader.vue's nav-arrow and Resources.global.vue's download/link icons.
+// "prev" is just "next" mirrored horizontally, not a separate asset.
 .v-block-gallery__arrow {
   flex-shrink: 0;
+  width: 32px;
+  height: 24px;
   background: transparent;
+  background-color: currentColor;
   border: none;
   color: var(--color-brand-00);
-  font-size: 40px;
-  line-height: 1;
   cursor: pointer;
+  mask-image: url('/img/inconsnext.svg');
+  -webkit-mask-image: url('/img/inconsnext.svg');
+  mask-size: contain;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: center;
 
   &:disabled {
     opacity: 0.3;
     cursor: default;
   }
+}
+
+.v-block-gallery__arrow--prev {
+  transform: scaleX(-1);
 }
 
 .v-block-gallery__content {

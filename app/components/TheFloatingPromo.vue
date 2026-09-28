@@ -12,7 +12,7 @@
       </button>
     </div>
     <div class="v-floating-promo__title">{{ nextEvent.title }}</div>
-    <UiButton :to="nextEvent.ticketLink || `/${nextEvent.id}`" class="v-floating-promo__cta">
+    <UiButton :to="`/${nextEvent.id}`" class="v-floating-promo__cta">
       En savoir plus
     </UiButton>
   </UiCard>

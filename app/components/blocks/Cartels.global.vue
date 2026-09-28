@@ -104,7 +104,51 @@ function tagList(card: { tags?: string }): string[] {
   padding-top: var(--spacing-xl);
 
   :deep(p) {
-    margin: 0;
+    margin: 0 0 var(--spacing-m);
+  }
+
+  :deep(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  :deep(strong) {
+    font-weight: 800;
+  }
+
+  :deep(em) {
+    font-style: italic;
+  }
+
+  // Global reset (typo.scss) strips every list's own marker/indent — restore
+  // both here, same treatment as Text.global.vue, so the writer field's
+  // bullet/numbered lists (and their nested, Tab-indented sub-lists)
+  // actually render as such.
+  :deep(ul),
+  :deep(ol) {
+    margin: 0 0 var(--spacing-m);
+    padding-left: var(--spacing-xl);
+  }
+
+  :deep(ul) {
+    list-style: disc;
+  }
+
+  :deep(ol) {
+    list-style: decimal;
+  }
+
+  :deep(li) {
+    margin-bottom: var(--spacing-xs);
+
+    ul,
+    ol {
+      margin-top: var(--spacing-xs);
+      margin-bottom: 0;
+    }
+  }
+
+  :deep(li:last-child) {
+    margin-bottom: 0;
   }
 }
 </style>

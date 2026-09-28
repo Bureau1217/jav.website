@@ -12,6 +12,10 @@ export interface KqlFile {
    * "file://<uuid>", never a filename, so resolveKqlFile.ts needs this to
    * match files nested inside a Section/Array-layout block. */
   uuid: string | null
+  /** Panel's built-in focal-point picker — "x% y%" (e.g. "76% 30%") or ""
+   * when never set. Apply as CSS object-position wherever this image uses
+   * object-fit: cover — see app/utils/objectPosition.ts. */
+  focus: string | null
 }
 
 export interface KqlTeacher {
@@ -49,6 +53,12 @@ export interface KqlBlock {
    * field points to a real file — picked from anywhere on the site, not
    * just this page's own images. */
   partnerLogos: Array<{ partners: Array<{ logo: KqlFile | null }> }>
+  /** Qualiopi block's own "logo" field resolved to a real file — picked from
+   * anywhere on the site, not just this page's own images. */
+  qualiopiLogo: KqlFile | null
+  /** Qualiopi block's own "pdf" field resolved to a real file, same idea as
+   * qualiopiLogo. The "Consultable ici" button downloads this file. */
+  qualiopiPdf: KqlFile | null
 }
 
 export interface KqlEvent {

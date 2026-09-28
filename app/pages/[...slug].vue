@@ -28,9 +28,21 @@ console.log(page)
 // it depends on the event's position in the site-wide events list, not a
 // fixed per-page id (see app/utils/eventPalette.ts).
 const pageTheme = usePageTheme()
+// See useFooterLeadBars.ts — true only when this page's last visible block
+// is a Qualiopi block, so the footer picks up its two "signature" bars.
+const footerLeadBars = useFooterLeadBars()
 watch(() => page.value, (p) => {
-  if (!p || p.template === 'event_item') return
+  if (!p) return
+  if (p.template === 'event_item') {
+    // PagesEventItem.vue owns its own theme (see above); it never renders a
+    // Qualiopi block either, so always clear a leftover true from whichever
+    // default page was visited previously.
+    footerLeadBars.value = false
+    return
+  }
   pageTheme.value = pageThemeFor(p.id)
+  const visibleBlocks = (p.blocks ?? []).filter(block => !block.isHidden)
+  footerLeadBars.value = visibleBlocks.at(-1)?.type === 'qualiopi'
 }, { immediate: true })
 
 // if (error.value) {

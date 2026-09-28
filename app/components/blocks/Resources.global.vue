@@ -3,25 +3,27 @@
     <UiSectionHeader v-if="block.content.title" :title="block.content.title" />
     <UiDivider variant="thin" />
     <template v-for="(item, index) in block.content.resource_items" :key="index">
-      <a
-        :href="resourceHref(item, index)"
-        :download="resourceDownload(item, index)"
-        :target="item.resource_type === 'file' ? undefined : '_blank'"
-        rel="noopener"
+      <component
+        :is="hasType(item) ? 'a' : 'div'"
+        :href="hasType(item) ? resourceHref(item, index) : undefined"
+        :download="hasType(item) ? resourceDownload(item, index) : undefined"
+        :target="hasType(item) && item.resource_type !== 'file' ? '_blank' : undefined"
+        :rel="hasType(item) ? 'noopener' : undefined"
         class="v-block-resources__item u-flex u-flex--align-center u-flex--justify-between u-gap-xl"
       >
         <span class="v-block-resources__text u-flex u-flex--column u-gap-xs">
-          <span class="v-block-resources__meta">
+          <span v-if="hasType(item)" class="v-block-resources__meta">
             {{ typeLabel(item) }}<template v-if="updatedLabel(item, index)"> · MIS À JOUR EN {{ updatedLabel(item, index) }}</template>
           </span>
           <span class="v-block-resources__title">{{ item.resource_title }}</span>
         </span>
         <span
+          v-if="hasType(item)"
           class="v-block-resources__icon"
           :class="item.resource_type === 'file' ? 'v-block-resources__icon--download' : 'v-block-resources__icon--link'"
           aria-hidden="true"
         />
-      </a>
+      </component>
       <UiDivider variant="thin" />
     </template>
   </div>
@@ -69,6 +71,14 @@ function resourceDownload(item: { resource_type?: string; resource_file?: string
   const url = fileUrl(item, index)
   if (!url) return undefined
   return item.resource_title || true
+}
+
+// "Type de ressource" left empty in the Panel (no default option, see
+// resources.yml) — renders just the title, no meta line, no arrow/download
+// icon, and not a link at all, rather than silently falling back to the
+// "Dossier" (link) treatment.
+function hasType(item: { resource_type?: string }): boolean {
+  return item.resource_type === 'file' || item.resource_type === 'link'
 }
 
 function typeLabel(item: { resource_type?: string }): string {

@@ -16,7 +16,12 @@
         class="v-block-teachers__item u-flex"
       >
         <div class="v-block-teachers__media">
-          <img v-if="teacher.photo" :src="teacher.photo.url" :alt="teacher.photo.alt ?? teacher.title">
+          <img
+            v-if="teacher.photo"
+            :src="teacher.photo.url"
+            :alt="teacher.photo.alt ?? teacher.title"
+            :style="{ objectPosition: objectPosition(teacher.photo) }"
+          >
         </div>
         <div class="v-block-teachers__text u-flex u-flex--column u-flex--justify-center u-gap-s">
           <div class="u-flex u-flex--column u-gap-xs">

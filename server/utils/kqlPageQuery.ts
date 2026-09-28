@@ -11,7 +11,13 @@ export const FILE_SELECT = {
   // go through this file's own itemImages/resourceFiles/partnerLogos
   // KQL resolution, so the front-end has to match a raw "file://<uuid>"
   // reference against the page's files itself, by uuid, not by filename.
-  uuid: 'file.uuid'
+  uuid: 'file.uuid',
+  // The Panel's built-in focal-point picker (file details view, no
+  // blueprint field needed) — returns e.g. "76% 30%", or "" when never
+  // set. Applied as CSS object-position wherever an image uses
+  // object-fit: cover, so a cropped image keeps its subject in frame
+  // instead of always centering — see app/utils/objectPosition.ts.
+  focus: 'file.focus'
 }
 
 const TEACHER_SELECT = {
@@ -22,7 +28,7 @@ const TEACHER_SELECT = {
   bio: 'page.teachers_bio',
   photo: {
     query: 'page.teachers_photo.toFile',
-    select: { url: true, alt: 'file.alt' }
+    select: { url: true, alt: 'file.alt', focus: 'file.focus' }
   }
 }
 
@@ -119,6 +125,19 @@ export const pageSelect = {
       // structure — each partner's "logo" resolved from anywhere on the
       // site, not just this page's own images. Harmless no-op on blocks
       // without a "cards" field.
+      // Qualiopi block's own "logo" and "pdf" fields — each a single file
+      // picked from anywhere on the site (not just this page's own
+      // files/images), same idea as itemImages/resourceFiles/partnerLogos
+      // above, but resolved directly (no nested "items"/"resource_items"/
+      // "cards" structure to iterate). Harmless no-op on every other block.
+      qualiopiLogo: {
+        query: 'block.content.logo.toFile',
+        select: FILE_SELECT
+      },
+      qualiopiPdf: {
+        query: 'block.content.pdf.toFile',
+        select: FILE_SELECT
+      },
       partnerLogos: {
         query: 'block.content.cards.toStructure',
         select: {

@@ -10,13 +10,13 @@
       <div class="v-block-formations__cards">
         <article v-for="card in cards" :key="card.uri" class="v-block-formations__card u-flex u-flex--column">
           <div class="v-block-formations__card-image">
-            <img v-if="card.image" :src="card.image" :alt="card.imageAlt">
+            <img v-if="card.image" :src="card.image" :alt="card.imageAlt" :style="{ objectPosition: card.imagePosition }">
           </div>
-          <div class="v-block-formations__card-content u-flex u-flex--align-end u-flex--justify-between u-gap-m">
-            <div class="v-block-formations__card-text u-flex u-flex--column u-gap-xs">
+          <div class="v-block-formations__card-content u-flex u-flex--column u-flex--justify-between u-gap-xl">
+            <div class="v-block-formations__card-text u-flex u-flex--column u-gap-m">
               <span class="v-block-formations__card-tag">{{ card.tag }}</span>
               <div class="v-block-formations__card-title">{{ card.title }}</div>
-              <div class="v-block-formations__card-description">{{ card.description }}</div>
+              <div class="v-block-formations__card-description" v-html="card.description" />
             </div>
             <UiButton :to="card.href" class="v-block-formations__card-cta">Découvrir</UiButton>
           </div>
@@ -38,32 +38,38 @@
 <script setup lang="ts">
 import type { KqlBlock, KqlFormationCard } from '~~/shared/types/kql'
 
-defineProps<{
+const props = defineProps<{
   block: KqlBlock
 }>()
 
-// The "formations" Kirby block has no editable fields — it's a fixed
-// anchor that always highlights the "Formation Professionnelle" and
-// "Pratique Amateur" pages (see server/api/formations.get.ts). Tag, title
-// and image come from those pages' own header fields; the description is
-// still hardcoded here until a matching CMS field exists for it.
-const DESCRIPTIONS: Record<string, string> = {
-  'formation-professionnelle': 'Centre reconnu par le Ministère de la Culture, certifié Qualiopi, qui forme depuis 30 ans aux métiers du jazz et des musiques actuelles.',
-  'pratique-amateur': 'Cours individuels par instrument et ateliers de pratique collective (jazz, pop/rock, funk, voix...), pour tous âges et tous niveaux.'
+// "formations" is a fixed anchor that always highlights the "Formation
+// Professionnelle" and "Pratique Amateur" pages (see
+// server/api/formations.get.ts) — only the cover image comes from those
+// pages themselves (there's no other sensible source for it). Everything
+// else shown on each card (tag, title, description) is fully editable here
+// instead, as its own object field per space — see
+// jav.cms/site/blueprints/blocks/formations.yml.
+const CARD_FIELDS: Record<string, string> = {
+  'formation-professionnelle': 'formation_professionnelle',
+  'pratique-amateur': 'pratique_amateur'
 }
 
 const { data: formationPages } = await useFetch<KqlFormationCard[]>('/api/formations')
 
 const cards = computed(() =>
-  (formationPages.value ?? []).map(page => ({
-    uri: page.uri,
-    tag: page.headerTitle ?? '',
-    title: page.headerSubtitle ?? '',
-    description: DESCRIPTIONS[page.uri] ?? '',
-    image: page.previewImage?.url ?? '',
-    imageAlt: page.previewImage?.alt ?? '',
-    href: `/${page.uri}`
-  }))
+  (formationPages.value ?? []).map((page) => {
+    const fields = props.block.content[CARD_FIELDS[page.uri]] ?? {}
+    return {
+      uri: page.uri,
+      tag: fields.tag ?? '',
+      title: fields.title ?? '',
+      description: fields.description ?? '',
+      image: page.previewImage?.url ?? '',
+      imageAlt: page.previewImage?.alt ?? '',
+      imagePosition: objectPosition(page.previewImage),
+      href: `/${page.uri}`
+    }
+  })
 )
 </script>
 
@@ -130,10 +136,19 @@ const cards = computed(() =>
 
 .v-block-formations__card-description {
   @include type-body-large-bold;
+
+  :deep(p) {
+    margin: 0;
+  }
 }
 
 .v-block-formations__card-cta {
   flex-shrink: 0;
+  align-self: flex-end;
+  // Text in the page's own accent (green on the homepage) instead of
+  // UiButton's site-wide default indigo — background stays the default
+  // cream (see main.scss's --button-color).
+  --button-text: var(--color-page-accent);
 }
 
 .v-block-formations__banner {

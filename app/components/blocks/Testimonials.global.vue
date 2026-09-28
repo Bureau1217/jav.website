@@ -11,7 +11,12 @@
       >
         <UiDivider :color="cardColor(index)" />
         <div class="v-block-testimonials__card-background">
-          <img v-if="item.photo" :src="item.photo.url" :alt="item.photo.alt ?? ''">
+          <img
+            v-if="item.photo"
+            :src="item.photo.url"
+            :alt="item.photo.alt ?? ''"
+            :style="{ objectPosition: objectPosition(item.photo) }"
+          >
         </div>
         <UiDivider :color="cardColor(index)" />
         <div class="v-block-testimonials__card-content u-flex u-flex--column u-gap-xs">

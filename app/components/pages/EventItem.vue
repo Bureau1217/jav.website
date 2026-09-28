@@ -14,6 +14,7 @@
         :src="page.eventCover.url"
         :alt="page.eventCover.alt ?? ''"
         class="v-page-event__header-image"
+        :style="{ objectPosition: objectPosition(page.eventCover) }"
       >
     </header>
 
@@ -44,7 +45,7 @@
               :key="image.filename"
               class="v-page-event__gallery-tile"
             >
-              <img :src="image.url" :alt="image.alt ?? ''">
+              <img :src="image.url" :alt="image.alt ?? ''" :style="{ objectPosition: objectPosition(image) }">
               <div v-if="index === 2 && extraGalleryCount > 0" class="v-page-event__gallery-more">
                 +{{ extraGalleryCount }}
               </div>
@@ -125,8 +126,9 @@ const bodyColorStyle = computed(() => {
 })
 
 const TYPE_LABELS: Record<string, string> = {
-  concert: 'Concert',
-  'table-ronde': 'Table ronde'
+  concert: 'Concerts',
+  'table-ronde': 'Rencontres',
+  autre: 'Autres événements'
 }
 
 function typeLabelFor(type: string | null) {

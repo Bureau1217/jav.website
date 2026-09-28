@@ -12,7 +12,12 @@
           :rel="current.link ? 'noopener' : undefined"
           class="v-block-gallery__image-wrap"
         >
-          <img :src="currentImage.url" :alt="currentImage.alt ?? current.title ?? ''" class="v-block-gallery__image">
+          <img
+            :src="currentImage.url"
+            :alt="currentImage.alt ?? current.title ?? ''"
+            class="v-block-gallery__image"
+            :style="{ objectPosition: objectPosition(currentImage) }"
+          >
           <img v-if="current.link" src="/img/play-button.svg" alt="" aria-hidden="true" class="v-block-gallery__play">
         </component>
       </div>

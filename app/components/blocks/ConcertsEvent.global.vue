@@ -2,30 +2,158 @@
   <div class="v-block-concerts-event u-flex u-flex--column u-gap-xl u-gutter-x">
     <UiSectionHeader
       :title="block.content.title || 'Concerts &amp; Évènements'"
-      link-to="/agenda"
-      link-text="Voir tout l'agenda"
+      :link-to="isAgenda ? undefined : '/agenda'"
+      :link-text="isAgenda ? undefined : 'Voir tous les évènements'"
       class="v-block-concerts-event__header"
     />
 
-    <div v-if="displayedEvents.length" class="v-block-concerts-event__grid">
-      <UiCard
-        v-for="{ event, index } in displayedEvents"
-        :key="event.id"
-        :background="palette(index).bg"
-        :color="palette(index).accent"
-        class="v-block-concerts-event__card u-flex"
-        :class="[
-          index === 0 ? 'v-block-concerts-event__card--featured' : 'u-flex--column',
-          index !== 0 && event.cover ? 'v-block-concerts-event__card--photo' : ''
-        ]"
+    <!-- Type filter — /agenda only (the homepage teaser is a fixed, capped
+         preview, not a browsable list). Filters the featured event and the
+         grid below together, since both come from the same filtered list —
+         see filteredUpcomingEvents. -->
+    <div v-if="isAgenda" class="v-block-concerts-event__filters u-flex u-gap-s u-flex--wrap">
+      <button
+        v-for="filter in TYPE_FILTERS"
+        :key="filter.value"
+        type="button"
+        class="v-block-concerts-event__filter"
+        :class="{ 'is-active': selectedType === filter.value }"
+        @click="selectedType = filter.value"
       >
-        <!-- "À la une" (first) event: kept as its own wide, 2-column split
-             — text pane left, photo pane right — regardless of the plain
-             photo-card treatment other events with a cover get below. -->
-        <template v-if="index === 0">
-          <div class="v-block-concerts-event__card-content u-flex u-flex--column u-flex--justify-between u-gap-xl">
+        {{ filter.label }}
+      </button>
+    </div>
+
+    <template v-if="displayedEvents.length">
+      <!-- Agenda (and anywhere else this block might sit besides the home
+           teaser): the "à la une" event stands on its own full-width row,
+           2-column split — text pane left, photo pane right — separate
+           from the grid of other cards below. On the HOME teaser instead,
+           it's simply the first item OF that grid, spanning its first 2
+           columns (see gridEvents/.grid--with-featured below) — the
+           homepage keeps a single unified block instead of two stacked
+           sections. -->
+      <UiCard
+        v-if="!isHome && featuredEvent"
+        :background="palette(featuredEvent.index).bg"
+        :color="palette(featuredEvent.index).accent"
+        class="v-block-concerts-event__card v-block-concerts-event__card--featured u-flex"
+      >
+        <div class="v-block-concerts-event__card-content u-flex u-flex--column u-flex--justify-between u-gap-xl">
+          <div class="v-block-concerts-event__card-header u-flex u-flex--column u-gap-s">
+            <span class="v-block-concerts-event__card-date">{{ formatEventDate(featuredEvent.event.date) }}</span>
+            <h3 class="v-block-concerts-event__card-title">{{ featuredEvent.event.title }}</h3>
+          </div>
+          <div class="v-block-concerts-event__card-footer u-flex u-flex--column u-gap-s">
+            <UiDivider />
+            <div class="v-block-concerts-event__card-description">{{ truncateText(featuredEvent.event.description) }}</div>
+            <UiDivider />
+          </div>
+        </div>
+        <div class="v-block-concerts-event__card-media u-flex u-flex--column u-flex--align-end u-flex--justify-between">
+          <img v-if="featuredEvent.event.cover" :src="featuredEvent.event.cover.url" :alt="featuredEvent.event.cover.alt ?? ''" :style="{ objectPosition: objectPosition(featuredEvent.event.cover) }">
+          <div v-if="featuredEvent.event.cover" class="v-block-concerts-event__card-gradient" :style="{ background: photoGradient(featuredEvent.index) }" />
+          <UiTag v-if="featuredEvent.event.type" :color="palette(featuredEvent.index).bg" class="v-block-concerts-event__card-filter">
+            {{ eventTypeLabel(featuredEvent.event.type) }}
+          </UiTag>
+          <UiButton
+            :to="`/${featuredEvent.event.id}`"
+            class="v-block-concerts-event__card-cta"
+            :style="{ '--button-color': palette(featuredEvent.index).bg, '--button-text': palette(featuredEvent.index).accent }"
+          >
+            En savoir plus
+          </UiButton>
+        </div>
+      </UiCard>
+
+      <div
+        v-if="gridEvents.length"
+        class="v-block-concerts-event__grid"
+        :class="{ 'v-block-concerts-event__grid--with-featured': isHome }"
+      >
+        <UiCard
+          v-for="({ event, index }, position) in gridEvents"
+          :key="event.id"
+          :background="palette(index).bg"
+          :color="palette(index).accent"
+          class="v-block-concerts-event__card u-flex"
+          :class="[
+            isHome && position === 0 ? 'v-block-concerts-event__card--featured' : 'u-flex--column',
+            !isHome && event.cover ? 'v-block-concerts-event__card--photo' : ''
+          ]"
+        >
+          <!-- HOME's own featured slot (first card of the grid) — same
+               2-column split as the standalone agenda version above. -->
+          <template v-if="isHome && position === 0">
+            <div class="v-block-concerts-event__card-content u-flex u-flex--column u-flex--justify-between u-gap-xl">
+              <div class="v-block-concerts-event__card-header u-flex u-flex--column u-gap-s">
+                <span class="v-block-concerts-event__card-date">{{ formatEventDate(event.date) }}</span>
+                <h3 class="v-block-concerts-event__card-title">{{ event.title }}</h3>
+              </div>
+              <div class="v-block-concerts-event__card-footer u-flex u-flex--column u-gap-s">
+                <UiDivider />
+                <div class="v-block-concerts-event__card-description">{{ truncateText(event.description) }}</div>
+                <UiDivider />
+              </div>
+            </div>
+            <div class="v-block-concerts-event__card-media u-flex u-flex--column u-flex--align-end u-flex--justify-between">
+              <img v-if="event.cover" :src="event.cover.url" :alt="event.cover.alt ?? ''" :style="{ objectPosition: objectPosition(event.cover) }">
+              <div v-if="event.cover" class="v-block-concerts-event__card-gradient" :style="{ background: photoGradient(index) }" />
+              <UiTag v-if="event.type" :color="palette(index).bg" class="v-block-concerts-event__card-filter">
+                {{ eventTypeLabel(event.type) }}
+              </UiTag>
+              <UiButton
+                :to="`/${event.id}`"
+                class="v-block-concerts-event__card-cta"
+                :style="{ '--button-color': palette(index).bg, '--button-text': palette(index).accent }"
+              >
+                En savoir plus
+              </UiButton>
+            </div>
+          </template>
+
+          <!-- Agenda only: event with a cover image gets the full-bleed
+               photo-on-top treatment (date + tag overlaid on it), colored
+               panel below with title/description/CTA. Never shown on the
+               home teaser — every non-featured card there is plain text,
+               regardless of whether the event has a cover. -->
+          <template v-else-if="!isHome && event.cover">
+            <div class="v-block-concerts-event__card-photo">
+              <img :src="event.cover.url" :alt="event.cover.alt ?? ''" :style="{ objectPosition: objectPosition(event.cover) }">
+              <div class="v-block-concerts-event__card-gradient" :style="{ background: photoGradient(index) }" />
+              <span class="v-block-concerts-event__card-photo-date">{{ formatEventDate(event.date) }}</span>
+              <UiTag v-if="event.type" class="v-block-concerts-event__card-photo-tag">
+                {{ eventTypeLabel(event.type) }}
+              </UiTag>
+            </div>
+            <div class="v-block-concerts-event__card-panel u-flex u-flex--column u-flex--justify-between u-gap-s">
+              <div class="u-flex u-flex--column u-gap-s">
+                <h3 class="v-block-concerts-event__card-title">{{ event.title }}</h3>
+                <div class="v-block-concerts-event__card-description">{{ truncateText(event.description) }}</div>
+              </div>
+              <div class="u-flex u-flex--column u-gap-s">
+                <UiDivider />
+                <UiButton
+                  :to="`/${event.id}`"
+                  class="v-block-concerts-event__card-cta"
+                  :style="{ '--button-color': palette(index).accent, '--button-text': palette(index).bg }"
+                >
+                  En savoir plus
+                </UiButton>
+              </div>
+            </div>
+          </template>
+
+          <!-- Plain text card — every home card but the featured one, or
+               any agenda card without a cover image. -->
+          <div v-else class="v-block-concerts-event__card-content u-flex u-flex--column u-flex--justify-between u-gap-xl">
             <div class="v-block-concerts-event__card-header u-flex u-flex--column u-gap-s">
-              <span class="v-block-concerts-event__card-date">{{ formatEventDate(event.date) }}</span>
+              <div class="u-flex u-flex--align-start u-flex--justify-between u-gap-s">
+                <span class="v-block-concerts-event__card-date">{{ formatEventDate(event.date) }}</span>
+                <UiTag v-if="event.type" class="v-block-concerts-event__card-tag">
+                  {{ eventTypeLabel(event.type) }}
+                </UiTag>
+              </div>
               <h3 class="v-block-concerts-event__card-title">{{ event.title }}</h3>
             </div>
             <div class="v-block-concerts-event__card-footer u-flex u-flex--column u-gap-s">
@@ -33,79 +161,17 @@
               <div class="v-block-concerts-event__card-description">{{ truncateText(event.description) }}</div>
               <UiDivider />
             </div>
-          </div>
-          <div class="v-block-concerts-event__card-media u-flex u-flex--column u-flex--align-end u-flex--justify-between">
-            <img v-if="event.cover" :src="event.cover.url" :alt="event.cover.alt ?? ''">
-            <div v-if="event.cover" class="v-block-concerts-event__card-gradient" :style="{ background: photoGradient(index) }" />
-            <UiTag v-if="event.type" :color="palette(index).bg" class="v-block-concerts-event__card-filter">
-              {{ eventTypeLabel(event.type) }}
-            </UiTag>
             <UiButton
-              :to="event.ticketLink || `/${event.id}`"
+              :to="`/${event.id}`"
               class="v-block-concerts-event__card-cta"
-              :style="{ '--button-color': palette(index).bg, '--button-text': palette(index).accent }"
+              :style="{ '--button-color': palette(index).accent, '--button-text': palette(index).bg }"
             >
               En savoir plus
             </UiButton>
           </div>
-        </template>
-
-        <!-- Any other event with a cover image: full-bleed photo on top
-             (date + tag overlaid on it), colored panel below with
-             title/description/CTA. -->
-        <template v-else-if="event.cover">
-          <div class="v-block-concerts-event__card-photo">
-            <img :src="event.cover.url" :alt="event.cover.alt ?? ''">
-            <div class="v-block-concerts-event__card-gradient" :style="{ background: photoGradient(index) }" />
-            <span class="v-block-concerts-event__card-photo-date">{{ formatEventDate(event.date) }}</span>
-            <UiTag v-if="event.type" class="v-block-concerts-event__card-photo-tag">
-              {{ eventTypeLabel(event.type) }}
-            </UiTag>
-          </div>
-          <div class="v-block-concerts-event__card-panel u-flex u-flex--column u-flex--justify-between u-gap-s">
-            <div class="u-flex u-flex--column u-gap-s">
-              <h3 class="v-block-concerts-event__card-title">{{ event.title }}</h3>
-              <div class="v-block-concerts-event__card-description">{{ truncateText(event.description) }}</div>
-            </div>
-            <div class="u-flex u-flex--column u-gap-s">
-              <UiDivider />
-              <UiButton
-                :to="event.ticketLink || `/${event.id}`"
-                class="v-block-concerts-event__card-cta"
-                :style="{ '--button-color': palette(index).accent, '--button-text': palette(index).bg }"
-              >
-                En savoir plus
-              </UiButton>
-            </div>
-          </div>
-        </template>
-
-        <!-- No cover image: plain text card. -->
-        <div v-else class="v-block-concerts-event__card-content u-flex u-flex--column u-flex--justify-between u-gap-xl">
-          <div class="v-block-concerts-event__card-header u-flex u-flex--column u-gap-s">
-            <div class="u-flex u-flex--align-start u-flex--justify-between u-gap-s">
-              <span class="v-block-concerts-event__card-date">{{ formatEventDate(event.date) }}</span>
-              <UiTag v-if="event.type" class="v-block-concerts-event__card-tag">
-                {{ eventTypeLabel(event.type) }}
-              </UiTag>
-            </div>
-            <h3 class="v-block-concerts-event__card-title">{{ event.title }}</h3>
-          </div>
-          <div class="v-block-concerts-event__card-footer u-flex u-flex--column u-gap-s">
-            <UiDivider />
-            <div class="v-block-concerts-event__card-description">{{ truncateText(event.description) }}</div>
-            <UiDivider />
-          </div>
-          <UiButton
-            :to="event.ticketLink || `/${event.id}`"
-            class="v-block-concerts-event__card-cta"
-            :style="{ '--button-color': palette(index).accent, '--button-text': palette(index).bg }"
-          >
-            En savoir plus
-          </UiButton>
-        </div>
-      </UiCard>
-    </div>
+        </UiCard>
+      </div>
+    </template>
     <p v-else class="v-block-concerts-event__empty">Aucun évènement à venir pour le moment.</p>
 
     <!-- Archives — /agenda only, auto-built from past events (no Panel
@@ -182,7 +248,26 @@ const withIndex = computed(() => (events.value ?? []).map((event, index) => ({ e
 // block, since there's nothing for an editor to configure here.
 const upcomingEvents = computed(() => withIndex.value.filter(({ event }) => !isPast(event.date)))
 
-const displayedEvents = computed(() => isHome.value ? upcomingEvents.value.slice(0, 5) : upcomingEvents.value)
+// Type filter — /agenda only (see template). "all" is the default/initial
+// selection, matching every event; any other value matches event.type
+// exactly (see TYPE_FILTERS below, keyed the same as TYPE_LABELS/the CMS's
+// own event_type select options).
+const selectedType = ref('all')
+const filteredUpcomingEvents = computed(() =>
+  selectedType.value === 'all'
+    ? upcomingEvents.value
+    : upcomingEvents.value.filter(({ event }) => event.type === selectedType.value)
+)
+
+const displayedEvents = computed(() => isHome.value ? upcomingEvents.value.slice(0, 5) : filteredUpcomingEvents.value)
+
+// The "à la une" event renders as its own full-width row, separate from the
+// grid of the other cards below, everywhere EXCEPT the home teaser — there
+// it's simply the grid's own first item instead (spanning its first 2
+// columns, see .grid--with-featured) — see template.
+const featuredEvent = computed(() => displayedEvents.value[0] ?? null)
+const restEvents = computed(() => displayedEvents.value.slice(1))
+const gridEvents = computed(() => isHome.value ? displayedEvents.value : restEvents.value)
 
 const archivedEvents = computed(() =>
   withIndex.value
@@ -208,13 +293,22 @@ const archiveEventsForYear = computed(() =>
 )
 
 const TYPE_LABELS: Record<string, string> = {
-  concert: 'Concert',
-  'table-ronde': 'Table ronde'
+  concert: 'Concerts',
+  'table-ronde': 'Rencontres',
+  autre: 'Autres événements'
 }
 
 function eventTypeLabel(type: string) {
   return TYPE_LABELS[type] ?? type
 }
+
+// Filter pills — /agenda only (see template). "all" first, then every
+// event_type option in the same order as the CMS's own select (see
+// jav.cms/site/blueprints/pages/event_item.yml).
+const TYPE_FILTERS = [
+  { value: 'all', label: 'All' },
+  ...Object.entries(TYPE_LABELS).map(([value, label]) => ({ value, label }))
+]
 
 function formatEventDate(date: string | null) {
   if (!date) return ''
@@ -264,13 +358,34 @@ function photoGradient(index: number) {
   @media (max-width: 700px) {
     grid-template-columns: 1fr;
   }
+}
 
-  .v-block-concerts-event__card:first-child {
-    grid-column: span 2;
+// Home teaser only — the featured event is this grid's own first item
+// instead of a separate row above it (see gridEvents/isHome in the
+// template), spanning its first 2 columns.
+.v-block-concerts-event__grid--with-featured .v-block-concerts-event__card:first-child {
+  grid-column: span 2;
 
-    @media (max-width: 700px) {
-      grid-column: span 1;
-    }
+  @media (max-width: 700px) {
+    grid-column: span 1;
+  }
+}
+
+// Same pill visual language as .archive-year below — "All" starts active by
+// default (selectedType's own initial value).
+.v-block-concerts-event__filter {
+  @include type-label;
+  background: transparent;
+  color: var(--color-page-accent);
+  border: 2px solid var(--color-page-accent);
+  border-radius: var(--radius-pill, 999px);
+  padding: var(--spacing-xs) var(--spacing-l);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &.is-active {
+    background: var(--color-page-accent);
+    color: var(--color-brand-00);
   }
 }
 

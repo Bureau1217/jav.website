@@ -1,5 +1,13 @@
 <template>
   <footer class="v-footer u-flex u-flex--column u-gutter-x">
+    <!-- Only when the page above ends on a Qualiopi block (see
+         useFooterLeadBars.ts) — continues that block's own two bars so the
+         footer doesn't just abut it with no transition. -->
+    <div v-if="footerLeadBars" class="v-footer__lead-bars u-flex u-flex--column u-gap-xs">
+      <UiDivider variant="thick" />
+      <UiDivider variant="thick" />
+    </div>
+
     <div class="v-footer__brand u-flex u-flex--column u-gap-xl">
       <UiDivider />
       <div class="v-footer__brand-row u-flex u-flex--align-center u-flex--justify-between u-gap-xl u-flex--wrap">
@@ -80,6 +88,8 @@ const footerPages = computed(() => {
   return picked.length ? picked : (navPages.value ?? [])
 })
 
+const footerLeadBars = useFooterLeadBars()
+
 const address = computed(() => siteInfo.value?.address ?? null)
 const addressLine1 = computed(() => {
   const a = address.value
@@ -108,6 +118,10 @@ const addressLine2 = computed(() => {
     padding-block: var(--spacing-4xl) var(--spacing-3xl);
     gap: var(--spacing-4xl);
   }
+}
+
+.v-footer__lead-bars {
+  width: 100%;
 }
 
 // Same mask trick as the header — bakes the exported logo mark into a

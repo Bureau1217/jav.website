@@ -13,6 +13,7 @@
           :src="page.headerImage.url"
           :alt="page.headerImage.alt ?? ''"
           class="v-page-default__header-image"
+          :style="{ objectPosition: objectPosition(page.headerImage) }"
         >
         <div class="v-page-default__header-gradient" />
       </div>

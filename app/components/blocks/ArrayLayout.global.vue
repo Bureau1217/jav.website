@@ -24,6 +24,22 @@
             <span v-if="item.content.title" class="v-block-array-layout__cta-title" v-html="item.content.title" />
           </UiCard>
 
+          <!-- "puce" items have their own title/text/tags fields (see
+               Puce.global.vue) — a plain item.content.text dump (the
+               fallback below) would silently drop the title and tags. -->
+          <template v-else-if="item.type === 'puce'">
+            <h3 v-if="column.columns_title && itemIndex === 0" v-html="column.columns_title" />
+            <UiDivider v-if="column.columns_title && itemIndex === 0" variant="thin" />
+            <div class="v-block-array-layout__puce u-flex u-flex--column u-gap-xs">
+              <div v-if="puceTags(item).length" class="u-flex u-gap-xs u-flex--wrap">
+                <UiTag v-for="tag in puceTags(item)" :key="tag">{{ tag }}</UiTag>
+              </div>
+              <div v-if="item.content.title" class="v-block-array-layout__item" v-html="item.content.title" />
+              <div v-if="item.content.text" class="v-block-array-layout__puce-text" v-html="item.content.text" />
+            </div>
+            <UiDivider variant="thin" />
+          </template>
+
           <template v-else>
             <h3 v-if="column.columns_title && itemIndex === 0" v-html="column.columns_title" />
             <UiDivider v-if="column.columns_title && itemIndex === 0" variant="thin" />
@@ -47,6 +63,14 @@ defineProps<{
 
 function columnItems(column: { columns_content?: string }) {
   return parseKqlBlocks(column.columns_content)
+}
+
+// Kirby's "tags" field stores its raw value as a single comma-separated
+// string (not an array) — split it into pills, same as Puce.global.vue.
+function puceTags(item: { content?: { tags?: string } }): string[] {
+  const raw = item.content?.tags
+  if (!raw) return []
+  return String(raw).split(',').map((tag: string) => tag.trim()).filter(Boolean)
 }
 </script>
 
@@ -83,6 +107,56 @@ function columnItems(column: { columns_content?: string }) {
 // canonical style (type-body-large, weight 500).
 .v-block-array-layout__item {
   @include type-body-large-bold;
+}
+
+.v-block-array-layout__puce-text {
+  @include type-body-large;
+
+  :deep(p) {
+    margin: 0 0 var(--spacing-m);
+  }
+
+  :deep(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  :deep(strong) {
+    font-weight: 800;
+  }
+
+  :deep(em) {
+    font-style: italic;
+  }
+
+  // Global reset (typo.scss) strips every list's own marker/indent —
+  // restore both here, same treatment as Puce.global.vue.
+  :deep(ul),
+  :deep(ol) {
+    margin: 0 0 var(--spacing-m);
+    padding-left: var(--spacing-xl);
+  }
+
+  :deep(ul) {
+    list-style: disc;
+  }
+
+  :deep(ol) {
+    list-style: decimal;
+  }
+
+  :deep(li) {
+    margin-bottom: var(--spacing-xs);
+
+    ul,
+    ol {
+      margin-top: var(--spacing-xs);
+      margin-bottom: 0;
+    }
+  }
+
+  :deep(li:last-child) {
+    margin-bottom: 0;
+  }
 }
 
 .v-block-array-layout__cta {

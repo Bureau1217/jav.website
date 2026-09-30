@@ -41,15 +41,20 @@
 <script setup lang="ts">
 const isOpen = ref(false)
 
-// Menu généré depuis les pages Kirby réelles (template "default"), dans
-// l'ordre de l'arbre du Panel — plus de liste en dur à maintenir à la main.
-// L'accueil est exclu ici : le logo pointe déjà vers "/".
+// Same editor-curated list + order as the footer ("Informations globales"
+// -> "Pages", see TheFooter.vue) — not the auto-generated Panel-tree order
+// used before. Falls back to that auto list only while the "Pages" field is
+// still empty, same reasoning as the footer. L'accueil est exclu ici même
+// si l'éditeur l'a inclus dans la liste : le logo pointe déjà vers "/".
+const { data: siteInfo } = await useSiteInfo()
 const { data: navPages } = await useSiteNav()
-const navItems = computed(() =>
-  (navPages.value ?? [])
+const navItems = computed(() => {
+  const picked = siteInfo.value?.footerPages ?? []
+  const pages = picked.length ? picked : (navPages.value ?? [])
+  return pages
     .filter(page => page.uri !== '')
     .map(page => ({ label: page.title, href: `/${page.uri}` }))
-)
+})
 
 watch(isOpen, (open) => {
   if (import.meta.client) {

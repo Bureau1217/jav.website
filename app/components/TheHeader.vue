@@ -52,8 +52,14 @@ const navItems = computed(() => {
   const picked = siteInfo.value?.footerPages ?? []
   const pages = picked.length ? picked : (navPages.value ?? [])
   return pages
-    .filter(page => page.uri !== '')
-    .map(page => ({ label: page.title, href: `/${page.uri}` }))
+    // The auto-generated list (navPages) never includes the home page in
+    // the first place (site.children excludes it, see /api/nav) — but the
+    // editor-curated list (footerPages) can, since it's a manual page
+    // picker, and the home page's own "uri" there isn't the usual empty
+    // string (it's a real page picked like any other, unlike /api/nav's
+    // query), so it has to be excluded by id instead.
+    .filter(page => page.id !== 'home')
+    .map(page => ({ label: page.title, href: `/${page.uri === 'home' ? '' : page.uri}` }))
 })
 
 watch(isOpen, (open) => {

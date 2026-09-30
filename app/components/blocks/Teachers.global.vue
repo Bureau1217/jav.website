@@ -30,13 +30,22 @@
           </div>
           <div v-if="teacher.bio" class="v-block-teachers__bio" v-html="teacher.bio" />
           <UiButton
-            v-if="teacher.website"
-            :to="teacher.website"
+                  v-if="teacher.teachers_website"
+            :to="teacher.teachers_website"
             external
             variant="secondary"
             class="v-block-teachers__site"
           >
             Site ↗
+          </UiButton>
+          <UiButton
+                  v-if="teacher.teachers_email"
+                  :to="teacher.teachers_email"
+                  external
+                  variant="secondary"
+                  class="v-block-teachers__site"
+          >
+            e-mail
           </UiButton>
         </div>
       </UiCard>
@@ -61,7 +70,7 @@ defineProps<{
 
 .v-block-teachers {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--spacing-xl);
 
   @media (max-width: 1100px) {

@@ -25,6 +25,8 @@ export interface KqlTeacher {
   /** Personal/professional website — shown as an "En savoir plus"-style
    * link on the Teachers block card when set. */
   website: string | null
+  teachers_email: string | null
+  teachers_website: string | null
   /** Full bio (writer field) — the Teachers block shows it truncated as a
    * short quote; the individual teacher page (not yet built) would show it
    * in full. */

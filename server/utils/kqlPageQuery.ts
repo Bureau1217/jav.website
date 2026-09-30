@@ -25,6 +25,8 @@ const TEACHER_SELECT = {
   title: true,
   fonction: 'page.teachers_fonction',
   website: 'page.teachers_website',
+  teachers_email: 'page.teachers_email',
+  teachers_website: 'page.teachers_website',
   bio: 'page.teachers_bio',
   photo: {
     query: 'page.teachers_photo.toFile',

@@ -28,16 +28,42 @@
             <UiTag v-if="teacher.fonction" class="v-block-teachers__fonction">{{ teacher.fonction }}</UiTag>
             <h3 class="v-block-teachers__name">{{ teacher.title }}</h3>
           </div>
-          <div v-if="teacher.bio" class="v-block-teachers__bio" v-html="teacher.bio" />
-          <UiButton
-            v-if="teacher.website"
-            :to="teacher.website"
-            external
-            variant="secondary"
-            class="v-block-teachers__site"
+          <div v-if="teacher.bio" class="v-block-teachers__bio " v-html="teacher.bio"/>
+
+          <div
+                  v-if="teacher.teachers_website"
+                  class="u-flex u-flex--align-center u-gap-s"
           >
-            Site ↗
-          </UiButton>
+            <img src="/img/icon-link.svg"
+                 role="button"
+                 alt="Site icon"
+            />
+            <UiButton
+                    :to="teacher.teachers_website"
+                    external
+                    variant="secondary"
+                    class="v-block-teachers__site"
+            >
+              site
+            </UiButton>
+          </div>
+          <div
+                  class="u-flex u-flex--align-center u-gap-s"
+                  v-if="teacher.teachers_email"
+          >
+            <img src="/img/icon-mail.svg"
+                 role="button"
+                 alt="Mail icon"
+            />
+            <UiButton
+                    :to="teacher.teachers_email"
+                    external
+                    variant="secondary"
+                    class="v-block-teachers__site"
+            >
+              {{teacher.teachers_email}}
+            </UiButton>
+          </div>
         </div>
       </UiCard>
     </div>
@@ -61,7 +87,7 @@ defineProps<{
 
 .v-block-teachers {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--spacing-xl);
 
   @media (max-width: 1100px) {
@@ -108,6 +134,7 @@ defineProps<{
 // Real <h3> — no local override needed, typo.scss covers it entirely; only
 // the color comes from UiCard's `color` prop (currentColor).
 .v-block-teachers__name {
+  @include type-text-heading-1;
   margin-top: var(--spacing-xs);
 }
 
@@ -124,6 +151,10 @@ defineProps<{
   :deep(p) {
     margin: 0;
   }
+}
+
+:global(.v-block-teachers__bio p){
+  @include type-body-large-bold;
 }
 
 .v-block-teachers__site {

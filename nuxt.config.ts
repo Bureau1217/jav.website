@@ -35,7 +35,6 @@ export default defineNuxtConfig({
     css: {
       preprocessorOptions: {
         scss: {
-          api: 'modern-compiler',
           additionalData: '@import "~/assets/_params.scss"; @import "~/assets/_typo-mixins.scss";'
         }
       }

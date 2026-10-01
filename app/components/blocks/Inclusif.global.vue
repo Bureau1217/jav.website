@@ -66,22 +66,17 @@ const titleHtml = computed(() => {
   }
 }
 
-// Small 4-point sparkle flanking the title, per the reference mockup —
-// a mask-image (inline SVG data-uri, no separate asset needed) so it
-// always matches the block's own indigo via currentColor.
+// Real exported icon (public/img), flanking the title, per the reference
+// mockup — a mask-image (not <img>) so it's recolored via `color` to always
+// match the block's own indigo via currentColor, same pattern as
+// TheHeader.vue's logo mark / Resources.global.vue's icons.
 .v-block-inclusif__sparkle {
   flex-shrink: 0;
   width: 28px;
   height: 28px;
   background-color: currentColor;
-  mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 0c0 5-1 8-3 10s-5 3-9 2c4-1 7-2 9-4s3-4 3-8Zm0 24c0-5 1-8 3-10s5-3 9-2c-4 1-7 2-9 4s-3 4-3 8Zm0-14c0-2 .4-3.5 1.3-4.7A6.9 6.9 0 0 1 17 3c-2 .4-3.5 1-4.4 2S12 7.5 12 10Zm0 4c0 2-.4 3.5-1.3 4.7A6.9 6.9 0 0 1 7 21c2-.4 3.5-1 4.4-2S12 16.5 12 14Z"/></svg>');
-  -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 0c0 5-1 8-3 10s-5 3-9 2c4-1 7-2 9-4s3-4 3-8Zm0 24c0-5 1-8 3-10s5-3 9-2c-4 1-7 2-9 4s-3 4-3 8Zm0-14c0-2 .4-3.5 1.3-4.7A6.9 6.9 0 0 1 17 3c-2 .4-3.5 1-4.4 2S12 7.5 12 10Zm0 4c0 2-.4 3.5-1.3 4.7A6.9 6.9 0 0 1 7 21c2-.4 3.5-1 4.4-2S12 16.5 12 14Z"/></svg>');
-  mask-size: contain;
-  -webkit-mask-size: contain;
-  mask-repeat: no-repeat;
-  -webkit-mask-repeat: no-repeat;
-  mask-position: center;
-  -webkit-mask-position: center;
+  mask: url('/img/emojiinclusif.svg') center / contain no-repeat;
+  -webkit-mask: url('/img/emojiinclusif.svg') center / contain no-repeat;
 
   @media (max-width: $breakpoint-mobile) {
     width: 20px;
@@ -89,17 +84,18 @@ const titleHtml = computed(() => {
   }
 }
 
-// Full width, heavily rounded corners (not a capped/narrower pill like
-// Gallery.global.vue) — per the reference mockup.
+// Same size/shape as Gallery.global.vue's own media — capped width, wide
+// aspect ratio, near-pill corners.
 .v-block-inclusif__media {
   width: 100%;
+  max-width: 1096px;
 }
 
 .v-block-inclusif__image {
   width: 100%;
   aspect-ratio: 1096 / 471;
   object-fit: cover;
-  border-radius: var(--radius-pill);
+  border-radius: 999px;
 
   @media (max-width: $breakpoint-mobile) {
     border-radius: var(--radius-l);
@@ -118,5 +114,46 @@ const titleHtml = computed(() => {
   --heading-1-size: 32px;
   --color-page-accent: var(--color-brand-04);
   --color-page-on-accent: var(--color-brand-05);
+  // Any UiButton nested in here (a CtA block's own button, Section's header
+  // link...) — filled indigo pill, light pink text, per the reference
+  // mockup, overriding UiButton's own site-wide default (cream bg/indigo
+  // text) since custom properties cascade straight through child
+  // components regardless of their own scoped styles.
+  --button-color: var(--color-brand-04);
+  --button-text: var(--color-brand-05);
+
+  // CtA's own button (Cta.global.vue's .v-block-cta__link) sets
+  // --button-color/--button-text itself (inverted: page-on-accent/
+  // page-accent, i.e. pink bg/indigo text here) — needs its own override at
+  // higher specificity to actually win over that, the generic one above
+  // isn't enough.
+  :deep(.v-block-cta__link) {
+    --button-color: var(--color-brand-04);
+    --button-text: var(--color-brand-05);
+  }
+
+  // A CtA block right after a Text block, per the reference mockup, isn't
+  // its own full-bleed colored card — it's just the button sitting directly
+  // under the text, same pink background throughout, no dividers/card
+  // padding. background/color need !important: UiCard sets them via an
+  // inline style (--ui-card-bg/--ui-card-color), which otherwise beats any
+  // external rule regardless of selector specificity.
+  :deep(.v-block-cta) {
+    background: transparent !important;
+    color: inherit !important;
+    padding-block: 0;
+    border-radius: 0;
+
+    .v-block-cta__rule {
+      display: none;
+    }
+
+    .v-block-cta__content {
+      align-items: flex-start;
+      text-align: left;
+      padding-block: 0;
+      gap: var(--spacing-m);
+    }
+  }
 }
 </style>

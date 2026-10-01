@@ -30,7 +30,6 @@
                fallback below) would silently drop the title and tags. -->
           <template v-else-if="item.type === 'puce'">
             <h3 v-if="column.columns_title && itemIndex === 0" v-html="column.columns_title" />
-            <UiDivider v-if="column.columns_title && itemIndex === 0" variant="thin" />
             <div class="v-block-array-layout__puce u-flex u-flex--column u-gap-xs">
               <div v-if="puceTags(item).length" class="u-flex u-gap-xs u-flex--wrap">
                 <UiTag v-for="tag in puceTags(item)" :key="tag">{{ tag }}</UiTag>
@@ -38,14 +37,11 @@
               <div v-if="item.content.title" class="v-block-array-layout__item" v-html="item.content.title" />
               <div v-if="item.content.text" class="v-block-array-layout__puce-text" v-html="item.content.text" />
             </div>
-            <UiDivider variant="thin" />
           </template>
 
           <template v-else>
             <h3 v-if="column.columns_title && itemIndex === 0" v-html="column.columns_title" />
-            <UiDivider v-if="column.columns_title && itemIndex === 0" variant="thin" />
             <div class="v-block-array-layout__item" v-html="item.content.text" />
-            <UiDivider variant="thin" />
           </template>
         </template>
       </div>

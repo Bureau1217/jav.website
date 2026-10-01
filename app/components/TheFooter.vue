@@ -17,7 +17,7 @@
     </div>
 
     <div class="v-footer__content u-flex u-flex--column u-gap-xl">
-      <nav class="v-footer__links u-flex u-flex--column u-gap-s" aria-label="Navigation du pied de page">
+      <nav class="v-footer__links u-flex u-flex--column u-gap-xs" aria-label="Navigation du pied de page">
         <NuxtLink v-for="page in footerPages" :key="page.uri" :to="`/${page.uri}`">
           {{ page.title }}
         </NuxtLink>
@@ -31,16 +31,13 @@
         </div>
         <div class="v-footer__col u-flex u-flex--column u-gap-0">
           <p v-if="siteInfo?.phone">Téléphone : {{ siteInfo.phone }}</p>
-          <p v-if="siteInfo?.fax">Fax : {{ siteInfo.fax }}</p>
           <p v-if="siteInfo?.email">E-mail : <a :href="`mailto:${siteInfo.email}`">{{ siteInfo.email }}</a></p>
         </div>
-        <div class="v-footer__col u-flex u-flex--column u-gap-0">
-          <NuxtLink to="/accessibilite">Accessibilité</NuxtLink>
-          <NuxtLink to="/tarifs-financement">Tarifs et Financement</NuxtLink>
+        <div v-if="legalLinksCol1.length" class="v-footer__col v-footer__col--legal u-flex u-flex--column u-gap-0">
+          <NuxtLink v-for="link in legalLinksCol1" :key="link.label" :to="link.href">{{ link.label }}</NuxtLink>
         </div>
-        <div class="v-footer__col u-flex u-flex--column u-gap-0">
-          <NuxtLink to="/mentions-legales">Mentions légales</NuxtLink>
-          <NuxtLink to="/politique-de-confidentialite">Politique de confidentialité</NuxtLink>
+        <div v-if="legalLinksCol2.length" class="v-footer__col v-footer__col--legal u-flex u-flex--column u-gap-0">
+          <NuxtLink v-for="link in legalLinksCol2" :key="link.label" :to="link.href">{{ link.label }}</NuxtLink>
         </div>
       </div>
 
@@ -49,25 +46,15 @@
       </div>
 
       <div class="v-footer__bottom u-flex u-flex--align-center u-flex--justify-between u-gap-xl u-flex--wrap">
-        <ul class="v-footer__social u-flex u-gap-l">
-          <li><a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a></li>
-          <li><a href="https://facebook.com" target="_blank" rel="noopener">Facebook</a></li>
-          <li><a href="https://x.com" target="_blank" rel="noopener">X</a></li>
+        <ul v-if="socialLinks.length" class="v-footer__social u-flex u-gap-l">
+          <li v-for="social in socialLinks" :key="social.label">
+            <a :href="social.href" target="_blank" rel="noopener">{{ social.label }}</a>
+          </li>
         </ul>
         <span class="v-footer__rights">Tous droits réservés {{ new Date().getFullYear() }}.</span>
       </div>
 
-      <div class="v-footer__accessibility u-flex u-flex--column u-gap-0">
-        <p><strong>ACCESSIBILITÉ AUX PERSONNES EN SITUATION DE HANDICAP :</strong></p>
-        <p>Notre établissement est accessible aux personnes à mobilité réduite.</p>
-        <p>
-          Selon les spécificités de votre handicap, nous étudierons les possibilités d’adaptation de la
-          formation en concertation avec l’équipe pédagogique et avec l’aide de la référente Ressource
-          handicap formation de l’AGEFIPH Auvergne-Rhône-Alpes.
-        </p>
-        <p>Une proposition vous sera apportée sous 10 jours.</p>
-        <p>Contact : <a href="mailto:coordination@jazzactionvalence.com">coordination@jazzactionvalence.com</a></p>
-      </div>
+      <div v-if="siteInfo?.accessibilityText" class="v-footer__accessibility u-flex u-flex--column u-gap-0" v-html="siteInfo.accessibilityText" />
     </div>
   </footer>
 </template>
@@ -101,6 +88,30 @@ const addressLine2 = computed(() => {
   if (!a) return ''
   return [a.postalCode, a.city].filter(Boolean).join(' ')
 })
+
+// Each only shown once an editor fills that network's URL in on
+// "Informations globales" — no more fixed Instagram/Facebook/X trio with
+// X dropped and the other two hardcoded to their homepages.
+const socialLinks = computed(() => {
+  const info = siteInfo.value
+  if (!info) return []
+  return [
+    { label: 'Instagram', href: info.socialInstagram },
+    { label: 'Facebook', href: info.socialFacebook },
+    { label: 'Youtube', href: info.socialYoutube }
+  ].filter((social): social is { label: string, href: string } => Boolean(social.href))
+})
+
+// The footer's 4 fixed-label legal links (see server/api/site-infos.get.ts)
+// split back into the same two-column layout as before, but only the ones
+// an editor has actually picked a page for — same reasoning as socialLinks
+// above, a link with no target just isn't shown rather than pointing
+// nowhere.
+const visibleLegalLinks = computed(() =>
+  (siteInfo.value?.footerLegalLinks ?? []).filter((link): link is { label: string, href: string } => Boolean(link.href))
+)
+const legalLinksCol1 = computed(() => visibleLegalLinks.value.slice(0, 2))
+const legalLinksCol2 = computed(() => visibleLegalLinks.value.slice(2))
 </script>
 
 <style lang="scss" scoped>
@@ -120,8 +131,19 @@ const addressLine2 = computed(() => {
   }
 }
 
+// Continues the Qualiopi block's own bars (see footerLeadBars above) — the
+// gap from the block's last content down to these bars should match the
+// Qualiopi block's own internal rhythm (2xl, same as its bars-to-logo gap
+// at the top) instead of stacking Qualiopi's own bottom padding
+// (--block-spacing) with the footer's separate top padding (also
+// --block-spacing) below, which otherwise piles up into a much bigger gap
+// than the one at the top. Pulls this element up by exactly that
+// difference; a negative margin-top doesn't affect the (unrelated) gap to
+// the next element below, since flex `gap` is measured independently of
+// margins.
 .v-footer__lead-bars {
   width: 100%;
+  margin-top: calc(var(--spacing-2xl) - (var(--block-spacing) * 2));
 }
 
 // Same mask trick as the header — bakes the exported logo mark into a
@@ -169,19 +191,21 @@ const addressLine2 = computed(() => {
   }
 }
 
+// Every footer column (address, phone/email, the two legal-links columns)
+// now shares the same small bold typography as the Instagram/Facebook row
+// below (see .v-footer__bottom) instead of the larger regular footer body
+// text this used to be.
 .v-footer__col {
-  // p picks up family/weight/size/line-height straight from the global `p`
-  // rule in typo.scss — no local override, so changing that rule updates
-  // this text too. Only color is footer-specific.
-  p {
+  p,
+  a {
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: 16px;
+    line-height: 1.6;
     color: var(--color-brand-01);
   }
 
-  // Same size as the p's right next to them (address, phone...) — both
-  // read as regular footer body text, just one is a link.
   a {
-    @include type-body-large;
-    color: var(--color-brand-01);
     text-decoration: none;
 
     &:hover {
@@ -222,7 +246,10 @@ const addressLine2 = computed(() => {
   text-align: center;
   align-items: center;
 
-  p {
+  // Content is now the "Pied de page — texte accessibilité" writer field
+  // (see server/api/site-infos.get.ts), rendered via v-html — :deep()
+  // reaches the dynamically-inserted <p>/<strong>/<a> tags under scoped CSS.
+  :deep(p) {
     color: var(--color-brand-01);
     margin: 0;
     // type-body-large (global p rule in typo.scss) sets its own explicit
@@ -231,7 +258,7 @@ const addressLine2 = computed(() => {
     font-size: 12px;
   }
 
-  a {
+  :deep(a) {
     color: var(--color-brand-01);
 
     &:hover {

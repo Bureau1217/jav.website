@@ -144,6 +144,10 @@ const hasContact = computed(() =>
 
 .v-block-qualiopi__description {
   @include type-body-large;
+  // An email address (as typed straight into this free-text field, no
+  // spaces to wrap on) wider than the column was overflowing the whole
+  // block horizontally on mobile instead of wrapping.
+  overflow-wrap: anywhere;
 
   :deep(p) {
     margin: 0;
@@ -156,6 +160,9 @@ const hasContact = computed(() =>
 
 .v-block-qualiopi__contact {
   @include type-body-large;
+  // Same reasoning as .v-block-qualiopi__description above — the contact
+  // email here is just as likely to be a single unbreakable string.
+  overflow-wrap: anywhere;
 
   a {
     color: inherit;

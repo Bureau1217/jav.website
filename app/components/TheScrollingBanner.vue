@@ -9,7 +9,12 @@
         :class="{ 'is-static': !link }"
       >
         <span>{{ message }}</span>
-        <img v-if="image" :src="image.url" :alt="image.alt ?? ''" class="v-scrolling-banner__icon">
+        <span
+          v-if="image"
+          class="v-scrolling-banner__icon"
+          aria-hidden="true"
+          :style="{ maskImage: `url(${image.url})`, WebkitMaskImage: `url(${image.url})` }"
+        />
         <span v-else aria-hidden="true">💥</span>
       </NuxtLink>
     </div>
@@ -66,11 +71,20 @@ const image = computed(() => band.value?.image ?? null)
   }
 }
 
+// A mask-image (not <img>) so the picto is always recolored to currentColor
+// — the page's theme accent, same pattern as Inclusif.global.vue's sparkle
+// icons — instead of showing its own uploaded colors.
 .v-scrolling-banner__icon {
   width: 32px;
   height: 32px;
-  object-fit: contain;
   flex-shrink: 0;
+  background-color: currentColor;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
 }
 
 @keyframes v-scrolling-banner-scroll {

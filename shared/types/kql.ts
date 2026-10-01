@@ -90,6 +90,11 @@ export interface KqlFormationCard {
   headerTitle: string | null
   headerSubtitle: string | null
   previewImage: KqlFile | null
+  // Only set for "formation-professionnelle" — the same Qualiopi logo file
+  // used by the Qualiopi block further down the home page (see
+  // server/api/formations.get.ts), shown as a badge overlaid on that card's
+  // own image.
+  qualiopiBadge: KqlFile | null
 }
 
 export interface KqlTestimonial {
@@ -126,16 +131,40 @@ export interface KqlAddress {
 }
 
 /**
+ * One of the footer's 4 legal-page links (Accessibilité, Tarifs et
+ * Financement, Mentions légales, Politique de confidentialité) — each is a
+ * fixed label (set in TheFooter.vue) paired with an editor-picked page link
+ * from "Informations globales". `href` is null whenever the editor hasn't
+ * picked a page yet, in which case the link isn't shown at all (see
+ * TheFooter.vue) rather than pointing at a dead route.
+ */
+export interface KqlFooterLegalLink {
+  label: string
+  href: string | null
+}
+
+/**
  * Everything editors manage from "Informations globales" (site.yml ->
  * site_infos template): postal address, contact details, the editor-picked
- * list of pages to show in the footer nav, and the scrolling banner items.
+ * list of pages to show in the footer nav, social links, the footer's legal
+ * page links, its small accessibility disclaimer text, and the scrolling
+ * banner items.
  */
 export interface KqlSiteInfo {
   address: KqlAddress | null
   phone: string | null
-  fax: string | null
   email: string | null
   footerPages: KqlNavItem[]
+  // Each null when the editor hasn't filled that network's URL in yet — not
+  // shown at all then (see TheFooter.vue), rather than a dead link.
+  socialInstagram: string | null
+  socialFacebook: string | null
+  socialYoutube: string | null
+  footerLegalLinks: KqlFooterLegalLink[]
+  // Raw HTML from a "writer" field (paragraph/bold/italic/link) — rendered
+  // with v-html, same pattern as every other writer field in this codebase
+  // (e.g. Qualiopi.global.vue's description).
+  accessibilityText: string | null
   bands: KqlInfoBand[]
 }
 

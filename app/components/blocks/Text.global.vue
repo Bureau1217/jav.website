@@ -2,7 +2,6 @@
   <div class="v-block-text-wrap u-flex u-flex--column u-gap-xl">
     <UiSectionHeader v-if="block.content.title" :title="titleHtml" />
     <div class="v-block-text" v-html="block.content.text" />
-    <UiDivider variant="thin" />
   </div>
 </template>
 

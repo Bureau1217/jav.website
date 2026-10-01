@@ -145,7 +145,9 @@ watch(isOpen, (open) => {
   position: relative;
   display: block;
   width: 100%;
-  height: 16px;
+  // Taller — more breathing room between the three bars below (was 16px,
+  // barely 2px of gap between each 4px-tall bar).
+  height: 24px;
 
   span {
     position: absolute;
@@ -158,16 +160,19 @@ watch(isOpen, (open) => {
   }
 
   span:nth-child(1) { top: 0; }
-  span:nth-child(2) { top: 6px; }
-  span:nth-child(3) { top: 12px; }
+  span:nth-child(2) { top: 10px; }
+  span:nth-child(3) { top: 20px; }
 
   &.is-open {
     span {
       background: var(--color-page-on-accent);
     }
 
+    // Rotate in place around the middle bar's own position (10px) — same
+    // center the cross needs regardless of how far apart the bars sit at
+    // rest.
     span:nth-child(1) {
-      top: 6px;
+      top: 10px;
       transform: rotate(45deg);
     }
 
@@ -176,7 +181,7 @@ watch(isOpen, (open) => {
     }
 
     span:nth-child(3) {
-      top: 6px;
+      top: 10px;
       transform: rotate(-45deg);
     }
   }
@@ -196,6 +201,10 @@ watch(isOpen, (open) => {
 
 .v-header__nav-link {
   @include type-nav-menu;
+  // GT Maru instead of type-nav-menu's own Inter — the nav menu is the one
+  // other place (besides the page's own big title and <h3>) this heading
+  // font is meant to show up, per the font-usage rule in _typo-mixins.scss.
+  font-family: var(--font-heading);
   text-decoration: none;
   color: var(--color-page-on-accent);
 

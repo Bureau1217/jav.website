@@ -9,7 +9,7 @@
           v-for="(partner, partnerIndex) in card.partners"
           :key="partnerIndex"
           bordered
-          background="var(--color-brand-00)"
+          background="#fff"
           color="var(--color-page-accent)"
           class="v-block-partners__logo u-flex u-flex--align-center u-flex--justify-center"
         >

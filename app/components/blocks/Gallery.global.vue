@@ -22,27 +22,31 @@
         </component>
       </div>
 
-      <div v-if="current" class="v-block-gallery__carousel u-flex u-flex--align-center u-gap-xl">
-        <button
-          type="button"
-          class="v-block-gallery__arrow v-block-gallery__arrow--prev"
-          :disabled="items.length < 2"
-          aria-label="Élément précédent"
-          @click="prev"
-        />
+      <div v-if="current" class="v-block-gallery__carousel u-flex u-flex--column u-flex--align-center u-gap-s">
+        <!-- Arrows live in their own row, sized only by the title (always
+             short) — not by .v-block-gallery__text below, so however many
+             lines the current item's text wraps to, it never moves them. -->
+        <div class="v-block-gallery__title-row">
+          <button
+            v-if="items.length > 1"
+            type="button"
+            class="v-block-gallery__arrow v-block-gallery__arrow--prev"
+            aria-label="Élément précédent"
+            @click="prev"
+          />
 
-        <div class="v-block-gallery__content u-flex u-flex--column u-flex--align-center u-gap-s">
           <div v-if="current.title" class="v-block-gallery__title">{{ current.title }}</div>
-          <div v-if="current.content" class="v-block-gallery__text" v-html="current.content" />
+
+          <button
+            v-if="items.length > 1"
+            type="button"
+            class="v-block-gallery__arrow v-block-gallery__arrow--next"
+            aria-label="Élément suivant"
+            @click="next"
+          />
         </div>
 
-        <button
-          type="button"
-          class="v-block-gallery__arrow v-block-gallery__arrow--next"
-          :disabled="items.length < 2"
-          aria-label="Élément suivant"
-          @click="next"
-        />
+        <div v-if="current.content" class="v-block-gallery__text" v-html="current.content" />
       </div>
 
       <div v-if="items.length > 1" class="v-block-gallery__dots u-flex u-gap-s">
@@ -127,11 +131,10 @@ function next() {
   width: 100%;
   aspect-ratio: 1096 / 471;
   object-fit: cover;
+  // Always fully pill-shaped — no mobile fallback to a smaller radius (the
+  // Inclusif/Qualiopi blocks' own images still do, but this one should stay
+  // maxed out at every size).
   border-radius: 999px;
-
-  @media (max-width: $breakpoint-mobile) {
-    border-radius: var(--radius-l);
-  }
 }
 
 // Only shown when the item's "Lien" field is filled — signals the image is
@@ -152,15 +155,41 @@ function next() {
   }
 }
 
+// Same max-width as .v-block-gallery__media above, so the arrows always
+// sit at the overall block's own edges (image-width) instead of right next
+// to the text.
 .v-block-gallery__carousel {
   width: 100%;
+  max-width: 1096px;
+}
+
+// The arrows' own positioning context — sized only by the title (a single
+// short line), not by .v-block-gallery__text below it. That's what keeps
+// them from jumping up/down depending on how many lines the current item's
+// text wraps to: this row's own height never changes, text is free to grow
+// as tall as it needs to underneath without affecting it. min-height covers
+// the (rare) item with no title at all, so the row — and the arrows — don't
+// collapse to nothing.
+.v-block-gallery__title-row {
+  position: relative;
+  width: 100%;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 // Prev/next carousel controls — a mask-image (not <img>) so the icon
 // inherits --color-brand-00 via currentColor, same pattern as
 // TheHeader.vue's nav-arrow and Resources.global.vue's download/link icons.
 // "prev" is just "next" mirrored horizontally, not a separate asset.
+// Pinned to the title row's own left/right edges (see
+// .v-block-gallery__title-row above), vertically centered against the
+// title specifically — not the whole carousel — so the text below is free
+// to vary without moving them.
 .v-block-gallery__arrow {
+  position: absolute;
+  top: 50%;
   flex-shrink: 0;
   width: 32px;
   height: 24px;
@@ -178,31 +207,52 @@ function next() {
   mask-position: center;
   -webkit-mask-position: center;
 
-  &:disabled {
-    opacity: 0.3;
-    cursor: default;
+  // The dots below still let you navigate on mobile — the arrows are
+  // dropped there instead of just shrunk, same reasoning as the play button
+  // scaling down rather than this pair, since there's no room for them
+  // beside the title without crowding it.
+  @media (max-width: $breakpoint-mobile) {
+    display: none;
   }
 }
 
 .v-block-gallery__arrow--prev {
-  transform: scaleX(-1);
+  left: 0;
+  transform: translateY(-50%) scaleX(-1);
 }
 
-.v-block-gallery__content {
-  flex: 1;
-  text-align: center;
-  max-width: 676px;
-  margin: 0 auto;
+.v-block-gallery__arrow--next {
+  right: 0;
+  transform: translateY(-50%);
 }
 
 // A <div>, not a <p> — this uses type-text-heading-1 (Inter 700/32px),
 // unlike a <p>'s canonical style (type-body-large, 500/24px).
 .v-block-gallery__title {
   @include type-text-heading-1;
+  text-align: center;
+  // Keeps clear of the arrows, pinned to the title row's own far edges (see
+  // .v-block-gallery__arrow above) instead of sitting right next to the
+  // title — otherwise a long title could run underneath them.
+  padding-inline: var(--spacing-3xl);
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 24px;
+    // No arrows to clear on mobile anymore (see .v-block-gallery__arrow
+    // above) — this padding would just leave the title looking off-center.
+    padding-inline: 0;
+  }
 }
 
 .v-block-gallery__text {
   @include type-body-large;
+  text-align: center;
+  max-width: 676px;
+  margin: 0 auto;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 18px;
+  }
 }
 
 .v-block-gallery__dot {

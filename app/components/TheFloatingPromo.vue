@@ -42,11 +42,11 @@ const isVisible = ref(true)
   width: 267px;
   padding: var(--spacing-xl);
 
+  // Hidden on mobile entirely — it sits on top of the page content there
+  // (no room to float beside it), and the same upcoming event is already
+  // the home page's own featured event card just below the hero.
   @media (max-width: $breakpoint-mobile) {
-    right: var(--spacing-m);
-    top: auto;
-    bottom: var(--spacing-m);
-    width: calc(100% - var(--spacing-m) * 2);
+    display: none;
   }
 }
 

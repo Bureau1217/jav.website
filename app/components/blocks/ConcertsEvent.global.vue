@@ -79,13 +79,21 @@
           class="v-block-concerts-event__card u-flex"
           :class="[
             isHome && position === 0 ? 'v-block-concerts-event__card--featured' : 'u-flex--column',
-            !isHome && event.cover ? 'v-block-concerts-event__card--photo' : ''
+            !isHome && event.cover ? 'v-block-concerts-event__card--photo' : '',
+            isHome && position === 0 && event.cover ? 'v-block-concerts-event__card--featured-has-mobile-photo' : ''
           ]"
         >
           <!-- HOME's own featured slot (first card of the grid) — same
-               2-column split as the standalone agenda version above. -->
+               2-column split as the standalone agenda version above, on
+               desktop/tablet. On mobile, when there's a cover image, this
+               split is hidden and the photo-on-top + panel-below markup
+               further down (same structure as the agenda-only ".card-photo"
+               variant) is shown instead — see
+               .card--featured-has-mobile-photo below. Without a cover, mobile
+               just keeps stacking this same split via .card's own
+               flex-direction:column, same as before. -->
           <template v-if="isHome && position === 0">
-            <div class="v-block-concerts-event__card-content u-flex u-flex--column u-flex--justify-between u-gap-xl">
+            <div class="v-block-concerts-event__card-content v-block-concerts-event__card-content--split u-flex u-flex--column u-flex--justify-between u-gap-xl">
               <div class="v-block-concerts-event__card-header u-flex u-flex--column u-gap-s">
                 <span class="v-block-concerts-event__card-date">{{ formatEventDate(event.date) }}</span>
                 <h3 class="v-block-concerts-event__card-title">{{ event.title }}</h3>
@@ -109,6 +117,35 @@
               >
                 En savoir plus
               </UiButton>
+            </div>
+
+            <!-- Mobile-only alternative (see .card--featured-has-mobile-photo) —
+                 full-bleed photo with date+tag overlaid, colored panel below
+                 with title/description/divider/CTA, matching the agenda
+                 photo-card style the user asked for. -->
+            <div v-if="event.cover" class="v-block-concerts-event__card-photo v-block-concerts-event__card-photo--featured-mobile">
+              <img :src="event.cover.url" :alt="event.cover.alt ?? ''" :style="{ objectPosition: objectPosition(event.cover) }">
+              <div class="v-block-concerts-event__card-gradient" :style="{ background: photoGradient(index) }" />
+              <span class="v-block-concerts-event__card-photo-date">{{ formatEventDate(event.date) }}</span>
+              <UiTag v-if="event.type" class="v-block-concerts-event__card-photo-tag">
+                {{ eventTypeLabel(event.type) }}
+              </UiTag>
+            </div>
+            <div v-if="event.cover" class="v-block-concerts-event__card-panel v-block-concerts-event__card-panel--featured-mobile u-flex u-flex--column u-flex--justify-between u-gap-s">
+              <div class="u-flex u-flex--column u-gap-s">
+                <h3 class="v-block-concerts-event__card-title">{{ event.title }}</h3>
+                <div class="v-block-concerts-event__card-description">{{ truncateText(event.description) }}</div>
+              </div>
+              <div class="u-flex u-flex--column u-gap-s">
+                <UiDivider />
+                <UiButton
+                  :to="`/${event.id}`"
+                  class="v-block-concerts-event__card-cta"
+                  :style="{ '--button-color': palette(index).accent, '--button-text': palette(index).bg }"
+                >
+                  En savoir plus
+                </UiButton>
+              </div>
             </div>
           </template>
 
@@ -498,6 +535,30 @@ function photoGradient(index: number) {
 .v-block-concerts-event__card-panel {
   padding: var(--spacing-xl);
   flex: 1;
+}
+
+// Home featured card's mobile-only alternative (see template) — hidden by
+// default (desktop/tablet keep the side-by-side split above), only swapped
+// in at the 700px breakpoint, and only when the event actually has a cover
+// (otherwise the split's own flex-direction:column stacking still applies,
+// same as before this change).
+.v-block-concerts-event__card-photo--featured-mobile,
+.v-block-concerts-event__card-panel--featured-mobile {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .v-block-concerts-event__card--featured-has-mobile-photo {
+    .v-block-concerts-event__card-content--split,
+    .v-block-concerts-event__card-media {
+      display: none;
+    }
+
+    .v-block-concerts-event__card-photo--featured-mobile,
+    .v-block-concerts-event__card-panel--featured-mobile {
+      display: flex;
+    }
+  }
 }
 
 // Colors come from the inline --button-color/--button-text set per card in

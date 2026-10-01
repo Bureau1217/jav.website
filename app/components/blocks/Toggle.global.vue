@@ -56,6 +56,12 @@ defineProps<{
 .v-block-toggle__title {
   @include type-text-heading-3;
   flex: 1;
+  // Without this, a flex item's default min-width:auto keeps it from
+  // shrinking below its text's unconstrained intrinsic width — so a long
+  // question didn't wrap within the available space and instead pushed the
+  // icon (flex-shrink: 0) past the row's own edge, overflowing the whole
+  // page horizontally on mobile.
+  min-width: 0;
 }
 
 .v-block-toggle__icon {

@@ -33,6 +33,7 @@
         <UiDivider />
         <UiDivider v-if="!page.headerImage" />
       </div>
+
     </header>
 
     <!-- Homepage only — the scrolling banner isn't shown on any other page. -->
@@ -105,7 +106,7 @@ const hasThemeOverride = computed(() => pageTheme.value !== null)
   min-height: 800px;
 
   @media (max-width: $breakpoint-mobile) {
-    min-height: 560px;
+    min-height: 760px;
   }
 }
 

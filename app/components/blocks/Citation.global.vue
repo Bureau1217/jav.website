@@ -47,17 +47,31 @@ const contentHtml = computed(() => {
   margin: 0 auto;
   text-align: center;
   color: var(--color-page-accent);
+
+  // More side breathing room than the wrap's own gutter alone gives on
+  // mobile — the 70% cap above already narrows things down on desktop, but
+  // at mobile widths it leaves comparatively little margin, so this adds
+  // extra inset of its own on top of it instead of just scaling with the
+  // viewport.
+  @media (max-width: $breakpoint-mobile) {
+    max-width: 100%;
+    padding-inline: var(--spacing-xl);
+  }
 }
 
-// A <div>, not a <h1> — this uses type-subtitle (48px, 104px line-height),
-// unlike h1's canonical style (Inter, see typo.scss) — h1 is now reserved
-// for "Titre de la section" fields.
+// A <div>, not a <h1> — this uses type-subtitle as its base (family, loose
+// 104px line-height), unlike h1's canonical style (Inter, see typo.scss) —
+// h1 is now reserved for "Titre de la section" fields. Size and weight are
+// both overridden below: smaller than the mixin's own 48px, and regular
+// weight instead of its semi-bold 600 — a plain, unbolded statement.
 .v-block-citation__content {
-  @include type-subtitle; // 48px
+  @include type-subtitle;
+  font-weight: 400;
+  font-size: 40px;
   line-height: 1.2; // overrides the subtitle mixin's own loose 104px leading
 
   @media (max-width: $breakpoint-mobile) {
-    font-size: 32px;
+    font-size: 24px;
   }
 
   :deep(p) {

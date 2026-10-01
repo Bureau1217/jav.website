@@ -23,6 +23,17 @@ export default defineEventHandler(async () => {
           previewImage: {
             query: 'page.page_image_preview.toFile',
             select: FILE_SELECT
+          },
+          // Same Qualiopi logo file as the home page's own Qualiopi block
+          // (see Qualiopi.global.vue) — resolved straight from that block's
+          // "logo" field so it stays in sync automatically if an editor ever
+          // swaps the certificate image, instead of a copy-pasted file
+          // reference here. Harmless null on the "pratique-amateur" page
+          // (no Qualiopi certification there) and if the home page's
+          // "qualiopi" block is ever removed.
+          qualiopiBadge: {
+            query: 'site.find("home").content.content.toBlocks.filterBy("type", "qualiopi").first.content.logo.toFile',
+            select: FILE_SELECT
           }
         }
       })

@@ -157,6 +157,17 @@
   --heading-1-size: 52px;
 }
 
+// Never had a mobile reduction before — a single long word (e.g.
+// "Professionnelle" in Formations.global.vue's title) at the full 52px
+// genuinely didn't fit a narrow mobile column, which made the whole page
+// horizontally scrollable, not just that one title visually tight. Same
+// breakpoint/pattern as --block-spacing above.
+@media (max-width: $breakpoint-mobile) {
+  :root {
+    --heading-1-size: 36px;
+  }
+}
+
 .u-gutter {
   padding: var(--gutter);
 }

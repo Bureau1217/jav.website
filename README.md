@@ -1,75 +1,21 @@
-# Nuxt Minimal Starter
+# Doc
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## Variables
 
-## Setup
+ajouter ces variables d'environnement pour pouvoir lancer correctement l'application
 
-Make sure to install dependencies:
 
-```bash
-# npm
-npm install
+NUXT_API_URL=https://jav-admin.bureau1217.ch/
+NUXT_API_AUTH_EMAIL={string}
+NUXT_API_AUTH_PASSWORD={string}
 
-# pnpm
-pnpm install
+# SMTP Infomaniak
+NUXT_SMTP_HOST={string}
+NUXT_SMTP_PORT={number}
+NUXT_SMTP_SECURE={boolean}
+NUXT_SMTP_AUTH_USER={string}
+NUXT_SMTP_AUTH_PASS={string}
 
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+# mailchimp
+NUXT_MAILCHIMP_API_KEY={string}
+NUXT_MAILCHIMP_LIST_ID={string}

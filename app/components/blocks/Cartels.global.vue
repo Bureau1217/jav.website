@@ -128,6 +128,21 @@ onMounted(async () => {
   reprocessAllTitles()
   resizeObserver = new ResizeObserver(() => reprocessAllTitles())
   titleRefs.value.forEach((el) => resizeObserver!.observe(el))
+
+  // The very first pass above can run before the custom "GT Maru" font has
+  // finished loading — canvas measureText() silently falls back to the same
+  // fallback font the browser is painting with at that moment, so the split
+  // itself looks consistent at first. But once GT Maru finishes loading
+  // shortly after, the browser reflows the already-split text in the real
+  // (wider) font — a chunk sized for the fallback font can then overflow its
+  // line on its own, and CSS overflow-wrap:break-word silently chops it
+  // again with no visible "-", stacking on top of our one intentional split
+  // (e.g. "Adminis-/tration" becoming "Administr-/at-/i-/on"). Re-running
+  // once document.fonts confirms every font is actually loaded clears that
+  // up — this is a no-op if fonts were already loaded before mount.
+  if (document.fonts?.ready) {
+    document.fonts.ready.then(() => reprocessAllTitles())
+  }
 })
 
 onBeforeUnmount(() => {

@@ -194,10 +194,17 @@ const hasThemeOverride = computed(() => pageTheme.value !== null)
     // the column on its own, even once it has its own line to itself — no
     // space left to wrap at, so it was overflowing straight past the
     // header's own edge (clipped, not scrollable, since the header has
-    // overflow: hidden — so it just silently got cut off). Hyphenation
-    // breaks it mid-word instead; overflow-wrap is the fallback for
-    // browsers/languages where hyphenation doesn't kick in.
-    hyphens: auto;
+    // overflow: hidden — so it just silently got cut off).
+    // hyphens:auto looked right for that single-word case, but on a
+    // multi-word title the browser's own French hyphenation dictionary
+    // keeps re-hyphenating every fragment that still doesn't fit the line
+    // ("Administr-/at-/i-/on" instead of just wrapping "d'Administration"
+    // whole) — same bug already fixed in Cartels.global.vue. There's no
+    // CSS knob for "only hyphenate when truly unavoidable" here, so this
+    // drops hyphens entirely and leaves overflow-wrap:break-word as the
+    // fallback — it still breaks a single word wider than the column (just
+    // without a visible "-"), while every normal multi-word title wraps
+    // cleanly at spaces.
     overflow-wrap: break-word;
   }
 }

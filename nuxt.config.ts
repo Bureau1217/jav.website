@@ -49,6 +49,11 @@ export default defineNuxtConfig({
     apiUrl: '',
     apiAuthEmail: '',
     apiAuthPassword: '',
+
+    mailchimp: {
+      apiKey: '',
+      listId: ''
+    },
     smtp: {
       host: 'mail.infomaniak.com',
       port: 465,

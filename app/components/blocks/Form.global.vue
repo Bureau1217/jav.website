@@ -8,7 +8,7 @@
       <form
         class="v-block-form__inner u-flex u-flex--column u-gap-2xl"
         :data-form-type="block.content.form_type"
-        @submit.prevent
+        @submit.prevent="onSubmit"
       >
         <div class="v-block-form__head u-flex u-flex--align-center u-flex--justify-between u-gap-xl u-flex--wrap">
           <h1 class="v-block-form__card-title">Votre demande</h1>
@@ -41,24 +41,24 @@
             <div class="v-block-form__row">
               <label class="v-block-form__field">
                 <span>Nom *</span>
-                <input type="text" name="lastname" placeholder="Dupont" required>
+                <input v-model="fields.lastname" type="text" name="lastname" placeholder="Dupont" required>
               </label>
               <label class="v-block-form__field">
                 <span>Prénom *</span>
-                <input type="text" name="firstname" placeholder="Marie" required>
+                <input v-model="fields.firstname" type="text" name="firstname" placeholder="Marie" required>
               </label>
             </div>
             <label class="v-block-form__field">
               <span>Âge *</span>
-              <input type="number" name="age" placeholder="30" min="0" required>
+              <input v-model="fields.age" type="number" name="age" placeholder="30" min="0" required>
             </label>
             <label class="v-block-form__field">
               <span>Téléphone *</span>
-              <input type="tel" name="phone" placeholder="+33 0 00 00 00 00" required>
+              <input v-model="fields.phone" type="tel" name="phone" placeholder="+33 0 00 00 00 00" required>
             </label>
             <label class="v-block-form__field">
               <span>E-mail *</span>
-              <input type="email" name="email" placeholder="marie.dupont@gmail.com" required>
+              <input v-model="fields.email" type="email" name="email" placeholder="marie.dupont@gmail.com" required>
             </label>
           </template>
 
@@ -102,9 +102,14 @@
           </div>
         </div>
 
-        <UiButton type="submit" class="v-block-form__submit">
-          {{ isInscription ? 'Recevoir mon dossier' : 'Envoyer' }}
-        </UiButton>
+        <div class="u-flex u-flex--align-center u-flex--justify-end u-gap-xl u-flex--wrap">
+          <!-- Always rendered (empty when idle) so screen readers pick up
+               the message as soon as its text changes. -->
+          <p class="v-block-form__status" aria-live="polite">{{ STATUS_MESSAGES[status] }}</p>
+          <UiButton type="submit" class="v-block-form__submit" :disabled="status === 'sending'">
+            {{ isInscription ? 'Recevoir mon dossier' : 'Envoyer' }}
+          </UiButton>
+        </div>
       </form>
     </UiCard>
   </div>
@@ -112,6 +117,7 @@
 
 <script setup lang="ts">
 import type { KqlBlock } from '~~/shared/types/kql'
+import type {InscriptionForm_deliveryMethod, InscriptionForm_registrationType} from "#shared/types/form.ts";
 
 const props = defineProps<{
   block: KqlBlock
@@ -123,8 +129,45 @@ const props = defineProps<{
 // endpoint is wired up.
 const isInscription = computed(() => props.block.content.form_type === 'inscription')
 
-const registrationType = ref<'first' | 'renewal'>('first')
-const deliveryMethod = ref<'email' | 'courrier'>('email')
+const registrationType = ref<InscriptionForm_registrationType>('first')
+const deliveryMethod = ref<InscriptionForm_deliveryMethod>('email')
+
+const EMPTY_FIELDS = { lastname: '', firstname: '', age: null as number | null, phone: '', email: '' }
+const fields = reactive({ ...EMPTY_FIELDS })
+
+const STATUS_MESSAGES = {
+  idle: '',
+  sending: 'Envoi en cours…',
+  success: 'Merci, votre demande a bien été envoyée.',
+  error: "Une erreur est survenue, corrigez l'erreur ou contactez-nous."
+}
+const status = ref<keyof typeof STATUS_MESSAGES>('idle')
+
+async function onSubmit() {
+  if (!isInscription.value) {
+    return
+  }
+
+  status.value = 'sending'
+
+  try {
+    const response = await $fetch('/api/form/inscription', {
+      method: 'POST',
+      body: {
+        registrationType: registrationType.value,
+        deliveryMethod: deliveryMethod.value,
+        ...fields
+      }
+    })
+
+    console.log(response)
+
+    Object.assign(fields, EMPTY_FIELDS)
+    status.value = 'success'
+  } catch {
+    status.value = 'error'
+  }
+}
 
 const INTROS: Record<string, string> = {
   inscription: 'Remplissez ce court formulaire. Nous vous envoyons le dossier complet, par e-mail ou par courrier, pour que vous puissiez le compléter à votre rythme.',
@@ -309,6 +352,10 @@ const introText = computed(() => INTROS[props.block.content.form_type as string]
 .v-block-form__submit {
   --button-color: var(--color-page-on-accent);
   --button-text: var(--color-page-accent);
-  align-self: flex-end;
+
+  &:disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
 }
 </style>

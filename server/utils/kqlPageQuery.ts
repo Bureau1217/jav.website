@@ -1,6 +1,21 @@
+// Every image on the site was being served at its original uploaded
+// resolution straight from Kirby (camera photos as large as 15MB) — nothing
+// anywhere was asking Kirby to resize them first. `file.resize(2000)` asks
+// Kirby's own thumbnail generator (already used by the Panel's own previews,
+// so no extra server setup needed) for a version capped at 2000px wide,
+// keeping the original aspect ratio; width/height below then describe that
+// resized version, not the original file. 2000px covers this site's widest
+// use (a full-bleed hero) with real headroom, while still cutting a huge
+// original down drastically — every smaller use (cards, thumbnails) just
+// downscales that one cached version in CSS, same as before.
+// `.resize()` is a documented no-op on a non-image file (passed straight
+// through unchanged) — safe to apply to every FILE_SELECT use, including
+// the Qualiopi/Resources blocks' PDF downloads.
+const RESIZED_URL = 'file.resize(2000).url'
+
 export const FILE_SELECT = {
   filename: true,
-  url: true,
+  url: RESIZED_URL,
   alt: 'file.alt',
   width: true,
   height: true,

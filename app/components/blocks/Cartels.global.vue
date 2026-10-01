@@ -122,11 +122,32 @@ function reprocessAllTitles() {
   })
 }
 
+// ResizeObserver fires on ANY border-box size change, including height —
+// and splitting an overflowing word inserts a <br>, which changes this
+// element's height. Without the width check below, that height change
+// re-triggers the same observer on the next frame, which re-measures,
+// re-splits to the exact same result, changes the height again... a
+// self-feeding (if self-correcting) loop that burns CPU on every card
+// title whenever the layout shifts. Re-running the split only when the
+// observed width actually changed breaks that cycle at the source.
+const lastWidths = new WeakMap<HTMLElement, number>()
 let resizeObserver: ResizeObserver | null = null
 onMounted(async () => {
   await nextTick()
   reprocessAllTitles()
-  resizeObserver = new ResizeObserver(() => reprocessAllTitles())
+  titleRefs.value.forEach((el) => lastWidths.set(el, el.clientWidth))
+  resizeObserver = new ResizeObserver((entries) => {
+    let changed = false
+    for (const entry of entries) {
+      const el = entry.target as HTMLElement
+      const width = el.clientWidth
+      if (lastWidths.get(el) !== width) {
+        lastWidths.set(el, width)
+        changed = true
+      }
+    }
+    if (changed) reprocessAllTitles()
+  })
   titleRefs.value.forEach((el) => resizeObserver!.observe(el))
 
   // The very first pass above can run before the custom "GT Maru" font has

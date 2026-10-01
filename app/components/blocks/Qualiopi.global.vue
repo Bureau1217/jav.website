@@ -37,10 +37,12 @@
       </component>
     </div>
 
-    <div class="v-block-qualiopi__bars u-flex u-flex--column u-gap-xs">
-      <UiDivider variant="thick" />
-      <UiDivider variant="thick" />
-    </div>
+    <!-- No closing bars here on purpose: when this block is the page's last
+         visible block, TheFooter.vue already renders this exact same pair
+         of thick bars right above itself (see useFooterLeadBars.ts) so the
+         block flows straight into the footer. Adding a second pair here
+         duplicated them (two stacked pairs) on any page — home included —
+         where Qualiopi is actually last. -->
   </div>
 </template>
 

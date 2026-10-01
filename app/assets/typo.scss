@@ -1,3 +1,9 @@
+// Needed now that main.scss @use's this file instead of @import'ing it —
+// @use doesn't inherit the importing file's own scope (unlike @import), so
+// the type-* mixins below have to be brought in directly rather than relying
+// on main.scss having them via nuxt.config's additionalData.
+@use "_typo-mixins" as *;
+
 // Bare tag defaults — the mixins themselves live in _typo-mixins.scss
 // (auto-injected into every component via Nuxt's vite scss additionalData,
 // see nuxt.config.ts), this file just applies them globally to the raw

@@ -1,3 +1,10 @@
+// Needed now that main.scss @use's this file instead of @import'ing it —
+// @use doesn't inherit the importing file's own scope (unlike @import), so
+// $breakpoint-mobile (used in the media queries below) has to be brought in
+// directly rather than relying on main.scss having it via nuxt.config's
+// additionalData.
+@use "_params" as *;
+
 // Layout — flex utility classes, same idea as .app-grid in the reference
 // stylesheet this was modeled on: instead of every block writing its own
 // `display: flex; flex-direction: column; gap: ...;`, it adds a couple of

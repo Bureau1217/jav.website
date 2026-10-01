@@ -35,7 +35,12 @@ export default defineNuxtConfig({
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: '@import "~/assets/_params.scss"; @import "~/assets/_typo-mixins.scss";'
+          // "as *" keeps every $variable/@mixin globally accessible with its
+          // bare name (e.g. $breakpoint-mobile, @include type-label)
+          // everywhere this gets injected, same as the old @import behavior
+          // — without it, @use would namespace them (e.g. params.$breakpoint
+          // -mobile) and every file using the bare name today would break.
+          additionalData: '@use "~/assets/_params.scss" as *; @use "~/assets/_typo-mixins.scss" as *;'
         }
       }
     }

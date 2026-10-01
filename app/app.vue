@@ -1,6 +1,7 @@
 <template>
   <div class="v-app u-flex u-flex--column" :style="pageThemeStyle">
     <TheLoader />
+    <ThePageTransition />
     <TheHeader />
     <main>
       <NuxtPage/>

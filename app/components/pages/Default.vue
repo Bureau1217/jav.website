@@ -1,6 +1,7 @@
 <template>
   <article class="v-page-default">
     <header
+      :key="page.headerImage?.uuid || 10"
       v-if="page.headerTitle || page.title"
       class="v-page-default__header u-flex u-flex--column u-flex--justify-end u-gutter-x"
       :class="[

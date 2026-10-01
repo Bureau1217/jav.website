@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { lang: 'fr' },
       title: 'JAV - L’École des Musiques',
-      titleTemplate: (title) => title ? `${title} - JAV` : 'JAV - L’École des Musiques',
+      titleTemplate: ((title) => title ? `${title} - JAV` : 'JAV - L’École des Musiques' )(),
       link: [
         // favicon-jav.png (provided, 100x100) — PNG favicons are supported
         // by every current browser, no .ico conversion needed; the old

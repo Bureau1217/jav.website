@@ -24,7 +24,7 @@ export interface SendMailOptions {
   attachments?: NodemailerOptions['attachments']
 }
 
-export function createMailTransporter() {
+export async function createMailTransporter() {
   let runtimeSmtp: Partial<SmtpConfig> = {}
 
   try {
@@ -37,7 +37,7 @@ export function createMailTransporter() {
   }
 
   const host = runtimeSmtp.host
-  const port        = Number(runtimeSmtp.port || process.env.SMTP_PORT || 465)
+  const port        = Number(runtimeSmtp.port)
   const secure      = runtimeSmtp.secure
   const user          = runtimeSmtp.auth?.user
   const pass          = runtimeSmtp.auth?.pass
@@ -58,7 +58,7 @@ export function createMailTransporter() {
  * @returns Le résultat de l'envoi Nodemailer
  */
 export async function sendMail(options: SendMailOptions) {
-  const transporter = createMailTransporter()
+  const transporter = await createMailTransporter()
 
   return await transporter.sendMail({
     from: options.from,

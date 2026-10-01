@@ -124,6 +124,12 @@ defineProps<{
 
 .v-block-teachers__text {
   flex: 1;
+  // Without this, a flex item's default min-width:auto keeps the name/bio
+  // text from wrapping below their own unconstrained intrinsic width — the
+  // card clips it via overflow-x:hidden instead of visibly overflowing, so
+  // on mobile this was silently cutting content off rather than wrapping it
+  // (same root cause as Toggle.global.vue's own title fix).
+  min-width: 0;
   padding: var(--spacing-xl);
 }
 
@@ -147,6 +153,11 @@ defineProps<{
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  // A bio can contain a raw auto-linked URL (no spaces to wrap on) — same
+  // unbreakable-string overflow as the email buttons below, which was
+  // forcing the card wider than its column on mobile before the 3-line
+  // clamp above ever got a chance to clip it vertically.
+  overflow-wrap: anywhere;
 
   :deep(p) {
     margin: 0;
@@ -159,5 +170,10 @@ defineProps<{
 
 .v-block-teachers__site {
   align-self: flex-start;
+  // The email button shows the raw address as its own text (no spaces to
+  // wrap on) — same unbreakable-string overflow as Qualiopi.global.vue's
+  // own email fields, wrapped here instead of letting it force the card
+  // wider than its column on mobile.
+  overflow-wrap: anywhere;
 }
 </style>

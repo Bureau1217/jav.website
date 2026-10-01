@@ -134,6 +134,13 @@ const cards = computed(() =>
   aspect-ratio: 628 / 387;
   overflow: hidden;
   cursor: pointer;
+
+  // Taller/bigger on mobile, same ratio as the Gallery block's own mobile
+  // image — the desktop ratio is a wide, short strip that leaves very
+  // little actual photo on a narrow screen.
+  @media (max-width: $breakpoint-mobile) {
+    aspect-ratio: 3 / 4;
+  }
   // Fixed — this is the backdrop the image insets reveal on hover below, so
   // it never transitions/moves itself, only the image on top of it does.
   border-radius: var(--radius-m);

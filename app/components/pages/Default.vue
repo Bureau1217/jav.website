@@ -159,6 +159,17 @@ const hasThemeOverride = computed(() => pageTheme.value !== null)
   position: relative;
 }
 
+// Both are flex items (header-row inside header-content, header-titles
+// inside header-row) whose default min-width:auto keeps them from
+// shrinking below their own content's unconstrained intrinsic width — a
+// long header title/subtitle could then push past the row's own edge
+// instead of wrapping, overflowing the whole page horizontally on mobile.
+// Same root cause as Toggle.global.vue's title fix.
+.v-page-default__header-row,
+.v-page-default__header-titles {
+  min-width: 0;
+}
+
 .v-page-default__header-actions {
   .ui-button {
     // Follows the page's own theme (see usePageTheme.ts) instead of a fixed
@@ -170,8 +181,24 @@ const hasThemeOverride = computed(() => pageTheme.value !== null)
 }
 
 .v-page-default__header .h-hero {
+  // A flex item of .header-titles (flex-direction: column) — align-items:
+  // stretch still defers to a flex item's own content-based min-width:auto
+  // as a floor, so a two-word title ("Formation Professionnelle") could
+  // still refuse to wrap at the space and instead overflow the row, same
+  // underlying cause as the Toggle/Formations fixes elsewhere.
+  min-width: 0;
+
   @media (max-width: $breakpoint-mobile) {
     font-size: 48px;
+    // A long single word (e.g. "Professionnelle") can still be wider than
+    // the column on its own, even once it has its own line to itself — no
+    // space left to wrap at, so it was overflowing straight past the
+    // header's own edge (clipped, not scrollable, since the header has
+    // overflow: hidden — so it just silently got cut off). Hyphenation
+    // breaks it mid-word instead; overflow-wrap is the fallback for
+    // browsers/languages where hyphenation doesn't kick in.
+    hyphens: auto;
+    overflow-wrap: break-word;
   }
 }
 

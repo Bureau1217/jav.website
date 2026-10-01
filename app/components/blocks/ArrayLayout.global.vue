@@ -94,6 +94,23 @@ function puceTags(item: { content?: { tags?: string } }): string[] {
     border-left: none;
   }
 
+  // Columns stack into a single one on mobile (see .columns above) — the
+  // vertical separators between them no longer make sense once there's
+  // nothing beside them to separate from, replaced with a thin horizontal
+  // rule above each column instead (none on the first — nothing stacked
+  // above it to separate from).
+  @media (max-width: $breakpoint-mobile) {
+    padding-inline: 0;
+    padding-top: var(--spacing-xl);
+    border-left: none;
+    border-top: var(--divider-thin-size) solid var(--color-page-accent);
+
+    &:first-child {
+      padding-top: 0;
+      border-top: none;
+    }
+  }
+
   // "Titre de la colonne" — Inter instead of the canonical h3 (GT Maru),
   // type-text-heading-1 already matches the target size (32px).
   h3 {

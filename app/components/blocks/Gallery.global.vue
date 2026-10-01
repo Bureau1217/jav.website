@@ -2,7 +2,11 @@
   <div class="v-block-gallery u-flex u-flex--column u-flex--align-center u-gap-xl u-gutter-x">
     <UiSectionHeader :title="block.content.title || 'JAV en image'" class="v-block-gallery__header" />
 
-    <div class="v-block-gallery__body u-flex u-flex--column u-flex--align-center u-gap-4xl">
+    <div
+      class="v-block-gallery__body u-flex u-flex--column u-flex--align-center u-gap-4xl"
+      @touchstart.passive="onTouchStart"
+      @touchend.passive="onTouchEnd"
+    >
       <div v-if="current" class="v-block-gallery__media">
         <component
           :is="current.link ? 'a' : 'div'"
@@ -101,6 +105,37 @@ function next() {
   if (items.value.length < 2) return
   activeIndex.value = (activeIndex.value + 1) % items.value.length
 }
+
+// Swipe to navigate — the prev/next arrows are hidden below the mobile
+// breakpoint (see .v-block-gallery__arrow), leaving only the dots to switch
+// items by tap; this adds a horizontal swipe over the whole body (image,
+// title, text) as a more natural way to browse on touch devices. A plain
+// horizontal delta past the threshold triggers prev/next; it's discarded
+// whenever the vertical delta is larger, so a vertical scroll gesture that
+// starts over the gallery never gets mistaken for a swipe.
+const SWIPE_THRESHOLD = 40
+let touchStartX = 0
+let touchStartY = 0
+
+function onTouchStart(event: TouchEvent) {
+  const touch = event.touches[0]
+  if (!touch) return
+  touchStartX = touch.clientX
+  touchStartY = touch.clientY
+}
+
+function onTouchEnd(event: TouchEvent) {
+  const touch = event.changedTouches[0]
+  if (!touch) return
+  const deltaX = touch.clientX - touchStartX
+  const deltaY = touch.clientY - touchStartY
+  if (Math.abs(deltaX) < SWIPE_THRESHOLD || Math.abs(deltaX) < Math.abs(deltaY)) return
+  if (deltaX < 0) {
+    next()
+  } else {
+    prev()
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -115,6 +150,11 @@ function next() {
 // max-width (below) govern how wide the media actually renders.
 .v-block-gallery__body {
   width: 100%;
+  // Keep vertical page scroll working over the gallery, but hand horizontal
+  // gestures to the swipe handler above instead of any browser-default
+  // horizontal panning (e.g. back/forward swipe navigation on some
+  // mobile browsers) that would otherwise compete with it.
+  touch-action: pan-y;
 }
 
 .v-block-gallery__media {
@@ -131,10 +171,18 @@ function next() {
   width: 100%;
   aspect-ratio: 1096 / 471;
   object-fit: cover;
-  // Always fully pill-shaped — no mobile fallback to a smaller radius (the
-  // Inclusif/Qualiopi blocks' own images still do, but this one should stay
-  // maxed out at every size).
   border-radius: 999px;
+
+  // Taller and bigger on mobile — the desktop ratio is a wide, short strip,
+  // which leaves very little actual photo on a narrow screen. A fixed
+  // --radius-l here (instead of the desktop 999px pill) rounds just the top
+  // and bottom corners like a normal rounded rectangle, since 999px would
+  // otherwise force the now-much-taller image into a full vertical stadium
+  // shape, curving its left/right sides in too.
+  @media (max-width: $breakpoint-mobile) {
+    aspect-ratio: 3 / 4;
+    border-radius: 150px;
+  }
 }
 
 // Only shown when the item's "Lien" field is filled — signals the image is

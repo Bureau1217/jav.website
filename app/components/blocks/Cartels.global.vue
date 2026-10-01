@@ -15,7 +15,7 @@
             <UiTag v-for="tag in tagList(card)" :key="tag">{{ tag }}</UiTag>
           </div>
         </div>
-        <h3 v-if="card.title" class="v-block-cartels__title" v-html="card.title" />
+        <h3 v-if="card.title" ref="titleRefs" class="v-block-cartels__title" v-html="card.title" />
         <div v-if="card.description" class="v-block-cartels__description" v-html="card.description" />
       </UiCard>
     </div>
@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import type { KqlBlock } from '~~/shared/types/kql'
 
-defineProps<{
+const props = defineProps<{
   block: KqlBlock
 }>()
 
@@ -36,6 +36,108 @@ function tagList(card: { tags?: string }): string[] {
   if (!raw) return []
   return String(raw).split(',').map((tag) => tag.trim()).filter(Boolean)
 }
+
+// CSS hyphens:auto looked right at first (a long single word like
+// "Autofinancement" needs a visible "-" break to fit the card) but it also
+// hyphenates words in a multi-word title that would've fit whole on the
+// next line anyway ("Prise en charge to-/tale..." instead of wrapping
+// "totale" whole) — the browser's greedy line-fill hyphenates whenever a
+// break point helps fill the current line, not only when a word truly can't
+// fit on any line. There's no CSS knob for "only when unavoidable", so this
+// measures each word itself against the title's rendered width and only
+// splits (with a real "-") the rare word that's wider than the whole card on
+// its own — every other word is left untouched, wrapping normally at spaces.
+const titleRefs = ref<HTMLElement[]>([])
+let measureCanvasCtx: CanvasRenderingContext2D | null = null
+
+function measure(text: string, font: string): number {
+  if (!measureCanvasCtx) {
+    measureCanvasCtx = document.createElement('canvas').getContext('2d')
+  }
+  if (!measureCanvasCtx) return 0
+  measureCanvasCtx.font = font
+  return measureCanvasCtx.measureText(text).width
+}
+
+// Breaks a single overflowing word into "fits-on-a-line-" chunks joined by
+// <br>, each chunk ending in a real hyphen (except the last) — a binary
+// shrink per chunk against the available width, font-measured via canvas.
+function splitOverflowingWord(word: string, font: string, maxWidth: number): string {
+  const chunks: string[] = []
+  let remaining = word
+  while (remaining.length > 1) {
+    let fitLen = remaining.length
+    while (fitLen > 1 && measure(`${remaining.slice(0, fitLen)}-`, font) > maxWidth) {
+      fitLen--
+    }
+    if (fitLen >= remaining.length) {
+      chunks.push(remaining)
+      remaining = ''
+      break
+    }
+    chunks.push(`${remaining.slice(0, fitLen)}-`)
+    remaining = remaining.slice(fitLen)
+  }
+  if (remaining) chunks.push(remaining)
+  return chunks.join('<br>')
+}
+
+function hyphenateOverflowingWords(el: HTMLElement) {
+  const original = el.dataset.originalHtml ?? el.innerHTML
+  el.dataset.originalHtml = original
+  el.innerHTML = original
+
+  const containerWidth = el.clientWidth
+  if (!containerWidth) return
+  const cs = getComputedStyle(el)
+  const font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`
+
+  function processNode(node: ChildNode) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent ?? ''
+      if (!text.trim()) return
+      let changed = false
+      const html = text.split(/(\s+)/).map((part) => {
+        if (!part.trim()) return part
+        if (measure(part, font) <= containerWidth) return part
+        changed = true
+        return splitOverflowingWord(part, font, containerWidth)
+      }).join('')
+      if (changed) {
+        const span = document.createElement('span')
+        span.innerHTML = html
+        node.replaceWith(...Array.from(span.childNodes))
+      }
+    } else {
+      Array.from(node.childNodes).forEach(processNode)
+    }
+  }
+  Array.from(el.childNodes).forEach(processNode)
+}
+
+function reprocessAllTitles() {
+  titleRefs.value.forEach((el) => {
+    delete el.dataset.originalHtml
+    hyphenateOverflowingWords(el)
+  })
+}
+
+let resizeObserver: ResizeObserver | null = null
+onMounted(async () => {
+  await nextTick()
+  reprocessAllTitles()
+  resizeObserver = new ResizeObserver(() => reprocessAllTitles())
+  titleRefs.value.forEach((el) => resizeObserver!.observe(el))
+})
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
+})
+
+watch(() => props.block.content.cards, async () => {
+  await nextTick()
+  reprocessAllTitles()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -81,6 +183,10 @@ function tagList(card: { tags?: string }): string[] {
 .v-block-cartels__card {
   padding: var(--spacing-xl);
   min-height: 560px; // taller/more elongated, per updated design
+  // A flex column's own default min-width:auto lets its content's intrinsic
+  // width (here, the title) push the card wider than its grid cell instead
+  // of wrapping — same root cause as every other min-width fix this session.
+  min-width: 0;
   border: 2px solid transparent;
   transition: background-color 0.2s ease, border-color 0.2s ease;
 
@@ -96,6 +202,16 @@ function tagList(card: { tags?: string }): string[] {
 
 .v-block-cartels__title {
   margin-top: var(--spacing-l);
+  // hyphens:auto looks right for a single long word on its own line (see
+  // Default.vue's header title), but on a multi-word title like this one
+  // the browser's greedy line-fill hyphenates words that would've fit fine
+  // on the next line anyway ("Prise en charge to-/tale..." instead of just
+  // wrapping "totale" whole) — not what was wanted here. hyphens:manual (the
+  // default — no effect without an explicit soft hyphen in the content)
+  // keeps wrapping at spaces only; overflow-wrap:break-word is still the
+  // fallback for the rare single word wider than the card on its own.
+  hyphens: manual;
+  overflow-wrap: break-word;
 }
 
 .v-block-cartels__description {

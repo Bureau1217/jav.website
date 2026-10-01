@@ -97,8 +97,12 @@ const titleHtml = computed(() => {
   object-fit: cover;
   border-radius: 999px;
 
+  // Same mobile treatment as Gallery.global.vue's own image — taller/bigger
+  // (the desktop ratio is a wide, short strip) with a fixed 150px radius
+  // instead of the desktop full pill.
   @media (max-width: $breakpoint-mobile) {
-    border-radius: var(--radius-l);
+    aspect-ratio: 3 / 4;
+    border-radius: 150px;
   }
 }
 

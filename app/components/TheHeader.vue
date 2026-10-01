@@ -110,23 +110,19 @@ watch(isOpen, (open) => {
 
 // Real exported logo mark, applied as a mask so it can be recolored via
 // `color` — same trick the Figma source file uses — instead of shipping
-// two separate colored SVGs for the bar vs. the open-nav state. Mint while
-// closed (floating over the page's hero, which always stays mint), but
-// switches to the page's "on accent" color once the menu opens onto its
-// own accent-colored background.
+// two separate colored SVGs for the bar vs. the open-nav state. Follows the
+// page's own theme (see usePageTheme.ts) in both states — mint while
+// closed and floating over the page's own hero/panel, same color it then
+// switches to once the menu opens onto its own accent-colored background.
 .v-header__logo-mark {
   display: block;
   width: 60px;
   height: 47px;
-  color: var(--color-brand-01);
+  color: var(--color-page-on-accent);
   background-color: currentColor;
   -webkit-mask: url('/img/LOGO-JAV_HEADER.svg') center / contain no-repeat;
   mask: url('/img/LOGO-JAV_HEADER.svg') center / contain no-repeat;
   transition: color 0.2s ease;
-}
-
-.v-header.is-open .v-header__logo-mark {
-  color: var(--color-page-on-accent);
 }
 
 .v-header__burger {
@@ -155,7 +151,9 @@ watch(isOpen, (open) => {
     width: 100%;
     height: 4px;
     border-radius: var(--radius-pill);
-    background: var(--color-brand-01);
+    // Follows the page's own theme (see usePageTheme.ts), same as the logo
+    // mark above — mint by default, e.g. white on Formation Pro.
+    background: var(--color-page-on-accent);
     transition: transform 0.25s ease, opacity 0.2s ease, background-color 0.2s ease;
   }
 
@@ -164,10 +162,6 @@ watch(isOpen, (open) => {
   span:nth-child(3) { top: 20px; }
 
   &.is-open {
-    span {
-      background: var(--color-page-on-accent);
-    }
-
     // Rotate in place around the middle bar's own position (10px) — same
     // center the cross needs regardless of how far apart the bars sit at
     // rest.

@@ -3,12 +3,24 @@
     <UiSectionHeader
       v-if="block.content.title"
       :title="block.content.title"
-      link-to="/enseignantexs"
-      link-text="Voir tous les profils"
     />
+
+    <div class="v-block-teachers__filters u-flex u-gap-m u-flex--wrap">
+      <button
+        v-for="filter in FILTERS"
+        :key="filter.value"
+        type="button"
+        class="v-block-teachers__filter"
+        :class="{ 'is-active': activeFilter === filter.value }"
+        @click="activeFilter = filter.value"
+      >
+        {{ filter.label }}
+      </button>
+    </div>
+
     <div class="v-block-teachers">
       <UiCard
-        v-for="teacher in block.teacherPages"
+        v-for="teacher in filteredTeachers"
         :key="teacher.id"
         bordered
         background="var(--color-brand-00)"
@@ -73,9 +85,30 @@
 <script setup lang="ts">
 import type { KqlBlock } from '~~/shared/types/kql'
 
-defineProps<{
+const props = defineProps<{
   block: KqlBlock
 }>()
+
+// Two fixed categories (not CMS-driven) — matches Kirby's own "Fonction"
+// tag options (enseignant·e / permanent·e, see teacher.yml); a teacher's raw
+// fonction field can hold several comma-separated tags, so this matches on
+// substring rather than requiring an exact single value. "responsable" is
+// also accepted for the permanent team — some profiles still carry that
+// older tag value instead of the current "permanent·e" option.
+const FILTERS = [
+  { value: 'enseignant', label: 'Équipe Enseignante', keywords: ['enseignant'] },
+  { value: 'permanent', label: 'Équipe Permanente', keywords: ['permanent', 'responsable'] }
+] as const
+
+const activeFilter = ref<typeof FILTERS[number]['value']>('enseignant')
+
+const filteredTeachers = computed(() => {
+  const keywords = FILTERS.find(filter => filter.value === activeFilter.value)?.keywords ?? []
+  return (props.block.teacherPages ?? []).filter((teacher: { fonction?: string }) => {
+    const fonction = teacher.fonction?.toLowerCase() ?? ''
+    return keywords.some(keyword => fonction.includes(keyword))
+  })
+})
 </script>
 
 <style lang="scss" scoped>
@@ -83,6 +116,22 @@ defineProps<{
 .v-block-teachers-wrap {
   padding-block: var(--block-spacing);
   color: var(--color-page-accent);
+}
+
+.v-block-teachers__filter {
+  @include type-label;
+  background: transparent;
+  color: var(--color-page-accent);
+  border: 2px solid var(--color-page-accent);
+  border-radius: var(--radius-pill);
+  padding: var(--spacing-xs) var(--spacing-l);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &.is-active {
+    background: var(--color-page-accent);
+    color: var(--color-page-on-accent);
+  }
 }
 
 .v-block-teachers {

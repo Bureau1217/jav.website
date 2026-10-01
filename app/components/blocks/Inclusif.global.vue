@@ -41,11 +41,11 @@ const titleHtml = computed(() => {
 </script>
 
 <style lang="scss" scoped>
-// Fixed pink/indigo pair, not the page-accent theme — this block's own
+// Fixed pink/green pair, not the page-accent theme — this block's own
 // look, per the reference mockup, not themed per-page like Gallery.
 .v-block-inclusif {
   background: var(--color-brand-05);
-  color: var(--color-brand-04);
+  color: var(--color-brand-02);
   padding-block: var(--block-spacing);
 }
 
@@ -68,7 +68,7 @@ const titleHtml = computed(() => {
 
 // Real exported icon (public/img), flanking the title, per the reference
 // mockup — a mask-image (not <img>) so it's recolored via `color` to always
-// match the block's own indigo via currentColor, same pattern as
+// match the block's own green via currentColor, same pattern as
 // TheHeader.vue's logo mark / Resources.global.vue's icons.
 .v-block-inclusif__sparkle {
   flex-shrink: 0;
@@ -111,28 +111,29 @@ const titleHtml = computed(() => {
 // nested content (see Section.global.vue). Also overrides the page-theme
 // variables that themed blocks (Tableau avec colonnes, CtA...) read from,
 // so their column dividers/titles/buttons pick up this block's own fixed
-// indigo-on-pink pair instead of whatever the surrounding page is themed
-// (green by default) — per the reference mockup.
+// green-on-pink pair instead of whatever the surrounding page is themed
+// (green by default too, but this stays fixed even on a maroon/orange page)
+// — per the reference mockup.
 .v-block-inclusif__content {
   --block-spacing: var(--spacing-4xl);
   --heading-1-size: 32px;
-  --color-page-accent: var(--color-brand-04);
+  --color-page-accent: var(--color-brand-02);
   --color-page-on-accent: var(--color-brand-05);
   // Any UiButton nested in here (a CtA block's own button, Section's header
-  // link...) — filled indigo pill, light pink text, per the reference
+  // link...) — filled green pill, light pink text, per the reference
   // mockup, overriding UiButton's own site-wide default (cream bg/indigo
   // text) since custom properties cascade straight through child
   // components regardless of their own scoped styles.
-  --button-color: var(--color-brand-04);
+  --button-color: var(--color-brand-02);
   --button-text: var(--color-brand-05);
 
   // CtA's own button (Cta.global.vue's .v-block-cta__link) sets
   // --button-color/--button-text itself (inverted: page-on-accent/
-  // page-accent, i.e. pink bg/indigo text here) — needs its own override at
+  // page-accent, i.e. pink bg/green text here) — needs its own override at
   // higher specificity to actually win over that, the generic one above
   // isn't enough.
   :deep(.v-block-cta__link) {
-    --button-color: var(--color-brand-04);
+    --button-color: var(--color-brand-02);
     --button-text: var(--color-brand-05);
   }
 

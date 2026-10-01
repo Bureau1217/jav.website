@@ -98,6 +98,7 @@ export interface KqlFormationCard {
 }
 
 export interface KqlTestimonial {
+  name: string
   role: string[]
   text: string
   photo: KqlFile | null

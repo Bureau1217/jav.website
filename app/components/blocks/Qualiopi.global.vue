@@ -36,6 +36,11 @@
         {{ block.content.contact_email_text }}
       </component>
     </div>
+
+    <div class="v-block-qualiopi__bars u-flex u-flex--column u-gap-xs">
+      <UiDivider variant="thick" />
+      <UiDivider variant="thick" />
+    </div>
   </div>
 </template>
 

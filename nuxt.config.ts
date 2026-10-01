@@ -24,6 +24,15 @@ export default defineNuxtConfig({
   runtimeConfig: {
     apiUrl: '',
     apiAuthEmail: '',
-    apiAuthPassword: ''
+    apiAuthPassword: '',
+    smtp: {
+      host: 'mail.infomaniak.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: 'info@jav-musique.com',
+        pass: 'motdepasse_exemple'
+      },
+    }
   }
 })

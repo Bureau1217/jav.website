@@ -54,8 +54,8 @@ export default defineNuxtConfig({
       port: 465,
       secure: true,
       auth: {
-        user: 'info@jav-musique.com',
-        pass: 'motdepasse_exemple'
+        user: '',
+        pass: ''
       },
     }
   }

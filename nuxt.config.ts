@@ -1,5 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  nitro: {
+    preset: 'node-server',
+  },
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   // Needed for CSS `hyphens: auto` to actually hyphenate (browsers pick the
@@ -24,6 +27,15 @@ export default defineNuxtConfig({
   runtimeConfig: {
     apiUrl: '',
     apiAuthEmail: '',
-    apiAuthPassword: ''
+    apiAuthPassword: '',
+    smtp: {
+      host: 'mail.infomaniak.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: 'info@jav-musique.com',
+        pass: 'motdepasse_exemple'
+      },
+    }
   }
 })

@@ -1,6 +1,7 @@
 <template>
   <div class="v-block-array-layout u-flex u-flex--column u-gap-xl u-gutter-x">
     <h1 v-if="block.content.title" v-html="block.content.title" />
+    <UiDivider variant="thick" />
     <div class="v-block-array-layout__columns u-flex u-gap-2xl">
       <div
         v-for="(column, index) in block.content.columns"
@@ -49,6 +50,7 @@
         </template>
       </div>
     </div>
+    <UiDivider variant="thick" />
   </div>
 </template>
 

@@ -138,6 +138,13 @@ export const pageSelect = {
         query: 'block.content.pdf.toFile',
         select: FILE_SELECT
       },
+      // Inclusif block's own "image" field — same idea as qualiopiLogo/
+      // qualiopiPdf above, a single file resolved from anywhere on the
+      // site. Harmless no-op on every other block.
+      inclusifImage: {
+        query: 'block.content.image.toFile',
+        select: FILE_SELECT
+      },
       partnerLogos: {
         query: 'block.content.cards.toStructure',
         select: {

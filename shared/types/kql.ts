@@ -59,6 +59,9 @@ export interface KqlBlock {
   /** Qualiopi block's own "pdf" field resolved to a real file, same idea as
    * qualiopiLogo. The "Consultable ici" button downloads this file. */
   qualiopiPdf: KqlFile | null
+  /** Inclusif block's own "image" field resolved to a real file — picked
+   * from anywhere on the site, same idea as qualiopiLogo. */
+  inclusifImage: KqlFile | null
 }
 
 export interface KqlEvent {

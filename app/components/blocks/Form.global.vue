@@ -134,12 +134,14 @@ const deliveryMethod = ref<InscriptionForm_deliveryMethod>('email')
 
 const EMPTY_FIELDS = { lastname: '', firstname: '', age: null as number | null, phone: '', email: '' }
 const fields = reactive({ ...EMPTY_FIELDS })
+const UNVALIDATED_BASE_TEXT = "Le formulaire n'a pas pu être validé."
 
 const STATUS_MESSAGES = {
   idle: '',
   sending: 'Envoi en cours…',
   success: 'Merci, votre demande a bien été envoyée.',
-  error: "Une erreur est survenue, corrigez l'erreur ou contactez-nous."
+  unvalidated: UNVALIDATED_BASE_TEXT,
+  error: "Une erreur est survenue, essayez à nouveau ou contactez-nous."
 }
 const status = ref<keyof typeof STATUS_MESSAGES>('idle')
 
@@ -151,7 +153,7 @@ async function onSubmit() {
   status.value = 'sending'
 
   try {
-    const response = await $fetch('/api/form/inscription', {
+    const response: { status: string, message?: string } = await $fetch('/api/form/inscription', {
       method: 'POST',
       body: {
         registrationType: registrationType.value,
@@ -160,12 +162,19 @@ async function onSubmit() {
       }
     })
 
-    console.log(response)
+    if( response.status === 'error' ) {
+        console.error('Mail non validé coté serveur: ', response.message)
+        STATUS_MESSAGES.unvalidated = UNVALIDATED_BASE_TEXT + ' Raison : ' + response.message
+        status.value = 'unvalidated'
+        return
+    }
 
-    Object.assign(fields, EMPTY_FIELDS)
-    status.value = 'success'
-  } catch {
-    status.value = 'error'
+      Object.assign(fields, EMPTY_FIELDS)
+      status.value = 'success'
+      return
+  } catch (e) {
+      status.value = 'error'
+      return
   }
 }
 

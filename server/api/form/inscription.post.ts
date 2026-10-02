@@ -1,14 +1,17 @@
 import * as zod from "@zod/zod";
 import type { InscriptionForm_deliveryMethod, InscriptionForm_registrationType } from "#shared/types/form.ts";
 
+// Messages d'erreur Zod par défaut en français.
+zod.config(zod.locales.fr())
+
 const inscriptionSchema = zod.object({
     registrationType: zod.literal<readonly InscriptionForm_registrationType[]>(['first', 'renewal']),
     deliveryMethod: zod.literal<readonly InscriptionForm_deliveryMethod[]>(['email', 'courrier']),
-    firstname:  zod.string().min(1),
-    lastname:   zod.string().min(1),
-    age:        zod.number().min(1),
-    email:      zod.string().trim().toLowerCase().pipe(zod.email()),
-    phone:      zod.string().min(1),
+    firstname:  zod.string().min(1, 'Le prénom est obligatoire'),
+    lastname:   zod.string().min(1, 'Le nom est obligatoire'),
+    age:        zod.number().min(1, "L'âge est obligatoire"),
+    email:      zod.string().trim().toLowerCase().pipe(zod.email("L'adresse e-mail n'est pas valide")),
+    phone:      zod.string().min(1, 'Le téléphone est obligatoire'),
 })
 
 

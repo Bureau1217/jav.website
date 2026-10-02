@@ -153,7 +153,14 @@ async function onSubmit() {
   status.value = 'sending'
 
   try {
-    const response: { status: string, message?: string } = await $fetch('/api/form/inscription', {
+    const response: { status: string, message?: {
+            code:   string
+            format: string
+            message: string
+            origin: string
+            path: string[]
+            pattern: string
+        }[] } = await $fetch('/api/form/inscription', {
       method: 'POST',
       body: {
         registrationType: registrationType.value,
@@ -164,7 +171,7 @@ async function onSubmit() {
 
     if( response.status === 'error' ) {
         console.error('Mail non validé coté serveur: ', response.message)
-        STATUS_MESSAGES.unvalidated = UNVALIDATED_BASE_TEXT + ' Raison : ' + response.message
+        STATUS_MESSAGES.unvalidated = UNVALIDATED_BASE_TEXT + ' Raison(s) : ' + response.message?.map(message => message.message)?.join(', ') + '.'
         status.value = 'unvalidated'
         return
     }

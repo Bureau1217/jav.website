@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
   try {
     await sendMail({
         from: '"JAV Musique" <info+inscription@jav-musiques.com>',
-        to: 'nico@villa1203.ch',
+        to: ['nico@villa1203.ch'],
         replyTo: `${data.firstname} ${data.lastname} <${data.email}>`,
         subject: `Nouvelle demande d'inscription - ${data.firstname} ${data.lastname}`,
         text: `Nouvelle demande d'inscription reçue :

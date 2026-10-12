@@ -46,6 +46,12 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
+    public: {
+      // Canonical public origin (e.g. "https://www.jav-musiques.com"), used
+      // for the sitemap's absolute URLs — set it with NUXT_PUBLIC_SITE_URL.
+      // Empty falls back to whichever host the request came in on.
+      siteUrl: ''
+    },
     apiUrl: '',
     apiAuthEmail: '',
     apiAuthPassword: '',

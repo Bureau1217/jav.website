@@ -2,45 +2,32 @@
   <div class="v-block-testimonials u-flex u-flex--column u-gap-xl u-gutter-x">
     <UiSectionHeader :title="block.content.title || 'Témoignages'" class="v-block-testimonials__header" />
 
-    <div v-if="featured" class="v-block-testimonials__layout">
-      <!-- The first testimonial is always the big, highlighted card — every
-           other one shows as a plain photo card alongside it (see the
-           clarifying question this was built from: a fixed featured slot,
-           not a carousel). -->
-      <UiCard
-        background="var(--color-page-accent)"
-        color="var(--color-page-on-accent)"
-        class="v-block-testimonials__featured u-flex u-flex--column u-flex--justify-between u-gap-2xl"
+    <div v-if="items.length" class="v-block-testimonials__cards">
+      <article
+        v-for="(item, index) in items"
+        :key="index"
+        class="v-block-testimonials__card u-flex u-flex--column"
       >
-        <div class="v-block-testimonials__featured-row u-flex u-flex--align-start u-flex--justify-between u-gap-m">
-          <span class="v-block-testimonials__featured-label">Témoignage</span>
-          <UiTag v-if="featured.role.length">{{ featured.role.join(' · ') }}</UiTag>
+        <UiDivider />
+        <div class="v-block-testimonials__card-media">
+          <img
+            v-if="item.photo"
+            :src="item.photo.url"
+            :alt="item.photo.alt ?? ''"
+            :style="{ objectPosition: objectPosition(item.photo) }"
+          >
+          <!-- "Étudiant" / "Alumni" (the Panel's "statut" tags field), top-left
+               of the photo — outline only, no background fill. -->
+          <UiTag v-if="item.role.length" class="v-block-testimonials__card-tag">
+            {{ item.role.join(' · ') }}
+          </UiTag>
         </div>
-        <div class="v-block-testimonials__featured-quote" v-html="featured.text" />
-      </UiCard>
-
-      <div v-if="otherItems.length" class="v-block-testimonials__cards">
-        <article
-          v-for="(item, index) in otherItems"
-          :key="index"
-          class="v-block-testimonials__card u-flex u-flex--column"
-        >
-          <UiDivider />
-          <div class="v-block-testimonials__card-media">
-            <img
-              v-if="item.photo"
-              :src="item.photo.url"
-              :alt="item.photo.alt ?? ''"
-              :style="{ objectPosition: objectPosition(item.photo) }"
-            >
-          </div>
-          <UiDivider />
-          <div class="v-block-testimonials__card-content u-flex u-flex--column u-gap-xs">
-            <span v-if="item.name" class="v-block-testimonials__card-name">{{ item.name }}</span>
-            <div class="v-block-testimonials__card-quote" v-html="item.text" />
-          </div>
-        </article>
-      </div>
+        <UiDivider />
+        <div class="v-block-testimonials__card-content u-flex u-flex--column u-gap-xs">
+          <span v-if="item.name" class="v-block-testimonials__card-name">{{ item.name }}</span>
+          <div class="v-block-testimonials__card-quote" v-html="item.text" />
+        </div>
+      </article>
     </div>
     <p v-else class="v-block-testimonials__empty">Pas encore de témoignage publié.</p>
   </div>
@@ -59,8 +46,7 @@ defineProps<{
 // (see server/api/testimonials.get.ts).
 const { data: testimonials } = await useFetch<KqlTestimonial[]>('/api/testimonials')
 
-const featured = computed(() => testimonials.value?.[0] ?? null)
-const otherItems = computed(() => testimonials.value?.slice(1) ?? [])
+const items = computed(() => testimonials.value ?? [])
 </script>
 
 <style lang="scss" scoped>
@@ -71,28 +57,16 @@ const otherItems = computed(() => testimonials.value?.slice(1) ?? [])
   padding-block: var(--block-spacing);
 }
 
-// Plain cards on the left, the single featured card on the right — named
-// areas (not source order) place them, so the featured card can come first
-// in markup (it's the one that should lead on a stacked mobile layout)
-// while still rendering on the right on desktop.
-.v-block-testimonials__layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-areas: "cards featured";
-  align-items: stretch;
-  gap: var(--spacing-xl);
-
-  @media (max-width: $breakpoint-mobile) {
-    grid-template-columns: 1fr;
-    grid-template-areas: "featured" "cards";
-  }
-}
-
+// All testimonials in one 3-column grid (2 on tablet, 1 on mobile) — every
+// one is the same photo-on-top, quote-below card.
 .v-block-testimonials__cards {
-  grid-area: cards;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--spacing-xl);
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
   @media (max-width: $breakpoint-mobile) {
     grid-template-columns: 1fr;
@@ -100,7 +74,8 @@ const otherItems = computed(() => testimonials.value?.slice(1) ?? [])
 }
 
 .v-block-testimonials__card-media {
-  aspect-ratio: 4 / 5;
+  position: relative;
+  aspect-ratio: 1 / 1;
   border-radius: var(--radius-m);
   overflow: hidden;
   background: var(--color-brand-00);
@@ -110,6 +85,14 @@ const otherItems = computed(() => testimonials.value?.slice(1) ?? [])
     height: 100%;
     object-fit: cover;
   }
+}
+
+.v-block-testimonials__card-tag {
+  position: absolute;
+  top: var(--spacing-m);
+  left: var(--spacing-m);
+  // UiTag reads this for both its text and its border.
+  --ui-tag-color: var(--color-page-on-accent);
 }
 
 .v-block-testimonials__card-content {
@@ -127,9 +110,7 @@ const otherItems = computed(() => testimonials.value?.slice(1) ?? [])
 // line), so adding generated ones on top would double them up.
 .v-block-testimonials__card-quote {
   @include type-body-large;
-  // Smaller than the mixin's own 24px even on desktop — these are plain
-  // secondary cards next to the much bigger featured quote, not meant to
-  // read as prominently.
+  // Smaller than the mixin's own 24px — three cards side by side.
   font-size: 18px;
 
   // Full-width single column on mobile (see .cards above) — stays 18px
@@ -138,29 +119,63 @@ const otherItems = computed(() => testimonials.value?.slice(1) ?? [])
     font-size: 16px;
   }
 
+  // The writer field's HTML (<p>, <br>, <em>, <strong>...) is rendered as
+  // authored: the global reset (typo.scss) zeroes every <p>'s margin and
+  // every list's marker/indent, and gives <p> its own 24px size — so
+  // paragraph spacing, list markers and the inline styles are restored here,
+  // and <p> inherits this card's smaller size instead. <br> line breaks
+  // already render natively.
   :deep(p) {
-    margin: 0;
-  }
-}
-
-.v-block-testimonials__featured {
-  grid-area: featured;
-  padding: var(--spacing-2xl);
-}
-
-.v-block-testimonials__featured-label {
-  @include type-label;
-}
-
-.v-block-testimonials__featured-quote {
-  @include type-emphasis;
-
-  @media (max-width: $breakpoint-mobile) {
-    font-size: 24px;
+    margin: 0 0 var(--spacing-s);
+    font-size: inherit;
+    line-height: inherit;
+    font-weight: inherit;
   }
 
-  :deep(p) {
-    margin: 0;
+  :deep(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  :deep(a) {
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  :deep(strong),
+  :deep(b) {
+    font-weight: 800;
+  }
+
+  :deep(em),
+  :deep(i) {
+    font-style: italic;
+  }
+
+  :deep(u) {
+    text-decoration: underline;
+  }
+
+  :deep(s),
+  :deep(del) {
+    text-decoration: line-through;
+  }
+
+  :deep(ul),
+  :deep(ol) {
+    margin: 0 0 var(--spacing-s);
+    padding-left: var(--spacing-xl);
+  }
+
+  :deep(ul) {
+    list-style: disc;
+  }
+
+  :deep(ol) {
+    list-style: decimal;
+  }
+
+  :deep(li) {
+    margin-bottom: var(--spacing-xxs);
   }
 }
 

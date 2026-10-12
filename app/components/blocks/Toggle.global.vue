@@ -55,6 +55,13 @@ defineProps<{
 // type-text-heading-3 (Inter 700/40px) instead.
 .v-block-toggle__title {
   @include type-text-heading-3;
+  // Smaller than the mixin's own 40px — item titles were reading too large.
+  font-size: 32px;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 24px;
+  }
+
   flex: 1;
   // Without this, a flex item's default min-width:auto keeps it from
   // shrinking below its text's unconstrained intrinsic width — so a long
@@ -67,9 +74,14 @@ defineProps<{
 .v-block-toggle__icon {
   position: relative;
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   transition: transform 0.2s ease;
+
+  @media (max-width: $breakpoint-mobile) {
+    width: 24px;
+    height: 24px;
+  }
 
   &::before,
   &::after {

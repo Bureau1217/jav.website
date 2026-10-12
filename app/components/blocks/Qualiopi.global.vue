@@ -37,12 +37,14 @@
       </component>
     </div>
 
-    <!-- No closing bars here on purpose: when this block is the page's last
-         visible block, TheFooter.vue already renders this exact same pair
-         of thick bars right above itself (see useFooterLeadBars.ts) so the
-         block flows straight into the footer. Adding a second pair here
-         duplicated them (two stacked pairs) on any page — home included —
-         where Qualiopi is actually last. -->
+    <!-- Closing bars only when this block is NOT the page's last visible
+         block: when it is last, TheFooter.vue already renders this exact
+         same pair of thick bars right above itself (see
+         useFooterLeadBars.ts), and a second pair here would stack two. -->
+    <div v-if="!footerLeadBars" class="v-block-qualiopi__bars u-flex u-flex--column u-gap-xs">
+      <UiDivider variant="thick" />
+      <UiDivider variant="thick" />
+    </div>
   </div>
 </template>
 
@@ -52,6 +54,8 @@ import type { KqlBlock } from '~~/shared/types/kql'
 const props = defineProps<{
   block: KqlBlock
 }>()
+
+const footerLeadBars = useFooterLeadBars()
 
 const logo = computed(() => props.block.qualiopiLogo ?? null)
 // Not through UiButton: this is a real file download (needs the `download`

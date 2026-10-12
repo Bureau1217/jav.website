@@ -52,7 +52,7 @@
           </div>
         </div>
         <div class="v-block-concerts-event__card-media u-flex u-flex--column u-flex--align-end u-flex--justify-between">
-          <img v-if="featuredEvent.event.cover" :src="featuredEvent.event.cover.url" :alt="featuredEvent.event.cover.alt ?? ''" :style="{ objectPosition: objectPosition(featuredEvent.event.cover) }">
+          <img v-if="featuredEvent.event.cover" v-bind="imageAttrs(featuredEvent.event.cover, '(max-width: 700px) 100vw, 50vw')" :alt="featuredEvent.event.cover.alt ?? ''" :style="{ objectPosition: objectPosition(featuredEvent.event.cover) }">
           <div v-if="featuredEvent.event.cover" class="v-block-concerts-event__card-gradient" :style="{ background: photoGradient(featuredEvent.index) }" />
           <UiTag v-if="featuredEvent.event.type" :color="palette(featuredEvent.index).bg" class="v-block-concerts-event__card-filter">
             {{ eventTypeLabel(featuredEvent.event.type) }}
@@ -70,7 +70,7 @@
              colored panel layout as every other card, instead of the
              side-by-side split — see .card--featured-has-mobile-photo. -->
         <div v-if="featuredEvent.event.cover" class="v-block-concerts-event__card-photo v-block-concerts-event__card-photo--featured-mobile">
-          <img :src="featuredEvent.event.cover.url" :alt="featuredEvent.event.cover.alt ?? ''" :style="{ objectPosition: objectPosition(featuredEvent.event.cover) }">
+          <img v-bind="imageAttrs(featuredEvent.event.cover, '100vw')" :alt="featuredEvent.event.cover.alt ?? ''" :style="{ objectPosition: objectPosition(featuredEvent.event.cover) }">
           <div class="v-block-concerts-event__card-gradient" :style="{ background: photoGradient(featuredEvent.index) }" />
           <span class="v-block-concerts-event__card-photo-date">{{ formatEventDate(featuredEvent.event.date) }}</span>
           <UiTag v-if="featuredEvent.event.type" class="v-block-concerts-event__card-photo-tag">
@@ -134,7 +134,7 @@
               </div>
             </div>
             <div class="v-block-concerts-event__card-media u-flex u-flex--column u-flex--align-end u-flex--justify-between">
-              <img v-if="event.cover" :src="event.cover.url" :alt="event.cover.alt ?? ''" :style="{ objectPosition: objectPosition(event.cover) }">
+              <img v-if="event.cover" v-bind="imageAttrs(event.cover, '(max-width: 700px) 100vw, 50vw')" :alt="event.cover.alt ?? ''" :style="{ objectPosition: objectPosition(event.cover) }">
               <div v-if="event.cover" class="v-block-concerts-event__card-gradient" :style="{ background: photoGradient(index) }" />
               <UiTag v-if="event.type" :color="palette(index).bg" class="v-block-concerts-event__card-filter">
                 {{ eventTypeLabel(event.type) }}
@@ -153,7 +153,7 @@
                  with title/description/divider/CTA, matching the agenda
                  photo-card style the user asked for. -->
             <div v-if="event.cover" class="v-block-concerts-event__card-photo v-block-concerts-event__card-photo--featured-mobile">
-              <img :src="event.cover.url" :alt="event.cover.alt ?? ''" :style="{ objectPosition: objectPosition(event.cover) }">
+              <img v-bind="imageAttrs(event.cover, '100vw')" :alt="event.cover.alt ?? ''" :style="{ objectPosition: objectPosition(event.cover) }">
               <div class="v-block-concerts-event__card-gradient" :style="{ background: photoGradient(index) }" />
               <span class="v-block-concerts-event__card-photo-date">{{ formatEventDate(event.date) }}</span>
               <UiTag v-if="event.type" class="v-block-concerts-event__card-photo-tag">
@@ -185,7 +185,7 @@
                regardless of whether the event has a cover. -->
           <template v-else-if="!isHome && event.cover">
             <div class="v-block-concerts-event__card-photo">
-              <img :src="event.cover.url" :alt="event.cover.alt ?? ''" :style="{ objectPosition: objectPosition(event.cover) }">
+              <img v-bind="imageAttrs(event.cover, '(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw')" :alt="event.cover.alt ?? ''" :style="{ objectPosition: objectPosition(event.cover) }">
               <div class="v-block-concerts-event__card-gradient" :style="{ background: photoGradient(index) }" />
               <span class="v-block-concerts-event__card-photo-date">{{ formatEventDate(event.date) }}</span>
               <UiTag v-if="event.type" class="v-block-concerts-event__card-photo-tag">

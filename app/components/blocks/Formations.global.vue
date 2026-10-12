@@ -12,10 +12,10 @@
         <article v-for="card in cards" :key="card.uri" class="v-block-formations__card u-flex u-flex--column u-gap-2xl">
           <h1 class="v-block-formations__title" v-html="card.heading" />
           <NuxtLink :to="card.href" class="v-block-formations__card-image">
-            <img v-if="card.image" :src="card.image" :alt="card.imageAlt" :style="{ objectPosition: card.imagePosition }">
+            <img v-if="card.image" v-bind="imageAttrs(card.imageFile, '(max-width: 700px) 100vw, 50vw')" :alt="card.imageAlt" :style="{ objectPosition: card.imagePosition }">
             <img
               v-if="card.badge"
-              :src="card.badge.url"
+              v-bind="imageAttrs(card.badge, '128px')"
               :alt="card.badge.alt || 'Qualiopi'"
               class="v-block-formations__card-badge"
             >
@@ -81,6 +81,7 @@ const cards = computed(() =>
       title: fields.title ?? '',
       description: fields.description ?? '',
       image: page.previewImage?.url ?? '',
+      imageFile: page.previewImage,
       imageAlt: page.previewImage?.alt ?? '',
       imagePosition: objectPosition(page.previewImage),
       // Only the Formation Professionnelle card gets the Qualiopi badge

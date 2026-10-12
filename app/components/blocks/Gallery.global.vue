@@ -17,7 +17,7 @@
           class="v-block-gallery__image-wrap"
         >
           <img
-            :src="currentImage.url"
+            v-bind="imageAttrs(currentImage, '(max-width: 1300px) 100vw, 1300px')"
             :alt="currentImage.alt ?? current.title ?? ''"
             class="v-block-gallery__image"
             :style="{ objectPosition: objectPosition(currentImage) }"

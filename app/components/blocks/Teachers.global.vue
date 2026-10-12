@@ -30,7 +30,7 @@
         <div class="v-block-teachers__media">
           <img
             v-if="teacher.photo"
-            :src="teacher.photo.url"
+            v-bind="imageAttrs(teacher.photo, '(max-width: 700px) 100vw, 400px')"
             :alt="teacher.photo.alt ?? teacher.title"
             :style="{ objectPosition: objectPosition(teacher.photo) }"
           >

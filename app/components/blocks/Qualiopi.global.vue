@@ -6,7 +6,7 @@
     </div>
 
     <div v-if="logo" class="v-block-qualiopi__logo">
-      <img :src="logo.url" :alt="logo.alt ?? 'Qualiopi'">
+      <img v-bind="imageAttrs(logo, '260px')" :alt="logo.alt ?? 'Qualiopi'">
     </div>
 
     <div class="v-block-qualiopi__text u-flex u-flex--column u-flex--align-center u-gap-m">

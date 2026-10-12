@@ -12,7 +12,7 @@
         <div class="v-block-testimonials__card-media">
           <img
             v-if="item.photo"
-            :src="item.photo.url"
+            v-bind="imageAttrs(item.photo, '(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw')"
             :alt="item.photo.alt ?? ''"
             :style="{ objectPosition: objectPosition(item.photo) }"
           >

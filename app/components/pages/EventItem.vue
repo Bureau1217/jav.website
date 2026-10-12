@@ -11,7 +11,7 @@
     >
       <img
         v-if="page.eventCover"
-        :src="page.eventCover.url"
+        v-bind="imageAttrs(page.eventCover, '100vw', { eager: true })"
         :alt="page.eventCover.alt ?? ''"
         class="v-page-event__header-image"
         :style="{ objectPosition: objectPosition(page.eventCover) }"
@@ -45,7 +45,7 @@
               :key="image.filename"
               class="v-page-event__gallery-tile"
             >
-              <img :src="image.url" :alt="image.alt ?? ''" :style="{ objectPosition: objectPosition(image) }">
+              <img v-bind="imageAttrs(image, '(max-width: 700px) 50vw, 33vw')" :alt="image.alt ?? ''" :style="{ objectPosition: objectPosition(image) }">
               <div v-if="index === 2 && extraGalleryCount > 0" class="v-page-event__gallery-more">
                 +{{ extraGalleryCount }}
               </div>

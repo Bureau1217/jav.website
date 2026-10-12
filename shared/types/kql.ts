@@ -1,6 +1,13 @@
 export interface KqlFile {
   filename: string
+  /** Largest generated version (2000px wide at most). */
   url: string
+  /** Smaller generated versions of the same image, offered to the browser
+   * through srcset — see app/utils/imageAttrs.ts. Absent on non-image
+   * files and on teacher portraits' missing sizes. */
+  url600?: string
+  url1000?: string
+  url1600?: string
   alt: string | null
   width: number
   height: number

@@ -190,6 +190,23 @@ const legalLinksCol2 = computed(() => visibleLegalLinks.value.slice(2))
   }
 }
 
+// Mobile: every column (address, phone/email, legal links) stacks into a
+// single column instead of wrapping two side by side. The two legal-link
+// columns stay tight together, as one continuous list.
+.v-footer__columns {
+  @media (max-width: $breakpoint-mobile) {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+  }
+}
+
+.v-footer__col--legal + .v-footer__col--legal {
+  @media (max-width: $breakpoint-mobile) {
+    margin-top: calc(-1 * var(--spacing-xl));
+  }
+}
+
 // Every footer column (address, phone/email, the two legal-links columns)
 // now shares the same small bold typography as the Instagram/Facebook row
 // below (see .v-footer__bottom) instead of the larger regular footer body

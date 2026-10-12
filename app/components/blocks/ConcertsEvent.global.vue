@@ -38,8 +38,9 @@
         :background="palette(featuredEvent.index).bg"
         :color="palette(featuredEvent.index).accent"
         class="v-block-concerts-event__card v-block-concerts-event__card--featured u-flex"
+        :class="{ 'v-block-concerts-event__card--featured-has-mobile-photo': featuredEvent.event.cover }"
       >
-        <div class="v-block-concerts-event__card-content u-flex u-flex--column u-flex--justify-between u-gap-xl">
+        <div class="v-block-concerts-event__card-content v-block-concerts-event__card-content--split u-flex u-flex--column u-flex--justify-between u-gap-xl">
           <div class="v-block-concerts-event__card-header u-flex u-flex--column u-gap-s">
             <span class="v-block-concerts-event__card-date">{{ formatEventDate(featuredEvent.event.date) }}</span>
             <h3 class="v-block-concerts-event__card-title">{{ featuredEvent.event.title }}</h3>
@@ -63,6 +64,34 @@
           >
             En savoir plus
           </UiButton>
+        </div>
+
+        <!-- Mobile-only alternative (single column): same photo-on-top +
+             colored panel layout as every other card, instead of the
+             side-by-side split — see .card--featured-has-mobile-photo. -->
+        <div v-if="featuredEvent.event.cover" class="v-block-concerts-event__card-photo v-block-concerts-event__card-photo--featured-mobile">
+          <img :src="featuredEvent.event.cover.url" :alt="featuredEvent.event.cover.alt ?? ''" :style="{ objectPosition: objectPosition(featuredEvent.event.cover) }">
+          <div class="v-block-concerts-event__card-gradient" :style="{ background: photoGradient(featuredEvent.index) }" />
+          <span class="v-block-concerts-event__card-photo-date">{{ formatEventDate(featuredEvent.event.date) }}</span>
+          <UiTag v-if="featuredEvent.event.type" class="v-block-concerts-event__card-photo-tag">
+            {{ eventTypeLabel(featuredEvent.event.type) }}
+          </UiTag>
+        </div>
+        <div v-if="featuredEvent.event.cover" class="v-block-concerts-event__card-panel v-block-concerts-event__card-panel--featured-mobile u-flex u-flex--column u-flex--justify-between u-gap-s">
+          <div class="u-flex u-flex--column u-gap-s">
+            <h3 class="v-block-concerts-event__card-title">{{ featuredEvent.event.title }}</h3>
+            <div class="v-block-concerts-event__card-description">{{ truncateText(featuredEvent.event.description) }}</div>
+          </div>
+          <div class="u-flex u-flex--column u-gap-s">
+            <UiDivider />
+            <UiButton
+              :to="`/${featuredEvent.event.id}`"
+              class="v-block-concerts-event__card-cta"
+              :style="{ '--button-color': palette(featuredEvent.index).accent, '--button-text': palette(featuredEvent.index).bg }"
+            >
+              En savoir plus
+            </UiButton>
+          </div>
         </div>
       </UiCard>
 

@@ -65,16 +65,37 @@
         <UiCard
           v-for="event in otherEvents"
           :key="event.id"
-          :to="`/${event.id}`"
           :background="palette(event.index).bg"
           :color="palette(event.index).accent"
-          class="v-page-event__other-card u-flex u-flex--column u-gap-s"
+          class="v-page-event__other-card u-flex u-flex--column"
         >
-          <span v-if="event.type" class="v-page-event__other-tag">{{ typeLabelFor(event.type) }}</span>
-          <h3 class="v-page-event__other-title">{{ event.title }}</h3>
-          <div v-if="event.description" class="v-page-event__other-description" v-html="event.description" />
-          <UiDivider />
-          <span class="v-page-event__other-link">En savoir plus</span>
+          <!-- Same plain text card as the home teaser's (ConcertsEvent):
+               date + tag on top, title, description cut short between two
+               dividers, button below. Never a photo here, even when the
+               event has a cover. -->
+          <div class="v-page-event__other-content u-flex u-flex--column u-flex--justify-between u-gap-xl">
+            <div class="u-flex u-flex--column u-gap-s">
+              <div class="u-flex u-flex--align-start u-flex--justify-between u-gap-s">
+                <span class="v-page-event__other-date">{{ formatOtherDate(event.date) }}</span>
+                <UiTag v-if="event.type" class="v-page-event__other-tag">
+                  {{ typeLabelFor(event.type) }}
+                </UiTag>
+              </div>
+              <h3 class="v-page-event__other-title">{{ event.title }}</h3>
+            </div>
+            <div class="u-flex u-flex--column u-gap-s">
+              <UiDivider />
+              <div class="v-page-event__other-description">{{ truncateText(event.description) }}</div>
+              <UiDivider />
+            </div>
+            <UiButton
+              :to="`/${event.id}`"
+              class="v-page-event__other-cta"
+              :style="{ '--button-color': palette(event.index).accent, '--button-text': palette(event.index).bg }"
+            >
+              En savoir plus
+            </UiButton>
+          </div>
         </UiCard>
       </div>
     </div>
@@ -159,6 +180,11 @@ const otherEvents = computed(() =>
     .filter(event => event.id !== props.page.id)
     .slice(0, 3)
 )
+
+function formatOtherDate(date: string | null) {
+  if (!date) return ''
+  return new Date(date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+}
 
 function palette(index: number) {
   return eventPalette(index)
@@ -294,28 +320,32 @@ function palette(index: number) {
   }
 }
 
+// Same size/padding as ConcertsEvent's own plain text cards.
 .v-page-event__other-card {
-  padding: var(--spacing-xl);
-  min-height: 260px;
-  text-decoration: none;
+  min-height: 440px;
 }
 
-.v-page-event__other-tag {
+.v-page-event__other-content {
+  flex: 1;
+  padding: var(--spacing-xl);
+}
+
+.v-page-event__other-date {
   @include type-tag-date;
 }
 
-// A real <h3> — no local font override needed, color comes from UiCard's
-// `color` prop (currentColor), same as ConcertsEvent's own cards.
-.v-page-event__other-description {
-  @include type-body-large-bold;
-  flex: 1;
-
-  :deep(p) {
-    margin: 0;
-  }
+// A real <h3> — color comes from UiCard's `color` prop (currentColor), same
+// as ConcertsEvent's own cards. Reserves room for up to 3 lines so the
+// description/button below start at the same height on every card.
+.v-page-event__other-title {
+  min-height: 120px;
 }
 
-.v-page-event__other-link {
+.v-page-event__other-description {
   @include type-body-large-bold;
+}
+
+.v-page-event__other-cta {
+  position: relative;
 }
 </style>

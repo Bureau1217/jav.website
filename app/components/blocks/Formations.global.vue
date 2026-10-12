@@ -240,6 +240,13 @@ const cards = computed(() =>
   &:hover {
     opacity: 0.85;
   }
+
+  // Smaller on mobile — the desktop-sized banner (86px icon, 32px title)
+  // was taking up too much of a narrow screen.
+  @media (max-width: $breakpoint-mobile) {
+    padding: var(--spacing-xs);
+    gap: var(--spacing-m);
+  }
 }
 
 .v-block-formations__banner-icon {
@@ -250,6 +257,11 @@ const cards = computed(() =>
   border-radius: var(--radius-s);
   font-size: 64px;
   flex-shrink: 0;
+
+  @media (max-width: $breakpoint-mobile) {
+    height: 56px;
+    font-size: 40px;
+  }
 }
 
 .v-block-formations__banner-text {
@@ -261,13 +273,26 @@ const cards = computed(() =>
   font-weight: 900;
   font-size: 32px; // smaller than the default heading-3 (40px), fits the banner
   line-height: 1;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 24px;
+  }
 }
 
 .v-block-formations__banner-subtitle {
   @include type-accent-italic;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 30px;
+    line-height: 32px;
+  }
 }
 
 .v-block-formations__banner-arrow {
   font-size: 32px;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 24px;
+  }
 }
 </style>

@@ -34,9 +34,11 @@
       <p v-if="block.content.text" class="v-block-section__text" v-html="block.content.text" />
     </div>
 
-    <div v-if="hasContent" v-show="isOpen" class="v-block-section__content">
-      <Blocks :blocks="parsedContent" :images="images" :files="files" />
-    </div>
+    <Transition :css="false" @enter="collapseEnter" @leave="collapseLeave">
+      <div v-if="hasContent" v-show="isOpen" class="v-block-section__content">
+        <Blocks :blocks="parsedContent" :images="images" :files="files" />
+      </div>
+    </Transition>
 
     <!-- Sits right after the header when closed (the content div above is
          v-show'd to zero height), and after the expanded content when
@@ -134,7 +136,9 @@ const tagList = computed(() => {
   &::after {
     width: 3px;
     height: 100%;
-    transition: transform 0.2s ease, opacity 0.2s ease;
+    // Same duration/easing as the content's own open/close animation, so
+    // the icon and the panel move together.
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   &.is-open::after {

@@ -14,7 +14,14 @@ const PUBLIC_TEMPLATES = ['default', 'event_item']
 
 // Pages that exist on the site but should stay out of the sitemap, by Kirby
 // page id.
-const EXCLUDED_IDS = ['formation-professionnelle/details']
+const EXCLUDED_IDS = [
+  'formation-professionnelle/details',
+  // Legal pages: public and findable by Google (they're linked from every
+  // page's footer, and not marked noindex), but deliberately left out of the
+  // sitemap so they aren't put forward alongside the site's main pages.
+  'mentions-legales',
+  'politique-de-confidentialite'
+]
 
 /**
  * Builds the site's own URL from the live request (host + protocol, honoring
@@ -40,7 +47,11 @@ const PAGE_PRIORITY: Record<string, { priority: number, changefreq: SitemapEntry
   'pratique-amateur': { priority: 0.9, changefreq: 'monthly' },
   // The agenda lists every upcoming event, so it changes far more often.
   'agenda': { priority: 0.8, changefreq: 'weekly' },
-  'a-propos': { priority: 0.7, changefreq: 'monthly' }
+  'a-propos': { priority: 0.7, changefreq: 'monthly' },
+  // Still a draft — only appears in the sitemap once published in the Panel
+  // (drafts are never part of site.index). If the page ends up with another
+  // slug, change this key to match.
+  'ressources': { priority: 0.8, changefreq: 'monthly' }
 }
 
 function entryFor(page: SitemapPage): SitemapEntry {
@@ -84,7 +95,11 @@ export default defineCachedEventHandler(async (event) => {
   // and each uncached call is a full page-tree query. Keyed by host so a
   // request on one hostname never serves URLs built for another.
   // No caching in dev, so edits here (or to pages in the CMS) show up on
-  // the next reload instead of up to an hour later.
-  maxAge: import.meta.dev ? 0 : 60 * 60,
+  // the next reload instead of up to an hour later. (maxAge: 0 alone wasn't
+  // enough: Nitro's default stale-while-revalidate kept serving an old cached
+  // copy, e.g. one built before a page was published.)
+  maxAge: 60 * 60,
+  swr: false,
+  shouldBypassCache: () => import.meta.dev,
   getKey: event => getRequestHost(event, { xForwardedHost: true })
 })

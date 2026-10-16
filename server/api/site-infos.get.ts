@@ -27,6 +27,8 @@ interface RawSiteInfosPage {
   footerLinkMentions: string | null
   footerLinkConfidentialite: string | null
   accessibilityText: string | null
+  seoDescription: string | null
+  seoImage: { url: string } | null
   bands: RawInfoBand[] | null
   images: Array<{ filename: string; url: string; alt: string | null; width: number; height: number; extension: string }>
 }
@@ -127,6 +129,11 @@ export default defineEventHandler(async () => {
       footerLinkMentions: 'page.footer_link_mentions.toUrl',
       footerLinkConfidentialite: 'page.footer_link_confidentialite.toUrl',
       accessibilityText: 'page.accessibility_text',
+      seoDescription: 'page.seo_default_description',
+      seoImage: {
+        query: 'page.seo_default_image.toFile',
+        select: { url: 'file.resize(1200).url' }
+      },
       bands: {
         query: 'page.infos_bands.toStructure',
         select: {
@@ -158,6 +165,8 @@ export default defineEventHandler(async () => {
     socialYoutube: null,
     footerLegalLinks: [],
     accessibilityText: null,
+    seoDescription: null,
+    seoImage: null,
     bands: []
   }
   if (!page) {
@@ -200,6 +209,8 @@ export default defineEventHandler(async () => {
     socialYoutube: page.socialYoutube || null,
     footerLegalLinks,
     accessibilityText: page.accessibilityText || null,
+    seoDescription: page.seoDescription || null,
+    seoImage: page.seoImage?.url || null,
     bands
   }
 

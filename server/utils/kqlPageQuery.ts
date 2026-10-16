@@ -98,6 +98,12 @@ export const pageSelect = {
     query: 'page.files',
     select: FILE_SELECT
   },
+  // SEO fields ("SEO" tab, site/blueprints/sections/seo.yml) — both optional;
+  // see app/composables/usePageSeo.ts for the fallbacks used when empty. The
+  // share image is not per page: it's one site-wide image, set in "Informations
+  // globales" (see server/api/site-infos.get.ts).
+  seoTitle: 'page.seo_title',
+  seoDescription: 'page.seo_description',
   // Page content's last-saved date — see KqlPage.pageModified.
   pageModified: 'page.modified("Y-m-d")',
   // "event_item" template fields (site/blueprints/pages/event_item.yml) —

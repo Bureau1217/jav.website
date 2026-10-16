@@ -5,14 +5,15 @@ export interface MailchimpSubscribeOptions {
   firstName?: string
   lastName?: string
   tags?: string[]
-  /** 'subscribed' = ajout direct, 'pending' = double opt-in (mail de confirmation) */
+
+  /** 'subscribed' = ajout direct,
+   *  'pending' = double opt-in (mail de confirmation)
+   *  */
   status?: 'subscribed' | 'pending'
 }
 
 /**
  * Adds (or updates) an email address in the Mailchimp audience.
- * Uses PUT on the member's MD5 hash, so calling it twice with the same
- * address is safe (no "already a list member" error).
  */
 export async function addToMailchimpList(options: MailchimpSubscribeOptions) {
   const { apiKey, listId } = useRuntimeConfig().mailchimp
@@ -26,7 +27,7 @@ export async function addToMailchimpList(options: MailchimpSubscribeOptions) {
   const email = options.email.trim().toLowerCase()
   const subscriberHash = createHash('md5').update(email).digest('hex')
 
-  return await $fetch(`https://${dc}.api.mailchimp.com/3.0/lists/${listId}/members/${subscriberHash}`, {
+  const response = await $fetch(`https://${dc}.api.mailchimp.com/3.0/lists/${listId}/members/${subscriberHash}`, {
     method: 'PUT',
     headers: {
       Authorization: `Basic ${Buffer.from(`anystring:${apiKey}`).toString('base64')}`
@@ -43,4 +44,9 @@ export async function addToMailchimpList(options: MailchimpSubscribeOptions) {
       ...(options.tags && { tags: options.tags })
     }
   })
+
+
+  console.log(response)
+
+  return response
 }

@@ -7,8 +7,6 @@
       <NuxtPage/>
     </main>
 
-    <BlocksNewsletter/>
-
     <TheFooter />
     <TheFloatingPromo />
   </div>

@@ -1,0 +1,50 @@
+// Needed now that main.scss @use's this file instead of @import'ing it —
+// @use doesn't inherit the importing file's own scope (unlike @import), so
+// the type-* mixins below have to be brought in directly rather than relying
+// on main.scss having them via nuxt.config's additionalData.
+@use "_typo-mixins" as *;
+
+// Bare tag defaults — the mixins themselves live in _typo-mixins.scss
+// (auto-injected into every component via Nuxt's vite scss additionalData,
+// see nuxt.config.ts), this file just applies them globally to the raw
+// HTML tags.
+//
+// h1 is now the "Titre de la section" tag — every block can have one (so
+// there are deliberately several <h1>s per page), rendered via
+// UiSectionHeader or inline in a few blocks (Section, ArrayLayout, Cta,
+// Formations). The page's own big title (formerly the page's single <h1>)
+// is no longer a heading tag at all — see .h-hero below, used once per page
+// in Default.vue.
+h1 {
+  @include type-text-heading-2;
+  font-size: var(--heading-1-size);
+}
+
+h3 {
+  @include type-heading-3;
+}
+
+p {
+  @include type-body-large;
+}
+
+// The page's own title (Hero/page-header) — a styled <div>, not a heading
+// tag, since h1 is now reserved for "Titre de la section" (see above).
+.h-hero {
+  @include type-display;
+}
+
+h1,
+h3,
+h4,
+p,
+.h-hero {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

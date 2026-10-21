@@ -1,0 +1,124 @@
+// _params.scss isn't @use'd here — Nuxt's vite scss additionalData (see
+// nuxt.config.ts) already injects it into every .scss file vite loads as its
+// own entry, including this one. But unlike the old @import (which flattened
+// everything into one shared scope, so grid.scss picked up $breakpoint-mobile
+// "for free" through this file), @use is modular: it does NOT forward what
+// this file has access to down into grid.scss/typo.scss below, since neither
+// of those is a vite entry of its own — so each of them now has its own
+// `@use "_params" as *;` (and typo.scss its own `@use "_typo-mixins" as *;`)
+// to regain that access.
+@use "_font-loading.scss";
+@use "grid.scss";
+@use "typo.scss";
+
+:root {
+  // Colors
+  --color-brand-00: #f9f5ea; // cream (background / light text on dark)
+  --color-brand-01: #8dffc0; // mint
+  --color-brand-02: #005745; // dark green
+  --color-brand-03: #6cace4; // light blue
+  --color-brand-04: #290fa1; // primary indigo
+  --color-brand-05: #f1b7e2; // pink
+  --color-brand-06: #8c1126; // maroon
+  --color-brand-07: #fb8d04; // orange
+  --color-brand-08: #ffd400; // yellow
+
+  // Page accent — the primary color used by every block (header/hero,
+  // footer, CTA, Form, Section, Citation, Planning, Resources, ArrayLayout,
+  // Toggle, List, Formations, Gallery, Text, Teachers, Partners, Cartels,
+  // Testimonials...). Defaults to the site-wide green theme (brand-02);
+  // specific pages override it (see usePageTheme.ts, applied in app.vue) to
+  // run their own color instead, e.g. Formation Pro's maroon (brand-06),
+  // without touching any block's own SCSS. Multi-color cycling palettes
+  // (ConcertsEvent) are the deliberate exception and stay fixed.
+  --color-page-accent: var(--color-brand-02);
+
+  // "On accent" — the foreground color used by elements that sit on top of
+  // a --color-page-accent-colored background (buttons, dividers, form
+  // fields...) inside a block's own content. Defaults to mint everywhere;
+  // a page can override it (e.g. Formation Pro uses white instead of mint)
+  // without affecting the header/hero or footer, which always use mint
+  // directly rather than this variable. The *-rgb twin is the same color as
+  // raw "r, g, b" for the translucent rgba() uses (Form's field borders).
+  --color-page-on-accent: var(--color-brand-01);
+  --color-page-on-accent-rgb: 141, 255, 192;
+
+  --button-text: var(--color-brand-04);
+  --button-color: var(--color-brand-00);
+
+  // Spacing scale
+  --spacing-xxs: 4px;
+  --spacing-xs: 8px;
+  --spacing-s: 12px;
+  --spacing-m: 16px;
+  --spacing-l: 20px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+  --spacing-3xl: 40px;
+  --spacing-4xl: 48px;
+  --spacing-5xl: 64px;
+  --spacing-6xl: 80px;
+  --spacing-7xl: 96px;
+
+  // Fonts
+  --font-heading: 'GT Maru', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-emoji: 'GT Maru Emoji', 'Inter', system-ui, sans-serif;
+  --font-accent: 'Feroniapi', 'Georgia', serif;
+
+  // Radii
+  --radius-s: var(--spacing-s);
+  --radius-m: var(--spacing-m);
+  --radius-l: var(--spacing-l);
+  --radius-pill: var(--spacing-7xl);
+
+  // UiDivider sizes — "thick" matches the footer's pill bar, "thin" matches
+  // the FAQ (Toggle) block's hairline between items. Every UiDivider in the
+  // site reads from these two variables, so changing one changes it
+  // everywhere at once.
+  --divider-thick-size: var(--spacing-s);
+  --divider-thin-size: 3px;
+
+  // --gutter lives in grid.scss (base value + its own responsive
+  // override, kept together in one file).
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+// Reserves the scrollbar's width whether or not a scrollbar is actually
+// showing, so toggling `overflow: hidden` on <html> (done while the mobile
+// nav is open, see TheHeader.vue) never changes the viewport width and
+// nudges right-aligned elements like the header's burger button sideways.
+html {
+  scrollbar-gutter: stable;
+}
+
+body {
+  background: var(--color-brand-00);
+  color: var(--color-brand-04);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+}

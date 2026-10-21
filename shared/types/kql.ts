@@ -5,12 +5,32 @@ export interface KqlFile {
   width: number
   height: number
   extension: string
+  /** "Y-m-d" — used by the Resources block to show "MIS À JOUR EN <mois> <année>" automatically, without editors having to fill a date field. */
+  modified: string | null
+  /** Kirby's own file UUID (no "file://" prefix) — a block's raw file
+   * reference (e.g. Resources' "resource_file") is always stored as
+   * "file://<uuid>", never a filename, so resolveKqlFile.ts needs this to
+   * match files nested inside a Section/Array-layout block. */
+  uuid: string | null
+  /** Panel's built-in focal-point picker — "x% y%" (e.g. "76% 30%") or ""
+   * when never set. Apply as CSS object-position wherever this image uses
+   * object-fit: cover — see app/utils/objectPosition.ts. */
+  focus: string | null
 }
 
 export interface KqlTeacher {
   id: string
   title: string
   fonction: string | null
+  /** Personal/professional website — shown as an "En savoir plus"-style
+   * link on the Teachers block card when set. */
+  website: string | null
+  teachers_email: string | null
+  teachers_website: string | null
+  /** Full bio (writer field) — the Teachers block shows it truncated as a
+   * short quote; the individual teacher page (not yet built) would show it
+   * in full. */
+  bio: string | null
   photo: KqlFile | null
 }
 
@@ -20,6 +40,133 @@ export interface KqlBlock {
   isHidden: boolean
   content: Record<string, any>
   teacherPages: KqlTeacher[]
+  /** One entry per row of the block's "items" structure (Gallery, List...),
+   * same order as content.items, with that row's "image" field resolved to
+   * a real file — see server/utils/kqlPageQuery.ts. */
+  itemImages: Array<{ image: KqlFile | null }>
+  /** One entry per row of the Resources block's "resource_items" structure,
+   * same order, with that row's "resource_file" field resolved to a real
+   * file — picked from anywhere on the site, not just files uploaded to
+   * this page, so the Resources block's "MIS À JOUR EN ..." date always
+   * reflects the file's real modified date, however it's stored. */
+  resourceFiles: Array<{ file: KqlFile | null }>
+  /** One entry per row of the Partners block's "cards" structure, each with
+   * its own "partners" sub-structure resolved so every partner's "logo"
+   * field points to a real file — picked from anywhere on the site, not
+   * just this page's own images. */
+  partnerLogos: Array<{ partners: Array<{ logo: KqlFile | null }> }>
+  /** Qualiopi block's own "logo" field resolved to a real file — picked from
+   * anywhere on the site, not just this page's own images. */
+  qualiopiLogo: KqlFile | null
+  /** Qualiopi block's own "pdf" field resolved to a real file, same idea as
+   * qualiopiLogo. The "Consultable ici" button downloads this file. */
+  qualiopiPdf: KqlFile | null
+  /** Inclusif block's own "image" field resolved to a real file — picked
+   * from anywhere on the site, same idea as qualiopiLogo. */
+  inclusifImage: KqlFile | null
+}
+
+export interface KqlEvent {
+  id: string
+  title: string
+  date: string | null
+  time: string | null
+  type: string | null
+  location: string | null
+  ticketLink: string | null
+  cover: KqlFile | null
+  description: string | null
+}
+
+/**
+ * One entry per page the homepage "formations" block highlights (Formation
+ * Professionnelle / Pratique Amateur). Card tag + title + image come from
+ * that page's own header fields, so editing the page's header updates the
+ * card automatically — see server/api/formations.get.ts.
+ */
+export interface KqlFormationCard {
+  id: string
+  uri: string
+  headerTitle: string | null
+  headerSubtitle: string | null
+  previewImage: KqlFile | null
+  // Only set for "formation-professionnelle" — the same Qualiopi logo file
+  // used by the Qualiopi block further down the home page (see
+  // server/api/formations.get.ts), shown as a badge overlaid on that card's
+  // own image.
+  qualiopiBadge: KqlFile | null
+}
+
+export interface KqlTestimonial {
+  name: string
+  role: string[]
+  text: string
+  photo: KqlFile | null
+}
+
+export interface KqlInfoBand {
+  text: string
+  image: KqlFile | null
+  link: string | null
+}
+
+/**
+ * One entry per page reference — powers the header burger nav (auto-
+ * generated from every top-level "default" page, see /api/nav) and the
+ * footer nav (editor-curated picker on "Informations globales", see
+ * /api/site-infos). `uri` is Kirby's page.uri, which is already '' for the
+ * home page, so `/${uri}` resolves correctly everywhere.
+ */
+export interface KqlNavItem {
+  id: string
+  title: string
+  uri: string
+}
+
+export interface KqlAddress {
+  name: string | null
+  street: string | null
+  number: string | null
+  postalCode: string | null
+  city: string | null
+}
+
+/**
+ * One of the footer's 4 legal-page links (Accessibilité, Tarifs et
+ * Financement, Mentions légales, Politique de confidentialité) — each is a
+ * fixed label (set in TheFooter.vue) paired with an editor-picked page link
+ * from "Informations globales". `href` is null whenever the editor hasn't
+ * picked a page yet, in which case the link isn't shown at all (see
+ * TheFooter.vue) rather than pointing at a dead route.
+ */
+export interface KqlFooterLegalLink {
+  label: string
+  href: string | null
+}
+
+/**
+ * Everything editors manage from "Informations globales" (site.yml ->
+ * site_infos template): postal address, contact details, the editor-picked
+ * list of pages to show in the footer nav, social links, the footer's legal
+ * page links, its small accessibility disclaimer text, and the scrolling
+ * banner items.
+ */
+export interface KqlSiteInfo {
+  address: KqlAddress | null
+  phone: string | null
+  email: string | null
+  footerPages: KqlNavItem[]
+  // Each null when the editor hasn't filled that network's URL in yet — not
+  // shown at all then (see TheFooter.vue), rather than a dead link.
+  socialInstagram: string | null
+  socialFacebook: string | null
+  socialYoutube: string | null
+  footerLegalLinks: KqlFooterLegalLink[]
+  // Raw HTML from a "writer" field (paragraph/bold/italic/link) — rendered
+  // with v-html, same pattern as every other writer field in this codebase
+  // (e.g. Qualiopi.global.vue's description).
+  accessibilityText: string | null
+  bands: KqlInfoBand[]
 }
 
 export interface KqlPage {
@@ -33,4 +180,18 @@ export interface KqlPage {
   images: KqlFile[]
   files: KqlFile[]
   blocks: KqlBlock[]
+  /** "Y-m-d" — page content's last-saved date. Used as the Resources
+   * block's "MIS À JOUR EN ..." for "Dossier" (link) items, which have no
+   * file of their own to read a modified date from. */
+  pageModified: string | null
+  /** "event_item" template fields (see PagesEventItem.vue) — null/empty on
+   * every other template. */
+  eventDate: string | null
+  eventTime: string | null
+  eventType: string | null
+  eventLocation: string | null
+  eventTicketLink: string | null
+  eventDescription: string | null
+  eventCover: KqlFile | null
+  eventGallery: KqlFile[]
 }

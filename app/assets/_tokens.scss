@@ -1,0 +1,7 @@
+// DEPRECATED — every typography mixin that used to live here has been
+// inlined directly into each component/typo.scss (per team decision: no
+// shared mixin, write the font-family/weight/size/line-height where it's
+// used, even if that repeats values across files). No longer imported
+// from nuxt.config.ts. Kept only because this session's sandbox couldn't
+// delete it (VM_DISK_SPACE_INSUFFICIENT) — safe to delete this file by
+// hand, or ask again once the sandbox is back.

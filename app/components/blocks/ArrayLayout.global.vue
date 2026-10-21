@@ -1,16 +1,52 @@
 <template>
-  <div class="v-block-array-layout">
-    <h3 v-if="block.content.title" v-html="block.content.title" />
-    <div class="v-block-array-layout__columns">
+  <div class="v-block-array-layout u-flex u-flex--column u-gap-xl u-gutter-x">
+    <h1 v-if="block.content.title" v-html="block.content.title" />
+    <UiDivider variant="thick" />
+    <div class="v-block-array-layout__columns u-flex u-gap-2xl">
       <div
         v-for="(column, index) in block.content.columns"
         :key="index"
-        class="v-block-array-layout__column"
+        class="v-block-array-layout__column u-flex u-flex--column u-gap-xl"
       >
-        <div v-if="column.columns_title" v-html="column.columns_title" />
-        <Blocks :blocks="parseKqlBlocks(column.columns_content)" :images="images" :files="files" />
+        <template v-for="(item, itemIndex) in columnItems(column)" :key="itemIndex">
+          <!-- "cta" items are shown as a compact pink badge (caption + bold
+               label) instead of the big full-bleed CTA used standalone
+               elsewhere — see Cta.global.vue for that other treatment. -->
+          <UiCard
+            v-if="item.type === 'cta'"
+            :to="item.content.link?.link_url || undefined"
+            background="var(--color-brand-05)"
+            color="var(--color-page-accent)"
+            class="v-block-array-layout__cta u-flex u-flex--column u-flex--align-center u-gap-xs"
+          >
+            <span v-if="item.content.link?.link_text" class="v-block-array-layout__cta-caption">
+              {{ item.content.link.link_text }}
+            </span>
+            <span v-if="item.content.title" class="v-block-array-layout__cta-title" v-html="item.content.title" />
+          </UiCard>
+
+          <!-- "puce" items have their own title/text/tags fields (see
+               Puce.global.vue) — a plain item.content.text dump (the
+               fallback below) would silently drop the title and tags. -->
+          <template v-else-if="item.type === 'puce'">
+            <h3 v-if="column.columns_title && itemIndex === 0" v-html="column.columns_title" />
+            <div class="v-block-array-layout__puce u-flex u-flex--column u-gap-xs">
+              <div v-if="puceTags(item).length" class="u-flex u-gap-xs u-flex--wrap">
+                <UiTag v-for="tag in puceTags(item)" :key="tag">{{ tag }}</UiTag>
+              </div>
+              <div v-if="item.content.title" class="v-block-array-layout__item" v-html="item.content.title" />
+              <div v-if="item.content.text" class="v-block-array-layout__puce-text" v-html="item.content.text" />
+            </div>
+          </template>
+
+          <template v-else>
+            <h3 v-if="column.columns_title && itemIndex === 0" v-html="column.columns_title" />
+            <div class="v-block-array-layout__item" v-html="item.content.text" />
+          </template>
+        </template>
       </div>
     </div>
+    <UiDivider variant="thick" />
   </div>
 </template>
 
@@ -22,13 +58,133 @@ defineProps<{
   images?: KqlFile[]
   files?: KqlFile[]
 }>()
+
+function columnItems(column: { columns_content?: string }) {
+  return parseKqlBlocks(column.columns_content)
+}
+
+// Kirby's "tags" field stores its raw value as a single comma-separated
+// string (not an array) — split it into pills, same as Puce.global.vue.
+function puceTags(item: { content?: { tags?: string } }): string[] {
+  const raw = item.content?.tags
+  if (!raw) return []
+  return String(raw).split(',').map((tag: string) => tag.trim()).filter(Boolean)
+}
 </script>
 
 <style lang="scss" scoped>
 .v-block-array-layout {
+  padding-block: var(--block-spacing);
+  color: var(--color-page-accent);
 }
 
 .v-block-array-layout__columns {
-  display: flex;
+  @media (max-width: $breakpoint-mobile) {
+    flex-direction: column;
+  }
+}
+
+.v-block-array-layout__column {
+  flex: 1;
+  padding-inline: var(--spacing-xl);
+  border-left: 3px solid var(--color-page-accent);
+
+  &:first-child {
+    padding-left: 0;
+    border-left: none;
+  }
+
+  // Columns stack into a single one on mobile (see .columns above) — the
+  // vertical separators between them no longer make sense once there's
+  // nothing beside them to separate from, replaced with a thin horizontal
+  // rule above each column instead (none on the first — nothing stacked
+  // above it to separate from).
+  @media (max-width: $breakpoint-mobile) {
+    padding-inline: 0;
+    padding-top: var(--spacing-xl);
+    border-left: none;
+    border-top: var(--divider-thin-size) solid var(--color-page-accent);
+
+    &:first-child {
+      padding-top: 0;
+      border-top: none;
+    }
+  }
+
+  // "Titre de la colonne" — Inter instead of the canonical h3 (GT Maru),
+  // type-text-heading-1 already matches the target size (32px).
+  h3 {
+    @include type-text-heading-1;
+  }
+}
+
+// A <div>, not a <p> — this is bold (type-body-large-bold), unlike a <p>'s
+// canonical style (type-body-large, weight 500).
+.v-block-array-layout__item {
+  @include type-body-large-bold;
+}
+
+.v-block-array-layout__puce-text {
+  @include type-body-large;
+
+  :deep(p) {
+    margin: 0 0 var(--spacing-m);
+  }
+
+  :deep(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  :deep(strong) {
+    font-weight: 800;
+  }
+
+  :deep(em) {
+    font-style: italic;
+  }
+
+  // Global reset (typo.scss) strips every list's own marker/indent —
+  // restore both here, same treatment as Puce.global.vue.
+  :deep(ul),
+  :deep(ol) {
+    margin: 0 0 var(--spacing-m);
+    padding-left: var(--spacing-xl);
+  }
+
+  :deep(ul) {
+    list-style: disc;
+  }
+
+  :deep(ol) {
+    list-style: decimal;
+  }
+
+  :deep(li) {
+    margin-bottom: var(--spacing-xs);
+
+    ul,
+    ol {
+      margin-top: var(--spacing-xs);
+      margin-bottom: 0;
+    }
+  }
+
+  :deep(li:last-child) {
+    margin-bottom: 0;
+  }
+}
+
+.v-block-array-layout__cta {
+  padding: var(--spacing-l) var(--spacing-xl);
+  text-align: center;
+  text-decoration: none;
+}
+
+.v-block-array-layout__cta-caption {
+  @include type-body;
+}
+
+.v-block-array-layout__cta-title {
+  @include type-text-heading-1;
 }
 </style>

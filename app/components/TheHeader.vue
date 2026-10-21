@@ -82,12 +82,12 @@ watch(isOpen, (open) => {
   z-index: 1000;
   isolation: isolate;
 
-  &.is-open {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-  }
+  // The header itself never changes position or size: it stays sticky and
+  // keeps reserving its ~88px in the page flow whether the menu is open or
+  // not (each page's top section is pulled up by that same 88px, so any
+  // change here shifts the whole page). Only the nav panel covers the
+  // screen — it's fixed, so it takes no space in the flow, even while it
+  // fades out after closing.
 }
 
 // Always transparent — every page's own top section (Hero photo or flat
@@ -96,16 +96,15 @@ watch(isOpen, (open) => {
 // (.is-open) gets an opaque background, since it's no longer overlaying
 // anything.
 .v-header__bar {
+  // Above the fixed nav panel so the logo and burger stay visible/clickable.
+  position: relative;
+  z-index: 1;
   padding-block: var(--spacing-m);
+  // Transparent in both states: when the menu is open, the color behind the
+  // bar comes from the fixed nav panel itself (it extends underneath), so
+  // bar and menu fade in/out together instead of the bar's own background
+  // switching on instantly ahead of the panel.
   background: transparent;
-  transition: background-color 0.2s ease;
-}
-
-// Follows the page you're on (see usePageTheme.ts), same as every themed
-// block — only while open, since the closed bar is transparent and floats
-// over the page's own hero, which always stays mint regardless of theme.
-.v-header.is-open .v-header__bar {
-  background: var(--color-page-accent);
 }
 
 // Real exported logo mark, applied as a mask so it can be recolored via
@@ -182,14 +181,18 @@ watch(isOpen, (open) => {
 }
 
 .v-header__nav {
-  flex: 1;
+  position: fixed;
+  inset: 0;
   background: var(--color-page-accent);
   color: var(--color-page-on-accent);
-  padding-block: var(--spacing-4xl);
+  // Clears the bar (88px) that sits above this panel, then the usual padding.
+  padding-top: calc(88px + var(--spacing-4xl));
+  padding-bottom: var(--spacing-4xl);
   overflow-y: auto;
 
   @media (max-width: $breakpoint-mobile) {
-    padding-block: var(--spacing-xl);
+    padding-top: calc(88px + var(--spacing-xl));
+    padding-bottom: var(--spacing-xl);
   }
 }
 
@@ -228,9 +231,11 @@ watch(isOpen, (open) => {
   -webkit-mask-position: center;
 }
 
+// Fade in/out of the whole panel. The panel is fixed (see .v-header__nav),
+// so however long this runs it never affects the page's layout.
 .v-header-nav-enter-active,
 .v-header-nav-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.4s ease;
 }
 
 .v-header-nav-enter-from,

@@ -20,6 +20,11 @@ const { data: page, error } = await useFetch<KqlPage>(
   { key: () => `page:${path.value}` }
 )
 
+// Title, description, canonical URL, Open Graph/Twitter tags — from the
+// page's "Référencement (SEO)" fields in the Panel, with fallbacks (see
+// usePageSeo.ts).
+usePageSeo(page)
+
 // Per-page color theme (see usePageTheme.ts) — kept in shared state (not a
 // local computed) because app.vue needs it too, to also retheme TheFooter,
 // which lives outside this page's own component tree. Skipped for

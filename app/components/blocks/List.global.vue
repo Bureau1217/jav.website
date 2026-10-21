@@ -16,7 +16,7 @@
         class="v-block-list__grid-item u-flex u-flex--column u-flex--align-center u-gap-m"
       >
         <div class="v-block-list__grid-image">
-          <img :src="image.url" :alt="image.alt ?? ''" :style="{ objectPosition: objectPosition(image) }">
+          <img v-bind="imageAttrs(image, '(max-width: 700px) 100vw, 500px')" :alt="image.alt ?? ''" :style="{ objectPosition: objectPosition(image) }">
         </div>
         <span v-if="item.title" class="v-block-list__grid-title">{{ item.title }}</span>
         <div v-if="item.text" class="v-block-list__grid-text" v-html="item.text" />

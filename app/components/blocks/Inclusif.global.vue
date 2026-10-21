@@ -7,7 +7,7 @@
         <span class="v-block-inclusif__sparkle" aria-hidden="true" />
       </div>
       <div v-if="image" class="v-block-inclusif__media">
-        <img :src="image.url" :alt="image.alt ?? ''" class="v-block-inclusif__image" :style="{ objectPosition: objectPosition(image) }">
+        <img v-bind="imageAttrs(image, '(max-width: 700px) 100vw, 1000px')" :alt="image.alt ?? ''" class="v-block-inclusif__image" :style="{ objectPosition: objectPosition(image) }">
       </div>
     </div>
 

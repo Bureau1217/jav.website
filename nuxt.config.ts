@@ -6,7 +6,10 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { lang: 'fr' },
       title: 'JAV - L’École des Musiques',
-      titleTemplate: ((title) => title ? `${title} - JAV` : 'JAV - L’École des Musiques' )(),
+      // Each page builds its complete title itself (see usePageSeo.ts), so no
+      // template is applied on top. (The previous value was a function called
+      // immediately, i.e. one fixed string for every page.)
+      titleTemplate: '%s',
       link: [
         // favicon-jav.png (provided, 100x100) — PNG favicons are supported
         // by every current browser, no .ico conversion needed; the old
@@ -46,6 +49,20 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
+    public: {
+      // Canonical public origin (e.g. "https://www.jav-musiques.com"), used
+      // for the sitemap's absolute URLs — set it with NUXT_PUBLIC_SITE_URL.
+      // Empty falls back to whichever host the request came in on.
+      siteUrl: '',
+      // Matomo (audience measurement), JAV's own install. Neither value is a
+      // secret (both end up in the page's public JS), so they live here as
+      // defaults — no .env needed; NUXT_PUBLIC_MATOMO_URL /
+      // NUXT_PUBLIC_MATOMO_SITE_ID still override them, and setting either to
+      // an empty value turns tracking off. Never active in `nuxt dev` (see
+      // app/plugins/matomo.client.ts).
+      matomoUrl: 'https://matomo.jav-musiques.com',
+      matomoSiteId: '1'
+    },
     apiUrl: '',
     apiAuthEmail: '',
     apiAuthPassword: '',

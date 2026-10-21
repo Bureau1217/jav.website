@@ -1,6 +1,13 @@
 export interface KqlFile {
   filename: string
+  /** Largest generated version (2000px wide at most). */
   url: string
+  /** Smaller generated versions of the same image, offered to the browser
+   * through srcset — see app/utils/imageAttrs.ts. Absent on non-image
+   * files and on teacher portraits' missing sizes. */
+  url600?: string
+  url1000?: string
+  url1600?: string
   alt: string | null
   width: number
   height: number
@@ -166,6 +173,10 @@ export interface KqlSiteInfo {
   // with v-html, same pattern as every other writer field in this codebase
   // (e.g. Qualiopi.global.vue's description).
   accessibilityText: string | null
+  /** Site-wide SEO: default description (for pages without their own) and
+   * the one Open Graph share image used by every page — see usePageSeo.ts. */
+  seoDescription: string | null
+  seoImage: string | null
   bands: KqlInfoBand[]
 }
 
@@ -180,6 +191,10 @@ export interface KqlPage {
   images: KqlFile[]
   files: KqlFile[]
   blocks: KqlBlock[]
+  /** SEO fields from the Panel's "SEO" tab — optional, null when not
+   * filled in. (The share image is site-wide, see KqlSiteInfo.seoImage.) */
+  seoTitle: string | null
+  seoDescription: string | null
   /** "Y-m-d" — page content's last-saved date. Used as the Resources
    * block's "MIS À JOUR EN ..." for "Dossier" (link) items, which have no
    * file of their own to read a modified date from. */

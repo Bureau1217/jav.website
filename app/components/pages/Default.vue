@@ -11,7 +11,7 @@
     >
       <div v-if="page.headerImage" class="v-page-default__header-media" aria-hidden="true">
         <img
-          :src="page.headerImage.url"
+          v-bind="imageAttrs(page.headerImage, '100vw', { eager: true })"
           :alt="page.headerImage.alt ?? ''"
           class="v-page-default__header-image"
           :style="{ objectPosition: objectPosition(page.headerImage) }"

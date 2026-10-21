@@ -116,12 +116,11 @@ const legalLinksCol2 = computed(() => visibleLegalLinks.value.slice(2))
 
 <style lang="scss" scoped>
 .v-footer {
-  // Follows the page you're on (see usePageTheme.ts) — green by default,
-  // e.g. maroon on Formation Pro. Text stays mint always (not
-  // --color-page-on-accent — that one's for blocks specifically, the
-  // footer is an explicit exception along with the page's own hero).
+  // Follows the page you're on (see usePageTheme.ts) for both the
+  // background and the text — green/mint by default, maroon on Formation
+  // Pro, the event's own (bg, accent) pair on an event page.
   background: var(--color-page-accent);
-  color: var(--color-brand-01);
+  color: var(--color-page-on-accent);
   padding-block: var(--spacing-7xl) var(--spacing-5xl);
   gap: var(--spacing-7xl);
 
@@ -182,12 +181,29 @@ const legalLinksCol2 = computed(() => visibleLegalLinks.value.slice(2))
   a {
     @include type-body-large-bold;
     text-decoration: none;
-    color: var(--color-brand-01);
+    color: var(--color-page-on-accent);
     width: fit-content;
 
     &:hover {
       text-decoration: underline;
     }
+  }
+}
+
+// Mobile: every column (address, phone/email, legal links) stacks into a
+// single column instead of wrapping two side by side. The two legal-link
+// columns stay tight together, as one continuous list.
+.v-footer__columns {
+  @media (max-width: $breakpoint-mobile) {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+  }
+}
+
+.v-footer__col--legal + .v-footer__col--legal {
+  @media (max-width: $breakpoint-mobile) {
+    margin-top: calc(-1 * var(--spacing-xl));
   }
 }
 
@@ -202,7 +218,7 @@ const legalLinksCol2 = computed(() => visibleLegalLinks.value.slice(2))
     font-weight: 800;
     font-size: 16px;
     line-height: 1.6;
-    color: var(--color-brand-01);
+    color: var(--color-page-on-accent);
   }
 
   a {
@@ -228,7 +244,7 @@ const legalLinksCol2 = computed(() => visibleLegalLinks.value.slice(2))
 
 .v-footer__social {
   a {
-    color: var(--color-brand-01);
+    color: var(--color-page-on-accent);
     text-decoration: none;
 
     &:hover {
@@ -250,7 +266,7 @@ const legalLinksCol2 = computed(() => visibleLegalLinks.value.slice(2))
   // (see server/api/site-infos.get.ts), rendered via v-html — :deep()
   // reaches the dynamically-inserted <p>/<strong>/<a> tags under scoped CSS.
   :deep(p) {
-    color: var(--color-brand-01);
+    color: var(--color-page-on-accent);
     margin: 0;
     // type-body-large (global p rule in typo.scss) sets its own explicit
     // font-size directly on <p>, so this has to override it here rather
@@ -259,7 +275,7 @@ const legalLinksCol2 = computed(() => visibleLegalLinks.value.slice(2))
   }
 
   :deep(a) {
-    color: var(--color-brand-01);
+    color: var(--color-page-on-accent);
 
     &:hover {
       text-decoration: underline;

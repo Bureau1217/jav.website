@@ -12,10 +12,10 @@
         <article v-for="card in cards" :key="card.uri" class="v-block-formations__card u-flex u-flex--column u-gap-2xl">
           <h1 class="v-block-formations__title" v-html="card.heading" />
           <NuxtLink :to="card.href" class="v-block-formations__card-image">
-            <img v-if="card.image" :src="card.image" :alt="card.imageAlt" :style="{ objectPosition: card.imagePosition }">
+            <img v-if="card.image" v-bind="imageAttrs(card.imageFile, '(max-width: 700px) 100vw, 50vw')" :alt="card.imageAlt" :style="{ objectPosition: card.imagePosition }">
             <img
               v-if="card.badge"
-              :src="card.badge.url"
+              v-bind="imageAttrs(card.badge, '128px')"
               :alt="card.badge.alt || 'Qualiopi'"
               class="v-block-formations__card-badge"
             >
@@ -81,6 +81,7 @@ const cards = computed(() =>
       title: fields.title ?? '',
       description: fields.description ?? '',
       image: page.previewImage?.url ?? '',
+      imageFile: page.previewImage,
       imageAlt: page.previewImage?.alt ?? '',
       imagePosition: objectPosition(page.previewImage),
       // Only the Formation Professionnelle card gets the Qualiopi badge
@@ -240,6 +241,13 @@ const cards = computed(() =>
   &:hover {
     opacity: 0.85;
   }
+
+  // Smaller on mobile — the desktop-sized banner (86px icon, 32px title)
+  // was taking up too much of a narrow screen.
+  @media (max-width: $breakpoint-mobile) {
+    padding: var(--spacing-xs);
+    gap: var(--spacing-m);
+  }
 }
 
 .v-block-formations__banner-icon {
@@ -250,6 +258,11 @@ const cards = computed(() =>
   border-radius: var(--radius-s);
   font-size: 64px;
   flex-shrink: 0;
+
+  @media (max-width: $breakpoint-mobile) {
+    height: 56px;
+    font-size: 40px;
+  }
 }
 
 .v-block-formations__banner-text {
@@ -261,13 +274,26 @@ const cards = computed(() =>
   font-weight: 900;
   font-size: 32px; // smaller than the default heading-3 (40px), fits the banner
   line-height: 1;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 24px;
+  }
 }
 
 .v-block-formations__banner-subtitle {
   @include type-accent-italic;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 30px;
+    line-height: 32px;
+  }
 }
 
 .v-block-formations__banner-arrow {
   font-size: 32px;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 24px;
+  }
 }
 </style>

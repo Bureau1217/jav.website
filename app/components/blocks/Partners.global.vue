@@ -13,7 +13,7 @@
           color="var(--color-page-accent)"
           class="v-block-partners__logo u-flex u-flex--align-center u-flex--justify-center"
         >
-          <img v-if="logoUrl(partner, index, partnerIndex)" :src="logoUrl(partner, index, partnerIndex)!" :alt="partner.name ?? ''">
+          <img v-if="logoFile(partner, index, partnerIndex)" v-bind="imageAttrs(logoFile(partner, index, partnerIndex), '300px')" :alt="partner.name ?? ''">
           <span v-else>{{ partner.name }}</span>
         </UiCard>
       </div>
@@ -34,9 +34,9 @@ const props = defineProps<{
 // this page — the primary source. Falling back to resolveKqlFile against
 // the page's own images covers the (rare) case a logo was actually
 // uploaded straight to this page.
-function logoUrl(partner: { logo?: string[] }, cardIndex: number, partnerIndex: number): string | null {
+function logoFile(partner: { logo?: string[] }, cardIndex: number, partnerIndex: number): KqlFile | null {
   const resolved = props.block.partnerLogos?.[cardIndex]?.partners?.[partnerIndex]?.logo
-  return resolved?.url ?? resolveKqlFile(partner.logo, props.images)?.url ?? null
+  return resolved ?? resolveKqlFile(partner.logo, props.images) ?? null
 }
 </script>
 

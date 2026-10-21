@@ -1,16 +1,5 @@
-import nodemailer from 'nodemailer'
-import type { SendMailOptions as NodemailerOptions } from 'nodemailer'
-
-export interface SmtpConfig {
-  host?: string
-  port?: number
-  secure?: boolean
-  auth?: {
-    user: string
-    pass: string
-  }
-  from?: string
-}
+import { Resend } from 'resend'
+import type { Attachment } from 'resend'
 
 export interface SendMailOptions {
   to: string | string[]
@@ -18,57 +7,44 @@ export interface SendMailOptions {
   text?: string
   html?: string
   from: string
-  replyTo?: string
+  replyTo?: string | string[]
   cc?: string | string[]
   bcc?: string | string[]
-  attachments?: NodemailerOptions['attachments']
-}
-
-export async function createMailTransporter() {
-  let runtimeSmtp: Partial<SmtpConfig> = {}
-
-  try {
-    const runtimeConfig = useRuntimeConfig()
-    if (runtimeConfig?.smtp) {
-      runtimeSmtp = runtimeConfig.smtp as Partial<SmtpConfig>
-    }
-  } catch {
-    // Si appelé hors contexte Nuxt / Nitro
-  }
-
-  const host = runtimeSmtp.host
-  const port        = Number(runtimeSmtp.port)
-  const secure      = runtimeSmtp.secure
-  const user          = runtimeSmtp.auth?.user
-  const pass          = runtimeSmtp.auth?.pass
-
-  return nodemailer.createTransport({
-    host,
-    port,
-    secure,
-    auth: {
-      user,
-      pass,
-    },
-  })
+  attachments?: Attachment[]
 }
 
 /**
+ * Envoie un mail via l'API Resend (clé : NUXT_RESEND_API_KEY).
+ * L'adresse `from` doit appartenir à un domaine vérifié dans Resend.
+ *
  * @param options Paramètres du mail (destinataire, sujet, corps texte/html, etc.)
- * @returns Le résultat de l'envoi Nodemailer
+ * @returns L'identifiant Resend du mail envoyé
  */
 export async function sendMail(options: SendMailOptions) {
-  const transporter = await createMailTransporter()
+  const { resend: resendConfig } = useRuntimeConfig()
 
-  return await transporter.sendMail({
+  if (!resendConfig.apiKey) {
+    throw new Error('Clé API Resend manquante (NUXT_RESEND_API_KEY)')
+  }
+
+  const resend = new Resend(resendConfig.apiKey)
+
+  // Le SDK Resend ne lève pas d'exception : l'erreur est renvoyée dans `error`.
+  const { data, error } = await resend.emails.send({
     from: options.from,
     to: options.to,
     subject: options.subject,
-    text: options.text,
+    text: options.text ?? '',
     html: options.html,
     replyTo: options.replyTo,
     cc: options.cc,
     bcc: options.bcc,
     attachments: options.attachments,
   })
+
+  if (error) {
+    throw new Error(`Resend : ${error.name} - ${error.message}`)
+  }
+
+  return data
 }

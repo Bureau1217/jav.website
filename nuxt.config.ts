@@ -71,14 +71,8 @@ export default defineNuxtConfig({
       apiKey: '',
       listId: ''
     },
-    smtp: {
-      host: 'mail.infomaniak.com',
-      port: 465,
-      secure: true,
-      auth: {
-        user: '',
-        pass: ''
-      },
+    resend: {
+      apiKey: ''
     }
   }
 })

@@ -7,7 +7,9 @@
       :link-text="block.content.link?.link_text"
     />
     <template v-for="(item, key, index) in block.content.items" :key="index">
-      <UiDivider v-if="index! > 0" variant="thin" />
+      <!-- On a list, Vue passes the real position as the 2nd alias (`key`);
+           the 3rd (`index`) is only filled for objects, hence `Number(key)`. -->
+      <UiDivider v-if="Number(key) > 0" variant="thin" />
       <details class="v-block-toggle__item">
         <summary class="u-flex u-flex--align-center u-flex--justify-between u-gap-5xl" @click.prevent="toggle">
           <h3 class="v-block-toggle__title">{{ item.titre }}</h3>

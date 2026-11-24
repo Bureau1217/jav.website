@@ -1,6 +1,10 @@
 <template>
-  <section class="v-block-section u-flex u-flex--column">
-    <div class="v-block-section__header u-flex u-flex--column u-gap-m u-gutter-x">
+  <section class="v-block-section u-flex u-flex--column" :class="{ 'is-open': isOpen }">
+    <div
+      class="v-block-section__header u-flex u-flex--column u-gap-m u-gutter-x"
+      :class="{ 'is-clickable': hasContent }"
+      @click="isOpen = !isOpen"
+    >
       <div class="v-block-section__row u-flex u-flex--align-start u-flex--justify-between u-gap-xl">
         <h1 v-if="block.content.title" v-html="block.content.title" />
         <button
@@ -9,7 +13,7 @@
           class="v-block-section__toggle"
           :class="{ 'is-open': isOpen }"
           :aria-expanded="isOpen"
-          @click="isOpen = !isOpen"
+          :aria-label="isOpen ? 'Fermer la section' : 'Ouvrir la section'"
         >
           <span aria-hidden="true" />
         </button>
@@ -32,6 +36,9 @@
       </div>
 
       <p v-if="block.content.text" class="v-block-section__text" v-html="block.content.text" />
+      <div v-if="hasContent" class="v-block-section__hint u-flex u-flex--align-end u-flex--justify-center" aria-hidden="true">
+        <span class="v-block-section__hint-label">Voir les informations</span>
+      </div>
     </div>
 
     <Transition :css="false" @enter="collapseEnter" @leave="collapseLeave">
@@ -91,7 +98,12 @@ const tagList = computed(() => {
 }
 
 .v-block-section__header {
+  position: relative;
   padding-block: var(--spacing-xl);
+
+  &.is-clickable {
+    cursor: pointer;
+  }
 }
 
 .v-block-section__link {
@@ -147,7 +159,54 @@ const tagList = computed(() => {
   }
 }
 
+.v-block-section__hint {
+  position: absolute;
+  inset: 0;
+  padding-bottom: var(--spacing-xl);
+  background: linear-gradient(to bottom, transparent 50%, var(--color-brand-00) 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.v-block-section__hint-label {
+  background: var(--color-page-accent);
+  color: var(--color-brand-00);
+  border-radius: var(--radius-pill);
+  padding: var(--spacing-xs) var(--spacing-m);
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 1;
+  transform: translateY(8px);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Shown on hover of a closed section's header (hover-capable devices only,
+// so a tap on mobile just opens it) and on keyboard focus of the toggle;
+// the "+" also starts turning into a "−" at the same time.
+@mixin section-hint {
+  .v-block-section__hint {
+    opacity: 1;
+  }
+
+  .v-block-section__hint-label {
+    transform: none;
+  }
+}
+
+@media (hover: hover) {
+  .v-block-section:not(.is-open):has(> .v-block-section__header.is-clickable:hover) {
+    @include section-hint;
+  }
+}
+
+.v-block-section:not(.is-open):has(.v-block-section__toggle:focus-visible) {
+  @include section-hint;
+}
+
 .v-block-section__content {
+  box-sizing: border-box;
   padding-block: var(--spacing-xl);
   // Nested blocks (rendered via <Blocks> above) sit inside an accordion —
   // they don't need the full page-level 96px rhythm between them, so this

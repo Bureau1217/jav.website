@@ -202,6 +202,16 @@ const tagList = computed(() => {
   }
 }
 
+@media (any-pointer: coarse) {
+  .v-block-section:not(.is-open):has(> .v-block-section__header.is-clickable) {
+    @include section-hint;
+  }
+
+  .v-block-section__hint {
+    justify-content: flex-start !important;
+  }
+}
+
 .v-block-section:not(.is-open):has(.v-block-section__toggle:focus-visible) {
   @include section-hint;
 }

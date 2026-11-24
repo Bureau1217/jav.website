@@ -37,7 +37,16 @@
 
       <p v-if="block.content.text" class="v-block-section__text" v-html="block.content.text" />
       <div v-if="hasContent" class="v-block-section__hint u-flex u-flex--align-end u-flex--justify-center" aria-hidden="true">
-        <span class="v-block-section__hint-label">Voir les informations</span>
+
+
+        <span class="v-block-section__hint-label">
+          <UiButton
+                  variant="primary"
+                  :style="{ '--button-color': 'var(--color-page-accent)', '--button-text': 'var(--color-brand-00)' }"
+          >
+            Voir les informations
+          </UiButton>
+        </span>
       </div>
     </div>
 
@@ -170,14 +179,6 @@ const tagList = computed(() => {
 }
 
 .v-block-section__hint-label {
-  background: var(--color-page-accent);
-  color: var(--color-brand-00);
-  border-radius: var(--radius-pill);
-  padding: var(--spacing-xs) var(--spacing-m);
-  font-family: var(--font-body);
-  font-weight: 800;
-  font-size: 24px;
-  line-height: 1;
   transform: translateY(8px);
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }

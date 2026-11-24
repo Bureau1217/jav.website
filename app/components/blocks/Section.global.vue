@@ -171,7 +171,7 @@ const tagList = computed(() => {
 .v-block-section__hint {
   position: absolute;
   inset: 0;
-  padding-bottom: var(--spacing-xl);
+  padding-inline: var(--gutter);
   background: linear-gradient(to bottom, transparent 50%, var(--color-brand-00) 100%);
   pointer-events: none;
   opacity: 0;
